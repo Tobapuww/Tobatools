@@ -17,7 +17,7 @@
   <em>Tobatools 不是"某品牌工具"，而是一个只尊重 Android 底层规则的刷机工具。</em>
 </p>
 
-[![License](https://img.shields.io/badge/License-MIT%202.0-%2361DAFB?style=for-the-badge&logo=opensourceinitiative)](LICENSE)
+[![License](https://img.shields.io/badge/License-GPL%20v3%20%2B%20Non--Commercial-%239E1E63?style=for-the-badge&logo=gnu&logoColor=white)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-%233776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Qt/PySide6](https://img.shields.io/badge/Qt%2FPySide6-%2341CD52?style=for-the-badge&logo=qt&logoColor=white)](https://doc.qt.io/qtforpython/)
 [![Fluent Design](https://img.shields.io/badge/Fluent%20Design-%230078D4?style=for-the-badge&logo=windows&logoColor=white)](https://learn.microsoft.com/zh-cn/windows/apps/design/style/fluent-design-system)
@@ -254,12 +254,33 @@ python -m app.main
 
 ---
 
-## 📜 许可证
+## 📄 许可证条款
 
-本项目基于 MIT License 开源，你可以自由使用、修改、分发本项目的代码。
+**Tobatools 基于 GNU General Public License v3.0 发布，并附加以下额外条款：**
+
+### ✅ 你可以：
+1. 自由地查看、下载、使用本工具
+2. 修改源代码，创建衍生版本
+3. 分享给朋友、发布修改后的版本
+4. 用于个人学习、研究、非商业项目
+5. ROM作者用本工具适配自己的ROM并发布
+6. 开发者贡献代码、配置文件
+
+### ❌ 你不可以：
+1. 将本工具或其修改版本用于**任何商业用途**
+2. 将本工具**集成到商业软件**中销售
+3. 倒卖、变卖本工具源代码
+4. 基于本工具开发**闭源的商业工具**
+5. 在**商业服务**中使用本工具（如收费刷机服务）
+6. 未经明确授权，在公司内部商业环境中部署
+
+### 💰 商业授权：
+如需商业使用，请联系作者获取商业许可证。
+
+### ⚖️ 开源义务：
+基于GPL v3，所有修改版本必须保持开源，并明确标注基于Tobatools。
 
 ---
-
 ## 🌟 致谢
 
 感谢所有为 Android 生态做出贡献的开发者们，正是你们的努力让刷机变得更加自由和开放。
