@@ -18,7 +18,7 @@
 </p>
 
 [![License](https://img.shields.io/badge/License-GPL%20v3%20%2B%20Non--Commercial-%239E1E63?style=for-the-badge&logo=gnu&logoColor=white)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.8%2B-%233776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.13%2B-%233776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Qt/PySide6](https://img.shields.io/badge/Qt%2FPySide6-%2341CD52?style=for-the-badge&logo=qt&logoColor=white)](https://doc.qt.io/qtforpython/)
 [![Fluent Design](https://img.shields.io/badge/Fluent%20Design-%230078D4?style=for-the-badge&logo=windows&logoColor=white)](https://learn.microsoft.com/zh-cn/windows/apps/design/style/fluent-design-system)
 
