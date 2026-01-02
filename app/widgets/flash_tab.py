@@ -1,5 +1,6 @@
 import os
 import subprocess
+import webbrowser
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -91,7 +92,8 @@ class _FlashWorker(QObject):
             if self.mode == 0:  # 散包刷机
                 self._flash_scattered()
             elif self.mode == 1:  # 压缩包刷机
-                self._flash_archive()
+                self.finished.emit(False, "压缩包刷机（ZIP/7z）暂不支持，后续版本再开放")
+                return
             elif self.mode == 2:  # ADB Sideload
                 self._flash_sideload()
             elif self.mode == 3:  # 小米线刷脚本
@@ -192,8 +194,24 @@ class _FlashWorker(QObject):
             scripts = logic.list_available_scripts(self.path)
             if scripts:
                 self.log_signal.emit(f"检测到 {len(scripts)} 个脚本: {', '.join(scripts)}")
-            
-            success = logic.execute_flash_script(self.path)
+
+            prefer_script = None
+            try:
+                wipe = False
+                if self.parent_tab and hasattr(self.parent_tab, 'wipe_check'):
+                    wipe = bool(self.parent_tab.wipe_check.isChecked())
+                # 勾选“清除数据” => flash_all.bat（会清数据）
+                # 未勾选 => flash_all_except_storage.bat（保留数据）
+                prefer_script = 'flash_all.bat' if wipe else 'flash_all_except_storage.bat'
+                if not (Path(self.path) / prefer_script).exists():
+                    prefer_script = None
+            except Exception:
+                prefer_script = None
+
+            if prefer_script:
+                self.log_signal.emit(f"已根据选项选择脚本: {prefer_script}")
+
+            success = logic.execute_flash_script(self.path, script_name=prefer_script)
             
             if success:
                 self.finished.emit(True, "线刷脚本执行完成")
@@ -219,6 +237,13 @@ class FlashTab(QWidget):
         self._watcher_worker = None  # 设备监听工作对象
         self._flash_thread = None  # 刷机线程
         self._flash_worker = None  # 刷机工作对象
+
+        try:
+            app = QApplication.instance()
+            if app is not None:
+                app.aboutToQuit.connect(self.cleanup)
+        except Exception:
+            pass
 
         outer = QVBoxLayout(self)
         try:
@@ -304,7 +329,7 @@ class FlashTab(QWidget):
         self.combo_mode = ComboBox()
         self.combo_mode.addItems([
             "散包刷机（文件夹）",
-            "压缩包刷机（ZIP/7z）",
+            "压缩包刷机（ZIP/7z，暂不支持）",
             "ADB Sideload",
             "小米线刷脚本"
         ])
@@ -463,6 +488,29 @@ class FlashTab(QWidget):
         v_opt.addLayout(h_opt)
         v_opt.addLayout(opt_row)
 
+        card_cfgdl = CardWidget(self)
+        v_cfgdl = QVBoxLayout(card_cfgdl)
+        v_cfgdl.setContentsMargins(16, 16, 16, 16)
+        v_cfgdl.setSpacing(10)
+        h_cfgdl = QHBoxLayout()
+        h_cfgdl.setSpacing(8)
+        h_cfgdl_icon = QLabel("⬇️")
+        h_cfgdl_icon.setStyleSheet("font-size:16px;")
+        h_cfgdl_title = QLabel("配置文件下载")
+        h_cfgdl_title.setStyleSheet("font-size:16px; font-weight:600;")
+        h_cfgdl.addWidget(h_cfgdl_icon)
+        h_cfgdl.addWidget(h_cfgdl_title)
+        h_cfgdl.addStretch(1)
+        v_cfgdl.addLayout(h_cfgdl)
+
+        cfgdl_row = QHBoxLayout()
+        cfgdl_row.setSpacing(8)
+        self.btn_cfg_download = PushButton("打开仓库")
+        self.btn_cfg_download.clicked.connect(self._open_cfg_repo)
+        cfgdl_row.addWidget(self.btn_cfg_download)
+        cfgdl_row.addStretch(1)
+        v_cfgdl.addLayout(cfgdl_row)
+
         card_act = CardWidget(self)
         v_act = QVBoxLayout(card_act)
         v_act.setContentsMargins(16, 16, 16, 16)
@@ -496,11 +544,12 @@ class FlashTab(QWidget):
         v_log.addWidget(self.log_view)
         v_log.addWidget(progress_container)
 
-        grid.addWidget(card_pkg, 0, 0, 1, 2)
-        grid.addWidget(card_status, 2, 0, 1, 2)
+        grid.addWidget(card_pkg, 0, 0, 1, 3)
+        grid.addWidget(card_status, 2, 0, 1, 3)
         grid.addWidget(card_opt, 3, 0)
-        grid.addWidget(card_act, 3, 1)
-        grid.addWidget(card_log, 4, 0, 1, 2)
+        grid.addWidget(card_cfgdl, 3, 1)
+        grid.addWidget(card_act, 3, 2)
+        grid.addWidget(card_log, 4, 0, 1, 3)
         layout.addLayout(grid)
 
         self.run_btn.clicked.connect(self.start_flash)
@@ -518,19 +567,30 @@ class FlashTab(QWidget):
         if index == 0:  # 散包刷机
             self.path_edit.setPlaceholderText("选择刷机包文件夹路径")
             self.btn_pick.setText("选择目录")
-            self.card_config.setVisible(True)  # 显示配置文件
-        elif index == 1:  # 压缩包刷机
-            self.path_edit.setPlaceholderText("选择 .zip 或 .7z 压缩包")
-            self.btn_pick.setText("选择文件")
-            self.card_config.setVisible(True)  # 显示配置文件
+            if hasattr(self, 'card_config'):
+                self.card_config.setVisible(True)  # 显示配置文件
+        elif index == 1:  # 压缩包刷机（暂不支持）
+            self._toast_info("提示", "压缩包刷机（ZIP/7z）暂不支持，后续版本再开放")
+            try:
+                self.combo_mode.blockSignals(True)
+                self.combo_mode.setCurrentIndex(0)
+            finally:
+                try:
+                    self.combo_mode.blockSignals(False)
+                except Exception:
+                    pass
+            self._on_mode_changed(0)
+            return
         elif index == 2:  # ADB Sideload
             self.path_edit.setPlaceholderText("选择 OTA 升级包 (.zip)")
             self.btn_pick.setText("选择文件")
-            self.card_config.setVisible(False)  # 隐藏配置文件
+            if hasattr(self, 'card_config'):
+                self.card_config.setVisible(False)  # 隐藏配置文件
         elif index == 3:  # 小米线刷脚本
             self.path_edit.setPlaceholderText("选择线刷包目录（包含 flash_all.bat）")
             self.btn_pick.setText("选择目录")
-            self.card_config.setVisible(False)  # 隐藏配置文件
+            if hasattr(self, 'card_config'):
+                self.card_config.setVisible(False)  # 隐藏配置文件
         
         # 清空路径
         self.path_edit.clear()
@@ -538,6 +598,10 @@ class FlashTab(QWidget):
     
     def _pick_source(self):
         mode = self.combo_mode.currentIndex()
+
+        if mode == 1:
+            self._toast_info("提示", "压缩包刷机（ZIP/7z）暂不支持")
+            return
         
         if mode == 0:  # 散包刷机
             path = QFileDialog.getExistingDirectory(self, "选择刷机包目录")
@@ -547,12 +611,17 @@ class FlashTab(QWidget):
             path, _ = QFileDialog.getOpenFileName(self, "选择 OTA 包", "", "OTA 包 (*.zip);;All (*.*)")
         elif mode == 3:  # 小米线刷脚本
             path = QFileDialog.getExistingDirectory(self, "选择小米线刷包目录")
-        else:
-            return
-        
+
         if path:
             self._source_path = path
             self.path_edit.setText(path)
+
+    def _open_cfg_repo(self):
+        url = "https://gitee.com/gyah/Tobatools-config-file"
+        try:
+            webbrowser.open(url)
+        except Exception:
+            self._toast_warning("打开失败", "无法打开链接，请手动复制到浏览器访问")
 
     def _pick_config(self):
         path, _ = QFileDialog.getOpenFileName(self, "选择刷机配置脚本", "", "配置脚本 (*.txt);;所有文件 (*.*)")
@@ -574,6 +643,11 @@ class FlashTab(QWidget):
         # 连接信号
         self._watcher_thread.started.connect(self._watcher_worker.run)
         self._watcher_worker.status_changed.connect(self._on_device_status_changed)
+        try:
+            self._watcher_thread.finished.connect(self._watcher_thread.deleteLater)
+            self._watcher_worker.destroyed.connect(lambda: None)
+        except Exception:
+            pass
         
         # 启动线程
         self._watcher_thread.start()
@@ -584,8 +658,19 @@ class FlashTab(QWidget):
             self._watcher_worker.stop()
         
         if self._watcher_thread:
-            self._watcher_thread.quit()
-            self._watcher_thread.wait(3000)  # 最多等待 3 秒
+            try:
+                if self._watcher_thread.isRunning():
+                    self._watcher_thread.quit()
+            except Exception:
+                pass
+            try:
+                self._watcher_thread.wait(3000)  # 最多等待 3 秒
+            except Exception:
+                pass
+            try:
+                self._watcher_thread.deleteLater()
+            except Exception:
+                pass
             self._watcher_thread = None
             self._watcher_worker = None
     
@@ -617,6 +702,10 @@ class FlashTab(QWidget):
         mode = self.combo_mode.currentIndex()
         path = self.path_edit.text().strip()
 
+        if mode == 1:
+            self._toast_info("提示", "压缩包刷机（ZIP/7z）暂不支持，后续版本再开放")
+            return
+
         if not path:
             self._toast_warning("提示", "请先选择文件或目录。")
             return
@@ -631,29 +720,38 @@ class FlashTab(QWidget):
                 self._toast_warning("提示", "选择的路径不是有效的文件。")
                 return
         
-        # 对于散包刷机，需要配置文件
+        # 配置文件（散包/压缩包刷机需要）
         config_path = None
-        if mode == 0:
-            config_path = self.config_edit.text().strip()
-            if not config_path:
-                self._toast_warning("提示", "散包刷机需要选择配置文件。")
+        if mode in [0, 1]:
+            if not self._config_path:
+                self._toast_warning("提示", "请先选择刷机配置文件！")
                 return
-        
-        # 检查设备模式（除了 Sideload 模式）
-        if mode != 2:  # Sideload 模式不需要检查 fastboot
+            config_path = str(self._config_path)
+
+        # 设备模式检查
+        # - 散包/压缩包：强制要求 bootloader/fastbootd
+        # - Sideload：不检查 fastboot
+        # - 小米线刷脚本：不强制拦截（脚本失败与否由脚本自行决定）
+        if mode in [0, 1]:
             from app.services import adb_service
             device_mode, serial = adb_service.detect_connection_mode()
-            
             if device_mode not in ['bootloader', 'fastbootd']:
                 self._toast_warning(
-                    "错误", 
-                    f"设备必须处于 Bootloader 或 Fastbootd 模式！\n"
-                    f"当前模式：{device_mode}\n\n"
-                    f"请先将设备重启到 Fastboot 模式。"
+                    "提示",
+                    "设备不在 Bootloader/Fastbootd 模式，无法开始刷机\n请先重启到 fastboot / fastbootd"
                 )
                 return
-        
-        # 二次确认
+        elif mode == 3:
+            try:
+                from app.services import adb_service
+                device_mode, serial = adb_service.detect_connection_mode()
+                if device_mode not in ['bootloader', 'fastbootd']:
+                    self._toast_warning(
+                        "提示",
+                        "当前设备不在 Bootloader/Fastbootd 模式，线刷脚本可能会失败\n你仍然可以继续"
+                    )
+            except Exception:
+                pass
         from qfluentwidgets import MessageBox
         mode_names = ["散包刷机", "压缩包刷机", "ADB Sideload", "小米线刷脚本"]
         
@@ -843,6 +941,13 @@ class FlashTab(QWidget):
             self._flash_worker = None
         
         self.cancel()
+
+    def closeEvent(self, event):
+        try:
+            self.cleanup()
+        except Exception:
+            pass
+        return super().closeEvent(event)
 
     # ---------- Small helpers ----------
     def append_log(self, text: str):

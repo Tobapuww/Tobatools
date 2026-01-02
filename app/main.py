@@ -24,8 +24,8 @@ def main():
     
     app = QApplication(sys.argv)
     app.setApplicationName("拖把工具箱")
-    QCoreApplication.setOrganizationName("OnePlusTools")
-    QCoreApplication.setOrganizationDomain("oneplus.local")
+    QCoreApplication.setOrganizationName("tobapuwTools")
+    QCoreApplication.setOrganizationDomain("tobapuw.local")
     root_dir = Path(__file__).resolve().parents[1]
     icon_path = root_dir / "android-chrome-512x512.png"
     app_icon = None

@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
 from qfluentwidgets import (
     TitleLabel, PushButton, PrimaryPushButton, InfoBar, InfoBarPosition,
     FluentIcon, Theme, setTheme, MessageBox,
-    SettingCardGroup, PushSettingCard, SettingCard, CaptionLabel, ComboBox
+    SettingCardGroup, PushSettingCard, SettingCard, CaptionLabel, ComboBox, SmoothScrollArea
 )
 
 from app.ui.about import AboutDialog
@@ -21,8 +21,30 @@ class SettingsTab(QWidget):
         super().__init__(parent)
         layout = QVBoxLayout(self)
         try:
-            layout.setContentsMargins(24, 24, 24, 24)
-            layout.setSpacing(12)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(0)
+        except Exception:
+            pass
+
+        self._scroll = SmoothScrollArea(self)
+        self._scroll.setWidgetResizable(True)
+        try:
+            self._scroll.setStyleSheet("QScrollArea {border: none; background: transparent;}")
+        except Exception:
+            pass
+        layout.addWidget(self._scroll)
+
+        container = QWidget()
+        try:
+            container.setStyleSheet("QWidget {background: transparent;}")
+        except Exception:
+            pass
+        self._scroll.setWidget(container)
+
+        content_layout = QVBoxLayout(container)
+        try:
+            content_layout.setContentsMargins(24, 24, 24, 24)
+            content_layout.setSpacing(12)
         except Exception:
             pass
 
@@ -63,7 +85,7 @@ class SettingsTab(QWidget):
             pass
         title_col.addWidget(t); title_col.addWidget(s)
         banner.addWidget(icon_lbl); banner.addLayout(title_col); banner.addStretch(1)
-        layout.addWidget(banner_w)
+        content_layout.addWidget(banner_w)
 
         # --- 外观设置 ---
         self.group_appearance = SettingCardGroup("外观", self)
@@ -85,7 +107,7 @@ class SettingsTab(QWidget):
         self.card_theme.hBoxLayout.addSpacing(16)
         
         self.group_appearance.addSettingCard(self.card_theme)
-        layout.addWidget(self.group_appearance)
+        content_layout.addWidget(self.group_appearance)
 
         # --- 下载设置 ---
         self.group_download = SettingCardGroup("下载", self)
@@ -99,7 +121,7 @@ class SettingsTab(QWidget):
         )
         self.card_download.clicked.connect(self._pick_download_dir)
         self.group_download.addSettingCard(self.card_download)
-        layout.addWidget(self.group_download)
+        content_layout.addWidget(self.group_download)
 
         # --- 工具 ---
         self.group_tools = SettingCardGroup("工具", self)
@@ -113,7 +135,7 @@ class SettingsTab(QWidget):
         )
         self.card_check_tools.clicked.connect(self._check_bin)
         self.group_tools.addSettingCard(self.card_check_tools)
-        layout.addWidget(self.group_tools)
+        content_layout.addWidget(self.group_tools)
 
         # --- 关于 ---
         self.group_about = SettingCardGroup("关于", self)
@@ -135,12 +157,42 @@ class SettingsTab(QWidget):
             self.group_about
         )
         self.card_update.clicked.connect(self._check_update)
+
+        self.card_repo = PushSettingCard(
+            "打开",
+            FluentIcon.GITHUB if hasattr(FluentIcon, "GITHUB") else FluentIcon.LINK,
+            "拖把工具箱GitHub开源仓库",
+            "https://github.com/Tobapuww/Tobatools",
+            self.group_about
+        )
+        self.card_repo.clicked.connect(lambda: self._open_url("https://github.com/Tobapuww/Tobatools"))
+
+        self.card_qq_group = PushSettingCard(
+            "加入",
+            FluentIcon.CHAT if hasattr(FluentIcon, "CHAT") else FluentIcon.MESSAGE,
+            "拖把工具箱官方QQ群",
+            "294122499",
+            self.group_about
+        )
+        self.card_qq_group.clicked.connect(lambda: self._open_url("https://qm.qq.com/q/iBPCO3Xrjy"))
+
+        self.card_tg_group = PushSettingCard(
+            "加入",
+            FluentIcon.SEND if hasattr(FluentIcon, "SEND") else FluentIcon.LINK,
+            "拖把工具箱Telegram频道",
+            "官方TG频道",
+            self.group_about
+        )
+        self.card_tg_group.clicked.connect(lambda: self._open_url("https://t.me/tuoba384076676"))
         
         self.group_about.addSettingCard(self.card_about)
         self.group_about.addSettingCard(self.card_update)
-        layout.addWidget(self.group_about)
+        self.group_about.addSettingCard(self.card_repo)
+        self.group_about.addSettingCard(self.card_qq_group)
+        self.group_about.addSettingCard(self.card_tg_group)
+        content_layout.addWidget(self.group_about)
 
-        layout.addStretch(1)
+        content_layout.addStretch(1)
 
         # Load Settings
         self._load_settings()
@@ -241,6 +293,12 @@ class SettingsTab(QWidget):
     def _show_about(self):
         dlg = AboutDialog(self)
         dlg.exec()
+
+    def _open_url(self, url: str):
+        try:
+            webbrowser.open(url)
+        except Exception:
+            InfoBar.error("打开失败", "无法打开链接，请手动复制到浏览器访问", parent=self, position=InfoBarPosition.TOP, isClosable=True)
 
     def _check_update(self):
         settings = QSettings()

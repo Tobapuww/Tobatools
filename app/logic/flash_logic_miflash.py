@@ -59,6 +59,10 @@ class MiFlashLogic:
         :return: 成功返回 True，失败返回 False
         """
         try:
+            if os.name != 'nt':
+                self.log("错误: 小米线刷脚本仅支持在 Windows 下执行")
+                return False
+
             folder = Path(folder_path)
             
             # 查找脚本
@@ -78,6 +82,7 @@ class MiFlashLogic:
             self.log("=" * 50)
             self.log(f"准备执行: {script_path.name}")
             self.log(f"工作目录: {folder_path}")
+            self.log(f"执行命令: cmd.exe /d /c call {script_path}")
             self.log("=" * 50)
             
             # 脚本说明
@@ -97,8 +102,10 @@ class MiFlashLogic:
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             
+            # 使用 cmd.exe 执行 .bat，确保行为与手动执行脚本一致
+            # 使用 call + 传入脚本全路径，避免路径含空格/切换目录等问题
             self._process = subprocess.Popen(
-                [str(script_path)],
+                ['cmd.exe', '/d', '/c', 'call', str(script_path)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
