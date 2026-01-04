@@ -1,4 +1,4 @@
-![b1743700dbdc185fdd3a0606e5c2031a](https://github.com/user-attachments/assets/d22d2628-57d2-4d6d-b710-be8ef97e2deb)# 🔥 拖把工具箱 - 全机型通用的安卓刷机工具
+# 🔥 拖把工具箱 - 全机型通用的安卓刷机工具
 
 > **如果一个 Android 设备已经解锁 Bootloader，  
 > 那它就不应该再被任何厂商工具限制。**
