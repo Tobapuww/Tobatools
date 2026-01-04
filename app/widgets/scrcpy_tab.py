@@ -4,7 +4,7 @@ import subprocess
 from PySide6.QtCore import Qt, QThread, Signal, QObject
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit,
-    QCheckBox, QSpinBox, QComboBox, QTextEdit
+    QCheckBox, QSpinBox, QComboBox, QTextEdit, QDialog, QDialogButtonBox
 )
 from pathlib import Path
 from qfluentwidgets import CardWidget, PushButton as FluentPushButton, PrimaryPushButton as FluentPrimaryPushButton, FluentIcon, CheckBox, ComboBox, InfoBar, InfoBarPosition, MessageDialog, SmoothScrollArea
@@ -60,6 +60,88 @@ class ScrcpyTab(QWidget):
         self._worker: _ScrcpyWorker | None = None
         self._scrcpy_path = self._resolve_scrcpy()
         self._build_ui()
+
+    def _resolve_adb(self) -> str:
+        base = Path(__file__).resolve().parent
+        bin1 = (base / ".." / ".." / "bin" / "adb.exe").resolve()
+        if bin1.exists():
+            return str(bin1)
+        bin2 = (Path.cwd() / "bin" / "adb.exe").resolve()
+        if bin2.exists():
+            return str(bin2)
+        return "adb"
+
+    def _list_adb_devices(self) -> list[dict]:
+        adb = self._resolve_adb()
+        try:
+            result = subprocess.run(
+                [adb, "devices", "-l"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=3,
+            )
+        except Exception:
+            return []
+
+        out = (result.stdout or "").splitlines()
+        devices: list[dict] = []
+        for line in out:
+            line = line.strip()
+            if not line:
+                continue
+            if line.lower().startswith("list of devices"):
+                continue
+            if line.startswith("*"):
+                continue
+            parts = line.split()
+            if len(parts) < 2:
+                continue
+            serial = parts[0]
+            state = parts[1]
+            if state != "device":
+                continue
+            model = ""
+            device_code = ""
+            for p in parts[2:]:
+                if p.startswith("model:"):
+                    model = p.split(":", 1)[1]
+                elif p.startswith("device:"):
+                    device_code = p.split(":", 1)[1]
+            devices.append({"serial": serial, "model": model, "device": device_code})
+        return devices
+
+    def _select_device_serial(self) -> str | None:
+        devices = self._list_adb_devices()
+        if len(devices) == 0:
+            InfoBar.warning("提示", "未检测到可用的 ADB 设备。", parent=self, position=InfoBarPosition.TOP, isClosable=True)
+            return None
+        if len(devices) == 1:
+            return devices[0]["serial"]
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("选择投屏设备")
+        lay = QVBoxLayout(dlg)
+        lay.addWidget(QLabel("检测到多个设备，请选择要投屏的设备：", dlg))
+        combo = QComboBox(dlg)
+        for d in devices:
+            label = d["serial"]
+            if d.get("model") or d.get("device"):
+                label += f"  ({d.get('model') or d.get('device')})"
+            combo.addItem(label, d["serial"])
+        lay.addWidget(combo)
+        btns = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, dlg)
+        btns.button(QDialogButtonBox.Ok).setText("确定")
+        btns.button(QDialogButtonBox.Cancel).setText("取消")
+        btns.accepted.connect(dlg.accept)
+        btns.rejected.connect(dlg.reject)
+        lay.addWidget(btns)
+
+        if dlg.exec() != QDialog.Accepted:
+            return None
+        return combo.currentData()
 
     def _resolve_scrcpy(self) -> str:
         base = Path(__file__).resolve().parent  # app/widgets
@@ -361,7 +443,15 @@ class ScrcpyTab(QWidget):
         if self._thread and self._thread.isRunning():
             InfoBar.info("提示", "投屏已在运行中。", parent=self, position=InfoBarPosition.TOP, isClosable=True)
             return
+
+        serial = self._select_device_serial()
+        if not serial:
+            return
+
         cmd = self._build_command()
+        # Force scrcpy to use the chosen device when multiple ADB devices exist.
+        if len(cmd) >= 1:
+            cmd = [cmd[0], "-s", str(serial)] + cmd[1:]
         self.log.clear()
         self._thread = QThread(self)
         self._worker = _ScrcpyWorker(cmd)
