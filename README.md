@@ -283,7 +283,8 @@ python -m app.main
 ---
 ## 🌟 致谢
 
-感谢所有为 Android 生态做出贡献的开发者们，正是你们的努力让刷机变得更加自由和开放。
+本项目的 UI 界面基于开源项目 [QFluentWidgets](https://github.com/zhiyiYo/PyQt-Fluent-Widgets) 开发，感谢 QFluentWidgets的作者@zhiyiYo及贡献者提供的优秀开源控件库。
+感谢所有为 Android 开源社区做出贡献的开发者、刷机爱好者，正是因为有你们，安卓的开源精神才得以延续。
 
 ---
 
