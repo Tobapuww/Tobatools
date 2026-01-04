@@ -51,7 +51,7 @@
 - **操作日志记录**：所有操作均可追溯，便于问题排查
 
 ### 🖥️ 现代化界面
-- **Fluent Design**：微软原生设计语言，界面简洁美观
+- **Fluent Design**：微软原生设计语言，界面简洁美观（基于PyQt-Fluent-Widgets控件库开发https://github.com/zhiyiYo/PyQt-Fluent-Widgets）
 - **多线程异步**：所有操作在后台执行，UI 永不卡顿
 - **Win11 特效**：完美支持 Mica 云母质感和 Acrylic 毛玻璃效果
 - **实时状态显示**：设备信息、刷机进度实时更新
