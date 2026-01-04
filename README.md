@@ -1,4 +1,4 @@
-# 🔥 拖把工具箱 - 全机型通用的安卓刷机工具
+![b1743700dbdc185fdd3a0606e5c2031a](https://github.com/user-attachments/assets/d22d2628-57d2-4d6d-b710-be8ef97e2deb)# 🔥 拖把工具箱 - 全机型通用的安卓刷机工具
 
 > **如果一个 Android 设备已经解锁 Bootloader，  
 > 那它就不应该再被任何厂商工具限制。**
@@ -21,6 +21,8 @@
 [![Python](https://img.shields.io/badge/Python-3.13%2B-%233776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Qt/PySide6](https://img.shields.io/badge/Qt%2FPySide6-%2341CD52?style=for-the-badge&logo=qt&logoColor=white)](https://doc.qt.io/qtforpython/)
 [![Fluent Design](https://img.shields.io/badge/Fluent%20Design-%230078D4?style=for-the-badge&logo=windows&logoColor=white)](https://learn.microsoft.com/zh-cn/windows/apps/design/style/fluent-design-system)
+[![TG频道-拖把工具箱](https://img.shields.io/badge/TG频道-拖把工具箱-%2326A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/tuoba1213141647)
+[![QQ群-拖把工具箱交流群](https://img.shields.io/badge/QQ群-拖把工具箱交流群-%2312B7F5?style=for-the-badge&logo=tencent-qq&logoColor=white)](https://qm.qq.com/q/FpJPM0fcQK)
 
 ---
 
