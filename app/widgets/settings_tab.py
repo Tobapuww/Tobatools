@@ -183,7 +183,7 @@ class SettingsTab(QWidget):
             "官方TG频道",
             self.group_about
         )
-        self.card_tg_group.clicked.connect(lambda: self._open_url("https://t.me/tuoba384076676"))
+        self.card_tg_group.clicked.connect(lambda: self._open_url("https://t.me/tuoba1213141647"))
         
         self.group_about.addSettingCard(self.card_about)
         self.group_about.addSettingCard(self.card_update)
