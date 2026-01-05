@@ -13,6 +13,7 @@ from app.widgets.root_tab import RootTab
 from app.widgets.device_info_tab import DeviceInfoTab
 from app.widgets.settings_tab import SettingsTab
 from app.widgets.scrcpy_tab import ScrcpyTab
+from app.widgets.software_manager_tab import SoftwareManagerTab
 from app.services.update_checker import UpdateCheckerWorker
 from app.version import VERSION
 from app.widgets.file_manager_tab import FileManagerTab
@@ -113,6 +114,7 @@ class FluentMainWindow(FluentWindow):
         self.settings_tab = SettingsTab(); self.settings_tab.setObjectName("settings")
         self.scrcpy_tab = ScrcpyTab(); self.scrcpy_tab.setObjectName("scrcpy")
         self.root_tab = RootTab(); self.root_tab.setObjectName("root")
+        self.software_tab = SoftwareManagerTab(); self.software_tab.setObjectName("software_manager")
 
         # 从上到下：设备信息、刷机、投屏、杂项、设置
         self.addSubInterface(self.info_tab, FluentIcon.INFO, "设备信息")
@@ -131,6 +133,11 @@ class FluentMainWindow(FluentWindow):
             self.addSubInterface(self.scrcpy_tab, FluentIcon.VIDEO, "投屏")
         except Exception:
             self.addSubInterface(self.scrcpy_tab, FluentIcon.PLAY, "投屏")
+        # 软件管理
+        try:
+            self.addSubInterface(self.software_tab, FluentIcon.APPLICATION, "软件管理")
+        except Exception:
+            self.addSubInterface(self.software_tab, FluentIcon.BASKETBALL, "软件管理")
         # 文件管理（置于杂项上方）
         try:
             self.addSubInterface(self.file_tab, FluentIcon.FOLDER, "文件管理")
@@ -214,6 +221,7 @@ class FluentMainWindow(FluentWindow):
             getattr(self, 'backup_tab', None),
             getattr(self, 'misc_tab', None),
             getattr(self, 'root_tab', None),
+            getattr(self, 'software_tab', None),
             getattr(self, 'info_tab', None),
             getattr(self, 'settings_tab', None),
         ]:
