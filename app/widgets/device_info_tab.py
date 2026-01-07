@@ -16,13 +16,663 @@ from qfluentwidgets import (
     FlyoutViewBase,
     BodyLabel,
     SmoothScrollArea,
+    LineEdit,
+    MessageBoxBase,
 )
 import os
 import subprocess
 import re
+import time
+import secrets
+import string
 from typing import Optional
 
 from app.services import adb_service
+
+
+class _WirelessAdbWorker(QObject):
+    finished = Signal(bool, str)
+
+    def __init__(self, action: str, host: str, connect_port: str, pair_port: str, pair_code: str):
+        super().__init__()
+        self.action = str(action or '').strip()
+        self.host = str(host or '').strip()
+        self.connect_port = str(connect_port or '').strip()
+        self.pair_port = str(pair_port or '').strip()
+        self.pair_code = str(pair_code or '').strip()
+
+    def run(self):
+        try:
+            if self.action == 'pair':
+                code, out = adb_service.adb_pair(self.host, self.pair_port, self.pair_code)
+                ok = code == 0
+                self.finished.emit(ok, out or ("ok" if ok else "failed"))
+                return
+            if self.action == 'connect':
+                code, out = adb_service.adb_connect(self.host, self.connect_port)
+                ok = code == 0
+                self.finished.emit(ok, out or ("ok" if ok else "failed"))
+                return
+            if self.action == 'disconnect':
+                code, out = adb_service.adb_disconnect(self.host, self.connect_port)
+                ok = code == 0
+                self.finished.emit(ok, out or ("ok" if ok else "failed"))
+                return
+            self.finished.emit(False, 'unknown action')
+        except Exception as e:
+            self.finished.emit(False, str(e))
+
+
+class _WirelessAdbDialog(MessageBoxBase):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self._thread = None
+        self._worker = None
+
+        self._mdns_thread = None
+        self._mdns_worker = None
+
+        self._adb_service_id = ''
+        self._adb_password = ''
+        self._qr_text = ''
+
+        self.titleLabel = QLabel("无线连接")
+        self.titleLabel.setStyleSheet("font-size:16px; font-weight:600;")
+        self.viewLayout.addWidget(self.titleLabel)
+
+        self.qrLabel = QLabel("可生成 ADB 二维码供手机『无线调试-扫码配对』使用，然后点『自动配对』扫描 mDNS 并完成配对。")
+        self.qrLabel.setWordWrap(True)
+        self.qrLabel.setStyleSheet("color:#565D6A;")
+        self.viewLayout.addWidget(self.qrLabel)
+
+        row0 = QHBoxLayout(); row0.setSpacing(10)
+        self.btnGenQr = PrimaryPushButton("生成二维码(ADB)", self)
+        self.btnScanMdns = PushButton("自动配对(扫描mDNS)", self)
+        self.btnStopMdns = PushButton("停止", self)
+        try:
+            self.btnStopMdns.setEnabled(False)
+        except Exception:
+            pass
+        self.btnRestartAdb = PushButton("重启ADB", self)
+        row0.addWidget(self.btnGenQr)
+        row0.addWidget(self.btnScanMdns)
+        row0.addWidget(self.btnStopMdns)
+        row0.addWidget(self.btnRestartAdb)
+        row0.addStretch(1)
+        self.viewLayout.addLayout(row0)
+
+        self.serviceLabel = QLabel("ServiceID：-")
+        self.serviceLabel.setStyleSheet("color:#4e5969;")
+        self.viewLayout.addWidget(self.serviceLabel)
+
+        self.qrImg = QLabel(self)
+        self.qrImg.setAlignment(Qt.AlignCenter)
+        try:
+            self.qrImg.setFixedSize(240, 240)
+            self.qrImg.setStyleSheet("background: rgba(0,0,0,0.03); border-radius: 10px;")
+        except Exception:
+            pass
+        self.viewLayout.addWidget(self.qrImg, 0, Qt.AlignHCenter)
+
+        row1 = QHBoxLayout(); row1.setSpacing(10)
+        row1.addWidget(QLabel("IP"))
+        self.ipEdit = LineEdit(self)
+        try:
+            self.ipEdit.setPlaceholderText("例如 192.168.1.10")
+        except Exception:
+            pass
+        row1.addWidget(self.ipEdit, 2)
+        row1.addWidget(QLabel("连接端口"))
+        self.connectPortEdit = LineEdit(self)
+        try:
+            self.connectPortEdit.setPlaceholderText("例如 5555/37099")
+            self.connectPortEdit.setFixedWidth(120)
+        except Exception:
+            pass
+        row1.addWidget(self.connectPortEdit)
+        self.viewLayout.addLayout(row1)
+
+        row2 = QHBoxLayout(); row2.setSpacing(10)
+        row2.addWidget(QLabel("配对端口"))
+        self.pairPortEdit = LineEdit(self)
+        try:
+            self.pairPortEdit.setPlaceholderText("手机显示的配对端口")
+            self.pairPortEdit.setFixedWidth(120)
+        except Exception:
+            pass
+        row2.addWidget(self.pairPortEdit)
+        row2.addWidget(QLabel("配对码"))
+        self.pairCodeEdit = LineEdit(self)
+        try:
+            self.pairCodeEdit.setPlaceholderText("6 位配对码")
+            self.pairCodeEdit.setFixedWidth(140)
+        except Exception:
+            pass
+        row2.addWidget(self.pairCodeEdit)
+        row2.addStretch(1)
+        self.viewLayout.addLayout(row2)
+
+        row3 = QHBoxLayout(); row3.setSpacing(10)
+        self.btnPair = PrimaryPushButton("配对", self)
+        self.btnConnect = PrimaryPushButton("连接", self)
+        self.btnDisconnect = PushButton("断开", self)
+        row3.addWidget(self.btnPair)
+        row3.addWidget(self.btnConnect)
+        row3.addWidget(self.btnDisconnect)
+        row3.addStretch(1)
+        self.viewLayout.addLayout(row3)
+
+        self.statusLabel = QLabel("状态：-")
+        self.statusLabel.setWordWrap(True)
+        self.statusLabel.setStyleSheet("color:#4e5969;")
+        self.viewLayout.addWidget(self.statusLabel)
+
+        try:
+            self.yesButton.hide()
+            self.cancelButton.setText("关闭")
+        except Exception:
+            pass
+
+        try:
+            self.btnPair.clicked.connect(lambda: self._run('pair'))
+            self.btnConnect.clicked.connect(lambda: self._run('connect'))
+            self.btnDisconnect.clicked.connect(lambda: self._run('disconnect'))
+        except Exception:
+            pass
+
+        try:
+            self.btnGenQr.clicked.connect(self._gen_qr)
+            self.btnScanMdns.clicked.connect(self._start_mdns_scan)
+            self.btnStopMdns.clicked.connect(self._stop_mdns_scan)
+            self.btnRestartAdb.clicked.connect(self._restart_adb)
+        except Exception:
+            pass
+
+    def closeEvent(self, event):
+        try:
+            self._stop_mdns_scan()
+        except Exception:
+            pass
+        return super().closeEvent(event)
+
+    def _random_string(self, n: int) -> str:
+        alphabet = string.ascii_lowercase + string.digits
+        return ''.join(secrets.choice(alphabet) for _ in range(max(1, int(n))))
+
+    def _gen_qr(self):
+        self._adb_service_id = 'toba-' + self._random_string(8)
+        self._adb_password = self._random_string(8)
+        self._qr_text = f"WIFI:T:ADB;S:{self._adb_service_id};P:{self._adb_password};;"
+        try:
+            self.serviceLabel.setText(f"ServiceID：{self._adb_service_id}")
+        except Exception:
+            pass
+        try:
+            self.pairCodeEdit.setText(self._adb_password)
+        except Exception:
+            pass
+        try:
+            self.statusLabel.setText('状态：已生成二维码，请在手机无线调试中扫码')
+        except Exception:
+            pass
+
+        pm = None
+        try:
+            import qrcode
+            try:
+                img = qrcode.make(self._qr_text)
+                img = img.resize((220, 220))
+                img = img.convert('RGBA')
+                data = img.tobytes('raw', 'RGBA')
+                from PySide6.QtGui import QImage
+                qimg = QImage(data, img.size[0], img.size[1], QImage.Format_RGBA8888)
+                pm = QPixmap.fromImage(qimg)
+            except Exception:
+                pm = None
+        except Exception:
+            pm = None
+
+        if pm is None or pm.isNull():
+            try:
+                self.qrImg.setText("未安装二维码依赖，已退化为文本：\n" + self._qr_text + "\n\n请安装：pip install qrcode[pil]")
+                self.qrImg.setWordWrap(True)
+                self.qrImg.setStyleSheet("background: rgba(0,0,0,0.03); border-radius: 10px; padding:10px; color:#4e5969;")
+            except Exception:
+                pass
+            return
+
+        try:
+            self.qrImg.setPixmap(pm)
+        except Exception:
+            pass
+
+    def _restart_adb(self):
+        try:
+            self.statusLabel.setText("状态：正在重启 ADB Server...")
+            self.btnRestartAdb.setEnabled(False)
+            
+            class _RestartWorker(QObject):
+                finished = Signal()
+                def run(self):
+                    try:
+                        adb_service.adb_kill_server()
+                        time.sleep(1)
+                        adb_service.adb_start_server()
+                    except Exception:
+                        pass
+                    self.finished.emit()
+
+            self._restart_thread = QThread(self)
+            self._restart_worker = _RestartWorker()
+            self._restart_worker.moveToThread(self._restart_thread)
+            self._restart_thread.started.connect(self._restart_worker.run)
+            self._restart_worker.finished.connect(lambda: self.statusLabel.setText("状态：ADB 已重启，请重新生成二维码或扫描"))
+            self._restart_worker.finished.connect(lambda: self.btnRestartAdb.setEnabled(True))
+            self._restart_worker.finished.connect(self._restart_thread.quit)
+            self._restart_worker.finished.connect(self._restart_worker.deleteLater)
+            self._restart_thread.finished.connect(self._restart_thread.deleteLater)
+            self._restart_thread.start()
+        except Exception as e:
+            self.statusLabel.setText(f"状态：重启 ADB 失败 {str(e)}")
+            self.btnRestartAdb.setEnabled(True)
+
+    def _set_mdns_busy(self, on: bool):
+        b = bool(on)
+        try:
+            self.btnScanMdns.setEnabled(not b)
+            self.btnGenQr.setEnabled(not b)
+            self.btnStopMdns.setEnabled(b)
+            self.btnRestartAdb.setEnabled(not b)
+        except Exception:
+            pass
+
+    def _start_mdns_scan(self):
+        if not self._adb_service_id or not self._adb_password:
+            self._gen_qr()
+
+        try:
+            if self._mdns_thread and self._mdns_thread.isRunning():
+                return
+        except Exception:
+            pass
+
+        class _MdnsWorker(QObject):
+            finished = Signal(bool, str)
+            status_update = Signal(str)
+            found = Signal(str, str)
+            connect_found = Signal(str, str)
+
+            def __init__(self, service_id: str, password: str):
+                super().__init__()
+                self._service_id = str(service_id or '').strip()
+                self._password = str(password or '').strip()
+                self._stop = False
+                self._last_ip = ''
+                self._last_pair_port = ''
+
+            def stop(self):
+                self._stop = True
+
+            def run(self):
+                # Try using zeroconf if available
+                try:
+                    import zeroconf
+                    self._run_zeroconf()
+                except ImportError:
+                    self._run_adb()
+
+            def _run_zeroconf(self):
+                from zeroconf import Zeroconf, ServiceBrowser, ServiceStateChange
+                
+                self.status_update.emit("正在使用 Zeroconf 原生扫描 mDNS...")
+                
+                found_target = {}
+                
+                def on_service_state_change(zeroconf, service_type, name, state_change):
+                    if self._stop:
+                        return
+                    if state_change is ServiceStateChange.Added:
+                        if "_adb-tls-pairing._tcp" in name:
+                            self.status_update.emit(f"发现服务: {name}")
+                        
+                        if self._service_id and self._service_id in name:
+                            info = zeroconf.get_service_info(service_type, name)
+                            if info:
+                                # parsed_addresses() returns list of str
+                                addrs = info.parsed_addresses()
+                                if addrs:
+                                    found_target['ip'] = addrs[0]
+                                    found_target['port'] = info.port
+                
+                zc = Zeroconf()
+                browser = ServiceBrowser(zc, "_adb-tls-pairing._tcp.local.", handlers=[on_service_state_change])
+                
+                deadline = time.time() + 60
+                try:
+                    while not self._stop and time.time() < deadline:
+                        if 'ip' in found_target:
+                            ip = found_target['ip']
+                            port = found_target['port']
+                            try:
+                                self.found.emit(str(ip), str(port))
+                            except Exception:
+                                pass
+                            self._last_ip = str(ip)
+                            self._last_pair_port = str(port)
+                            self.status_update.emit(f"匹配成功! 正在配对 {ip}:{port}")
+                            pcode, pout = adb_service.adb_pair(ip, port, self._password, timeout=15)
+                            ok = pcode == 0
+                            if ok:
+                                try:
+                                    self._try_find_connect_port_zeroconf()
+                                except Exception:
+                                    pass
+                            self.finished.emit(ok, (pout or '').strip() or ('成功' if ok else '失败'))
+                            return
+                        time.sleep(0.5)
+                finally:
+                    zc.close()
+                
+                if self._stop:
+                    return
+                self.finished.emit(False, '扫描超时，未找到匹配的配对服务')
+
+            def _try_find_connect_port_zeroconf(self):
+                try:
+                    from zeroconf import Zeroconf, ServiceBrowser, ServiceStateChange
+                except Exception:
+                    return
+
+                if not self._last_ip:
+                    return
+
+                self.status_update.emit('正在获取连接端口...')
+                found = {}
+
+                def on_conn_state_change(zeroconf, service_type, name, state_change):
+                    if self._stop:
+                        return
+                    if state_change is not ServiceStateChange.Added:
+                        return
+                    info = zeroconf.get_service_info(service_type, name)
+                    if not info:
+                        return
+                    addrs = info.parsed_addresses()
+                    if not addrs:
+                        return
+                    ip = addrs[0]
+                    if ip != self._last_ip:
+                        return
+                    found['ip'] = ip
+                    found['port'] = info.port
+
+                zc2 = Zeroconf()
+                browser2 = ServiceBrowser(zc2, '_adb-tls-connect._tcp.local.', handlers=[on_conn_state_change])
+                deadline = time.time() + 10
+                try:
+                    while not self._stop and time.time() < deadline:
+                        if 'port' in found:
+                            try:
+                                self.connect_found.emit(str(found['ip']), str(found['port']))
+                            except Exception:
+                                pass
+                            self.status_update.emit(f"已获取连接端口：{found['port']}")
+                            return
+                        time.sleep(0.2)
+                finally:
+                    zc2.close()
+
+                if not self._stop:
+                    self.status_update.emit('未能通过 mDNS 获取连接端口，请在手机「无线调试 → IP 地址与端口」中查看并手动填写')
+
+            def _run_adb(self):
+                self.status_update.emit("未安装 zeroconf，正在使用 ADB 扫描 (建议: pip install zeroconf)...")
+                try:
+                    deadline = time.time() + 60
+                    # Support both tabs and spaces as separators
+                    line_regex = re.compile(r"([^\s]+)\s+_adb-tls-pairing\._tcp\.\s+([^:]+):([0-9]+)")
+                    while not self._stop and time.time() < deadline:
+                        code, out = adb_service.adb_mdns_services(timeout=5)
+                        if code != 0:
+                            self.status_update.emit(f"mDNS 查询出错 (code={code})")
+                            time.sleep(1)
+                            continue
+                        if not out:
+                            self.status_update.emit("mDNS 列表为空")
+                            time.sleep(1)
+                            continue
+                        
+                        lines = out.splitlines()
+                        found_pairing_services = 0
+                        
+                        for line in out.splitlines():
+                            # Check if line is a pairing service
+                            if "_adb-tls-pairing._tcp." not in line:
+                                continue
+                                
+                            found_pairing_services += 1
+                            
+                            if self._service_id and self._service_id not in line:
+                                # Found a pairing service but ID doesn't match
+                                continue
+                                
+                            m = line_regex.search(line)
+                            if not m:
+                                continue
+                            ip = (m.group(2) or '').strip()
+                            port = (m.group(3) or '').strip()
+                            if not ip or not port:
+                                continue
+
+                            try:
+                                self.found.emit(str(ip), str(port))
+                            except Exception:
+                                pass
+                            self._last_ip = str(ip)
+                            self._last_pair_port = str(port)
+                            self.status_update.emit(f"发现匹配服务，尝试配对 {ip}:{port} ...")
+                            pcode, pout = adb_service.adb_pair(ip, port, self._password, timeout=15)
+                            ok = pcode == 0
+                            if ok:
+                                try:
+                                    self._try_find_connect_port_adb()
+                                except Exception:
+                                    pass
+                            self.finished.emit(ok, (pout or '').strip() or ('成功' if ok else '失败'))
+                            return
+                        
+                        self.status_update.emit(f"扫描中... 发现 {found_pairing_services} 个配对服务 (0 匹配)")
+                        time.sleep(1)
+                    self.finished.emit(False, '未找到配对服务（请确认手机已扫码且在同一局域网）')
+                except Exception as e:
+                    self.finished.emit(False, str(e))
+
+            def _try_find_connect_port_adb(self):
+                if not self._last_ip:
+                    return
+                self.status_update.emit('正在获取连接端口...')
+                line_regex = re.compile(r"([^\s]+)\s+_adb-tls-connect\._tcp\.\s+([^:]+):([0-9]+)")
+                deadline = time.time() + 10
+                while not self._stop and time.time() < deadline:
+                    code, out = adb_service.adb_mdns_services(timeout=5)
+                    if code != 0 or not out:
+                        time.sleep(0.5)
+                        continue
+                    for line in out.splitlines():
+                        if '_adb-tls-connect._tcp.' not in line:
+                            continue
+                        m = line_regex.search(line)
+                        if not m:
+                            continue
+                        ip = (m.group(2) or '').strip()
+                        port = (m.group(3) or '').strip()
+                        if ip != self._last_ip:
+                            continue
+                        if not port:
+                            continue
+                        try:
+                            self.connect_found.emit(str(ip), str(port))
+                        except Exception:
+                            pass
+                        self.status_update.emit(f"已获取连接端口：{port}")
+                        return
+                    time.sleep(0.5)
+
+                if not self._stop:
+                    self.status_update.emit('未能通过 mDNS 获取连接端口（当前 ADB mDNS 列表可能为空），请在手机「无线调试 → IP 地址与端口」中查看并手动填写')
+
+        self._set_mdns_busy(True)
+        try:
+            self.statusLabel.setText('状态：扫描 mDNS 中…')
+        except Exception:
+            pass
+
+        self._mdns_thread = QThread(self)
+        self._mdns_worker = _MdnsWorker(self._adb_service_id, self._adb_password)
+        self._mdns_worker.moveToThread(self._mdns_thread)
+        self._mdns_thread.started.connect(self._mdns_worker.run)
+        self._mdns_worker.status_update.connect(self.statusLabel.setText)
+        self._mdns_worker.found.connect(self._on_mdns_found)
+        self._mdns_worker.connect_found.connect(self._on_mdns_connect_found)
+        self._mdns_worker.finished.connect(self._on_mdns_finished)
+        self._mdns_worker.finished.connect(self._mdns_thread.quit)
+        self._mdns_worker.finished.connect(self._mdns_worker.deleteLater)
+        self._mdns_thread.finished.connect(self._mdns_thread.deleteLater)
+        self._mdns_thread.finished.connect(self._on_mdns_thread_finished)
+        self._mdns_thread.start()
+
+    def _on_mdns_found(self, ip: str, pair_port: str):
+        try:
+            if hasattr(self, 'ipEdit'):
+                try:
+                    if not str(self.ipEdit.text() or '').strip():
+                        self.ipEdit.setText(str(ip))
+                except Exception:
+                    self.ipEdit.setText(str(ip))
+            if hasattr(self, 'pairPortEdit'):
+                try:
+                    if not str(self.pairPortEdit.text() or '').strip():
+                        self.pairPortEdit.setText(str(pair_port))
+                except Exception:
+                    self.pairPortEdit.setText(str(pair_port))
+        except Exception:
+            pass
+
+    def _on_mdns_connect_found(self, ip: str, connect_port: str):
+        try:
+            if hasattr(self, 'connectPortEdit'):
+                try:
+                    if not str(self.connectPortEdit.text() or '').strip():
+                        self.connectPortEdit.setText(str(connect_port))
+                except Exception:
+                    self.connectPortEdit.setText(str(connect_port))
+        except Exception:
+            pass
+
+    def _stop_mdns_scan(self):
+        try:
+            if self._mdns_worker and hasattr(self._mdns_worker, 'stop'):
+                self._mdns_worker.stop()
+        except Exception:
+            pass
+        try:
+            if self._mdns_thread and self._mdns_thread.isRunning():
+                self._mdns_thread.quit()
+                self._mdns_thread.wait(1200)
+        except Exception:
+            pass
+
+    def _on_mdns_finished(self, ok: bool, out: str):
+        try:
+            msg = (out or '').strip() or ('成功' if ok else '失败')
+            self.statusLabel.setText('状态：' + msg)
+        except Exception:
+            pass
+
+    def _on_mdns_thread_finished(self):
+        try:
+            self._mdns_worker = None
+            self._mdns_thread = None
+        except Exception:
+            pass
+        self._set_mdns_busy(False)
+
+    def _set_busy(self, on: bool):
+        b = bool(on)
+        try:
+            self.btnPair.setEnabled(not b)
+            self.btnConnect.setEnabled(not b)
+            self.btnDisconnect.setEnabled(not b)
+        except Exception:
+            pass
+
+    def _run(self, action: str):
+        try:
+            if self._thread and self._thread.isRunning():
+                return
+        except Exception:
+            pass
+
+        try:
+            host = str(self.ipEdit.text() or '').strip()
+        except Exception:
+            host = ''
+        try:
+            cport = str(self.connectPortEdit.text() or '').strip()
+        except Exception:
+            cport = ''
+        try:
+            pport = str(self.pairPortEdit.text() or '').strip()
+        except Exception:
+            pport = ''
+        try:
+            pcode = str(self.pairCodeEdit.text() or '').strip()
+        except Exception:
+            pcode = ''
+
+        if action == 'connect' and not host:
+            try:
+                self.statusLabel.setText('状态：请填写 IP 地址')
+            except Exception:
+                pass
+            self._set_busy(False)
+            return
+
+        self._set_busy(True)
+        try:
+            if action == 'connect' and host and not cport:
+                self.statusLabel.setText('状态：未填写连接端口，正在尝试使用默认端口连接…')
+            else:
+                self.statusLabel.setText('状态：执行中…')
+        except Exception:
+            pass
+
+        self._thread = QThread(self)
+        self._worker = _WirelessAdbWorker(action, host, cport, pport, pcode)
+        self._worker.moveToThread(self._thread)
+        self._thread.started.connect(self._worker.run)
+        self._worker.finished.connect(self._on_finished)
+        self._worker.finished.connect(self._thread.quit)
+        self._worker.finished.connect(self._worker.deleteLater)
+        self._thread.finished.connect(self._thread.deleteLater)
+        self._thread.finished.connect(self._on_thread_finished)
+        self._thread.start()
+
+    def _on_finished(self, ok: bool, out: str):
+        try:
+            msg = (out or '').strip() or ('成功' if ok else '失败')
+            self.statusLabel.setText('状态：' + msg)
+        except Exception:
+            pass
+
+    def _on_thread_finished(self):
+        try:
+            self._worker = None
+            self._thread = None
+        except Exception:
+            pass
+        self._set_busy(False)
 
 
 class StatsRingWidget(QWidget):
@@ -113,6 +763,9 @@ class DeviceInfoTab(QWidget):
         self._msg_boxes = []  # keep strong refs to non-modal dialogs
         self._watch_thread = None
         self._watch_worker = None
+
+        self._wifi_thread = None
+        self._wifi_worker = None
         # 顶部消息条状态去抖
         self._last_conn_banner = None  # 'connected' | 'disconnected' | None
 
@@ -225,6 +878,8 @@ class DeviceInfoTab(QWidget):
         action_bar.setSpacing(12)
         self.refresh_btn = PrimaryPushButton("刷新设备")
         self.refresh_btn.setFixedHeight(36)
+        self.wireless_btn = PushButton("无线连接")
+        self.wireless_btn.setFixedHeight(36)
         self.install_btn = PushButton("安装驱动")
         self.install_btn.setFixedHeight(36)
         self.progress = QProgressBar()
@@ -233,6 +888,7 @@ class DeviceInfoTab(QWidget):
         self.progress.setFixedWidth(120)
         self.progress.setVisible(False)
         action_bar.addWidget(self.refresh_btn)
+        action_bar.addWidget(self.wireless_btn)
         action_bar.addWidget(self.install_btn)
         action_bar.addWidget(self.progress)
         action_bar.addStretch(1)
@@ -367,6 +1023,7 @@ class DeviceInfoTab(QWidget):
         grid.addWidget(card_reboot, 2, 0)
         grid.addWidget(card_donate, 2, 1, 1, 2)
         self.card_reboot = card_reboot
+
         layout.addLayout(grid)
 
         # 赞赏弹出（PopupTeachingTip：带动画，设置为常驻直至手动关闭）
@@ -435,11 +1092,24 @@ class DeviceInfoTab(QWidget):
         except Exception:
             pass
 
+        try:
+            self.wireless_btn.clicked.connect(self._open_wireless_dialog)
+        except Exception:
+            pass
+
         self.refresh_btn.clicked.connect(self.refresh)
         self.install_btn.clicked.connect(self._install_driver)
         self.reboot_btn.clicked.connect(self._on_reboot_clicked)
-        self._watch_thread = None
-        self._watch_worker = None
+
+    def _open_wireless_dialog(self):
+        try:
+            dlg = _WirelessAdbDialog(self)
+            dlg.exec()
+        except Exception as e:
+            try:
+                InfoBar.error('无线连接', str(e), parent=self, position=InfoBarPosition.TOP, isClosable=True)
+            except Exception:
+                pass
 
     def _build_ring(self, title: str, accent: str):
         card = CardWidget(self)
@@ -846,6 +1516,13 @@ class DeviceInfoTab(QWidget):
                 self._watch_thread.wait(1500)
         except Exception:
             pass
+
+        try:
+            if getattr(self, '_wifi_thread', None):
+                self._wifi_thread.quit()
+                self._wifi_thread.wait(1500)
+        except Exception:
+            pass
         return super().closeEvent(event)
 
     def cleanup(self):
@@ -857,20 +1534,29 @@ class DeviceInfoTab(QWidget):
                     pass
             if hasattr(self, '_watch_thread') and self._watch_thread:
                 try:
-                    if self._watch_thread.isRunning():
-                        self._watch_thread.quit(); self._watch_thread.wait(1500)
+                    self._watch_thread.quit()
+                    self._watch_thread.wait(1500)
                 except Exception:
                     pass
-            if hasattr(self, '_thread') and self._thread:
+        except Exception:
+            pass
+
+        try:
+            if hasattr(self, '_wifi_thread') and self._wifi_thread:
                 try:
-                    if self._thread.isRunning():
-                        self._thread.quit(); self._thread.wait(1500)
+                    self._wifi_thread.quit()
+                    self._wifi_thread.wait(1500)
                 except Exception:
                     pass
+        except Exception:
+            pass
+
+        try:
             if hasattr(self, '_thread2') and self._thread2:
                 try:
                     if self._thread2.isRunning():
-                        self._thread2.quit(); self._thread2.wait(1500)
+                        self._thread2.quit()
+                        self._thread2.wait(1500)
                 except Exception:
                     pass
         except Exception:
