@@ -34,6 +34,79 @@ def _run(cmd: List[str], timeout: int = 8) -> str:
         return ""  # 其他错误
 
 
+def _adb_bin() -> str:
+    return str(ADB_BIN) if ADB_BIN.exists() else "adb"
+
+
+def run_adb(args: List[str], timeout: int = 10) -> Tuple[int, str]:
+    adb = _adb_bin()
+    cmd = [adb] + list(args or [])
+    try:
+        r = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            timeout=timeout,
+            **_silent_kwargs(),
+        )
+        return int(r.returncode), (r.stdout or '').strip()
+    except subprocess.TimeoutExpired:
+        return 124, 'timeout'
+    except FileNotFoundError:
+        return 127, 'adb not found'
+    except Exception as e:
+        return 1, str(e)
+
+
+def _normalize_host_port(host: str, port: str | int) -> str:
+    h = str(host or '').strip()
+    p = str(port or '').strip()
+    if not h:
+        return ''
+    if ':' in h:
+        return h
+    if not p:
+        return h
+    return f"{h}:{p}"
+
+
+def adb_pair(host: str, port: str | int, pairing_code: str, timeout: int = 15) -> Tuple[int, str]:
+    hp = _normalize_host_port(host, port)
+    code = str(pairing_code or '').strip()
+    if not hp or not code:
+        return 2, 'missing host/port or pairing code'
+    return run_adb(['pair', hp, code], timeout=timeout)
+
+
+def adb_connect(host: str, port: str | int, timeout: int = 10) -> Tuple[int, str]:
+    hp = _normalize_host_port(host, port)
+    if not hp:
+        return 2, 'missing host/port'
+    return run_adb(['connect', hp], timeout=timeout)
+
+
+def adb_disconnect(host: str | None = None, port: str | int | None = None, timeout: int = 10) -> Tuple[int, str]:
+    if host:
+        hp = _normalize_host_port(host, port or '')
+        return run_adb(['disconnect', hp], timeout=timeout)
+    return run_adb(['disconnect'], timeout=timeout)
+
+
+def adb_mdns_services(timeout: int = 5) -> Tuple[int, str]:
+    return run_adb(['mdns', 'services'], timeout=timeout)
+
+
+def adb_kill_server() -> Tuple[int, str]:
+    return run_adb(['kill-server'], timeout=10)
+
+
+def adb_start_server() -> Tuple[int, str]:
+    return run_adb(['start-server'], timeout=10)
+
+
 def check_adb_available() -> bool:
     adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
     return bool(_run([adb, "version"]))
