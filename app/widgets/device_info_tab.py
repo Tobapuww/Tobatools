@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QProgressBar, QGridLayout
 from PySide6.QtCore import Qt, QObject, Signal, QThread, QTimer, QCoreApplication, QRectF
-from PySide6.QtGui import QPixmap, QPainter, QPen, QColor, QFont, QPalette
+from PySide6.QtGui import QPixmap, QPainter, QPen, QColor, QFont, QPalette, QIcon
 from qfluentwidgets import (
     PushButton,
     PrimaryPushButton,
@@ -864,43 +864,74 @@ class DeviceInfoTab(QWidget):
         head1.addStretch(1)
         conn_layout.addLayout(head1)
         
-        # 状态显示区（增加背景和内边距，自适应深色模式）
+        # 状态显示区（优化视觉层次和布局）
         status_container = QWidget()
         status_container.setObjectName("statusContainer")
         status_container.setStyleSheet("""
             QWidget#statusContainer {
-                background: rgba(0, 0, 0, 0.03);
-                border-radius: 8px;
-                padding: 16px;
+                background: rgba(0, 0, 0, 0.02);
+                border: 1px solid rgba(0, 0, 0, 0.06);
+                border-radius: 10px;
+                padding: 18px;
             }
             QWidget#statusContainer:dark {
-                background: rgba(255, 255, 255, 0.05);
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.08);
             }
         """)
         status_layout = QVBoxLayout(status_container)
         status_layout.setContentsMargins(0, 0, 0, 0)
         
         self.status_label = QLabel("点击 \"刷新设备\" 获取设备信息")
-        self.status_label.setStyleSheet("font-size:15px; font-weight:500; background:transparent;")
+        self.status_label.setStyleSheet("""
+            font-size:15px; 
+            font-weight:500; 
+            background:transparent;
+            padding: 4px 0;
+        """)
         self.status_label.setWordWrap(True)
+        self.status_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         status_layout.addWidget(self.status_label)
         
         conn_layout.addWidget(status_container)
         
-        # 操作按钮区
+        # 操作按钮区（优化布局和间距）
         action_bar = QHBoxLayout()
-        action_bar.setSpacing(12)
+        action_bar.setSpacing(16)
+        action_bar.setContentsMargins(0, 8, 0, 0)
+        
         self.refresh_btn = PrimaryPushButton("刷新设备")
-        self.refresh_btn.setFixedHeight(36)
+        self.refresh_btn.setFixedHeight(38)
+        self.refresh_btn.setMinimumWidth(100)
+        
         self.wireless_btn = PushButton("无线连接")
-        self.wireless_btn.setFixedHeight(36)
+        self.wireless_btn.setFixedHeight(38)
+        self.wireless_btn.setMinimumWidth(100)
+        
         self.install_btn = PushButton("安装驱动")
-        self.install_btn.setFixedHeight(36)
+        self.install_btn.setFixedHeight(38)
+        self.install_btn.setMinimumWidth(100)
+        
         self.progress = QProgressBar()
         self.progress.setRange(0, 0)
-        self.progress.setMaximumHeight(12)
-        self.progress.setFixedWidth(120)
+        self.progress.setMaximumHeight(3)
+        self.progress.setFixedWidth(140)
         self.progress.setVisible(False)
+        self.progress.setStyleSheet("""
+            QProgressBar {
+                border: none;
+                border-radius: 2px;
+                background: rgba(0, 0, 0, 0.06);
+            }
+            QProgressBar::chunk {
+                border-radius: 2px;
+                background: #4098FF;
+            }
+            QProgressBar:dark {
+                background: rgba(255, 255, 255, 0.08);
+            }
+        """)
+        
         action_bar.addWidget(self.refresh_btn)
         action_bar.addWidget(self.wireless_btn)
         action_bar.addWidget(self.install_btn)
@@ -925,7 +956,7 @@ class DeviceInfoTab(QWidget):
         info_layout.setVerticalSpacing(16)
 
         info_items = [
-            ("connection_status", "连接模式", "🛰"),
+            ("cpu_info", "CPU型号", "🔧"),
             ("bootloader_unlock", "Bootloader", "🔐"),
             ("current_slot", "当前槽位", "📳"),
             ("android_version", "Android版本", "🤖"),
@@ -1239,10 +1270,40 @@ class DeviceInfoTab(QWidget):
         self.battery_health_full_label.setText(f"充满容量：{full_text}")
     def _set_status_label(self, text: str, color: str = "#00b42a"):
         try:
-            self.status_label.setText(text)
-            self.status_label.setStyleSheet(f"color:{color};")
+            # 检查是否是已连接状态，如果是则添加图标
+            if "已连接：" in text and color == "#00b42a":
+                # 使用富文本将图标和文字放在同一个标签中
+                icon_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "icon", "ic_fluent_checkmark_48_filled.svg")
+                if os.path.exists(icon_path):
+                    # 构建富文本，图标和文字居中显示
+                    rich_text = f'<img src="{icon_path}" width="16" height="16" style="vertical-align: middle;"> {text}'
+                    self.status_label.setText(rich_text)
+                    self.status_label.setStyleSheet(f"""
+                        font-size:15px; 
+                        font-weight:500; 
+                        color:{color}; 
+                        background:transparent;
+                        padding: 4px 0;
+                    """)
+                    self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                else:
+                    self.status_label.setText(text)
+                    self.status_label.setStyleSheet(f"font-size:15px; font-weight:500; color:{color}; background:transparent; padding: 4px 0;")
+            else:
+                # 对于非连接状态，保持原有样式
+                self.status_label.setText(text)
+                self.status_label.setStyleSheet(f"""
+                    font-size:15px; 
+                    font-weight:500; 
+                    color:{color}; 
+                    background:transparent;
+                    padding: 4px 0;
+                """)
+                self.status_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         except Exception:
-            pass
+            # 如果出错，回退到原有样式
+            self.status_label.setText(text)
+            self.status_label.setStyleSheet(f"font-size:15px; font-weight:500; color:{color}; background:transparent;")
 
     def _apply_banner_state(self, state: str):
         if state == 'connected' and self._last_conn_banner != 'connected':
@@ -1335,7 +1396,7 @@ class DeviceInfoTab(QWidget):
         self._reset_info_display()
 
         primary_keys = [
-            "connection_status",
+            "cpu_info",
             "bootloader_unlock",
             "battery",
             "storage_data",
@@ -1354,8 +1415,9 @@ class DeviceInfoTab(QWidget):
                 continue
             raw_val = str(info.get(key, ""))
             val = raw_val
-            if key == "connection_status":
-                val = self._cn_connection(val)
+            if key == "cpu_info":
+                # CPU信息直接显示，不需要转换
+                pass
             elif key == "bootloader_unlock":
                 val = self._cn_unlock(val)
             elif key == "battery":

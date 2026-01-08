@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt
 from qfluentwidgets import MessageBox
 
 ABOUT_TEXT = (
-    "拖把工具箱0.2.0公开版\n\n"
+    "拖把工具箱0.3.0公开版\n\n"
     "感谢以下贡献者与支持：\n\n"
     "• 移植包开发者&工具箱刷机逻辑：@秋詞、@Lucky\n"
     "• 刷机工具开发者：@Tobapuw、@人美心善且温柔\n"
