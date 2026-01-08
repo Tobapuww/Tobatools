@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QProgressBar, QComboBox, QGridLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QProgressBar, QGridLayout
 from PySide6.QtCore import Qt, QObject, Signal, QThread, QTimer, QCoreApplication, QRectF
 from PySide6.QtGui import QPixmap, QPainter, QPen, QColor, QFont, QPalette
 from qfluentwidgets import (
@@ -6,10 +6,8 @@ from qfluentwidgets import (
     PrimaryPushButton,
     InfoBar,
     InfoBarPosition,
-    MessageDialog,
     MessageBox,
     CardWidget,
-    TitleLabel,
     FluentIcon,
     ComboBox,
     PopupTeachingTip,
@@ -64,6 +62,8 @@ class _WirelessAdbWorker(QObject):
 
 
 class _WirelessAdbDialog(MessageBoxBase):
+    connected = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -73,6 +73,8 @@ class _WirelessAdbDialog(MessageBoxBase):
         self._mdns_thread = None
         self._mdns_worker = None
 
+        self._last_action = ''
+
         self._adb_service_id = ''
         self._adb_password = ''
         self._qr_text = ''
@@ -81,26 +83,12 @@ class _WirelessAdbDialog(MessageBoxBase):
         self.titleLabel.setStyleSheet("font-size:16px; font-weight:600;")
         self.viewLayout.addWidget(self.titleLabel)
 
-        self.qrLabel = QLabel("可生成 ADB 二维码供手机『无线调试-扫码配对』使用，然后点『自动配对』扫描 mDNS 并完成配对。")
+        self.qrLabel = QLabel("请用手机『无线调试-扫码配对』扫描下方二维码。工具会自动尝试连接，若二维码扫描连接失败，请手动重启一次设备无线调试的开关。你也可以在下方手动输入连接信息进行连接。")
         self.qrLabel.setWordWrap(True)
         self.qrLabel.setStyleSheet("color:#565D6A;")
         self.viewLayout.addWidget(self.qrLabel)
 
-        row0 = QHBoxLayout(); row0.setSpacing(10)
-        self.btnGenQr = PrimaryPushButton("生成二维码(ADB)", self)
-        self.btnScanMdns = PushButton("自动配对(扫描mDNS)", self)
-        self.btnStopMdns = PushButton("停止", self)
-        try:
-            self.btnStopMdns.setEnabled(False)
-        except Exception:
-            pass
         self.btnRestartAdb = PushButton("重启ADB", self)
-        row0.addWidget(self.btnGenQr)
-        row0.addWidget(self.btnScanMdns)
-        row0.addWidget(self.btnStopMdns)
-        row0.addWidget(self.btnRestartAdb)
-        row0.addStretch(1)
-        self.viewLayout.addLayout(row0)
 
         self.serviceLabel = QLabel("ServiceID：-")
         self.serviceLabel.setStyleSheet("color:#4e5969;")
@@ -160,6 +148,7 @@ class _WirelessAdbDialog(MessageBoxBase):
         row3.addWidget(self.btnPair)
         row3.addWidget(self.btnConnect)
         row3.addWidget(self.btnDisconnect)
+        row3.addWidget(self.btnRestartAdb)
         row3.addStretch(1)
         self.viewLayout.addLayout(row3)
 
@@ -182,16 +171,33 @@ class _WirelessAdbDialog(MessageBoxBase):
             pass
 
         try:
-            self.btnGenQr.clicked.connect(self._gen_qr)
-            self.btnScanMdns.clicked.connect(self._start_mdns_scan)
-            self.btnStopMdns.clicked.connect(self._stop_mdns_scan)
             self.btnRestartAdb.clicked.connect(self._restart_adb)
+        except Exception:
+            pass
+
+        try:
+            QTimer.singleShot(0, self._gen_qr)
+            QTimer.singleShot(150, self._start_mdns_scan)
         except Exception:
             pass
 
     def closeEvent(self, event):
         try:
             self._stop_mdns_scan()
+        except Exception:
+            pass
+
+        try:
+            if self._thread and self._thread.isRunning():
+                self._thread.quit()
+                self._thread.wait(1200)
+        except Exception:
+            pass
+
+        try:
+            if hasattr(self, '_restart_thread') and self._restart_thread and self._restart_thread.isRunning():
+                self._restart_thread.quit()
+                self._restart_thread.wait(1200)
         except Exception:
             pass
         return super().closeEvent(event)
@@ -267,7 +273,7 @@ class _WirelessAdbDialog(MessageBoxBase):
             self._restart_worker = _RestartWorker()
             self._restart_worker.moveToThread(self._restart_thread)
             self._restart_thread.started.connect(self._restart_worker.run)
-            self._restart_worker.finished.connect(lambda: self.statusLabel.setText("状态：ADB 已重启，请重新生成二维码或扫描"))
+            self._restart_worker.finished.connect(lambda: self.statusLabel.setText("状态：ADB 已重启"))
             self._restart_worker.finished.connect(lambda: self.btnRestartAdb.setEnabled(True))
             self._restart_worker.finished.connect(self._restart_thread.quit)
             self._restart_worker.finished.connect(self._restart_worker.deleteLater)
@@ -276,16 +282,6 @@ class _WirelessAdbDialog(MessageBoxBase):
         except Exception as e:
             self.statusLabel.setText(f"状态：重启 ADB 失败 {str(e)}")
             self.btnRestartAdb.setEnabled(True)
-
-    def _set_mdns_busy(self, on: bool):
-        b = bool(on)
-        try:
-            self.btnScanMdns.setEnabled(not b)
-            self.btnGenQr.setEnabled(not b)
-            self.btnStopMdns.setEnabled(b)
-            self.btnRestartAdb.setEnabled(not b)
-        except Exception:
-            pass
 
     def _start_mdns_scan(self):
         if not self._adb_service_id or not self._adb_password:
@@ -325,7 +321,7 @@ class _WirelessAdbDialog(MessageBoxBase):
             def _run_zeroconf(self):
                 from zeroconf import Zeroconf, ServiceBrowser, ServiceStateChange
                 
-                self.status_update.emit("正在使用 Zeroconf 原生扫描 mDNS...")
+                self.status_update.emit("等待设备扫描二维码...")
                 
                 found_target = {}
                 
@@ -387,7 +383,7 @@ class _WirelessAdbDialog(MessageBoxBase):
                 if not self._last_ip:
                     return
 
-                self.status_update.emit('正在获取连接端口...')
+                self.status_update.emit('正在连接设备...')
                 found = {}
 
                 def on_conn_state_change(zeroconf, service_type, name, state_change):
@@ -442,8 +438,7 @@ class _WirelessAdbDialog(MessageBoxBase):
                             self.status_update.emit("mDNS 列表为空")
                             time.sleep(1)
                             continue
-                        
-                        lines = out.splitlines()
+
                         found_pairing_services = 0
                         
                         for line in out.splitlines():
@@ -491,7 +486,7 @@ class _WirelessAdbDialog(MessageBoxBase):
             def _try_find_connect_port_adb(self):
                 if not self._last_ip:
                     return
-                self.status_update.emit('正在获取连接端口...')
+                self.status_update.emit('正在连接设备...')
                 line_regex = re.compile(r"([^\s]+)\s+_adb-tls-connect\._tcp\.\s+([^:]+):([0-9]+)")
                 deadline = time.time() + 10
                 while not self._stop and time.time() < deadline:
@@ -522,7 +517,6 @@ class _WirelessAdbDialog(MessageBoxBase):
                 if not self._stop:
                     self.status_update.emit('未能通过 mDNS 获取连接端口（当前 ADB mDNS 列表可能为空），请在手机「无线调试 → IP 地址与端口」中查看并手动填写')
 
-        self._set_mdns_busy(True)
         try:
             self.statusLabel.setText('状态：扫描 mDNS 中…')
         except Exception:
@@ -590,13 +584,18 @@ class _WirelessAdbDialog(MessageBoxBase):
         except Exception:
             pass
 
+        if ok:
+            try:
+                QTimer.singleShot(150, lambda: self._run('connect'))
+            except Exception:
+                pass
+
     def _on_mdns_thread_finished(self):
         try:
             self._mdns_worker = None
             self._mdns_thread = None
         except Exception:
             pass
-        self._set_mdns_busy(False)
 
     def _set_busy(self, on: bool):
         b = bool(on)
@@ -613,6 +612,11 @@ class _WirelessAdbDialog(MessageBoxBase):
                 return
         except Exception:
             pass
+
+        try:
+            self._last_action = str(action or '').strip()
+        except Exception:
+            self._last_action = ''
 
         try:
             host = str(self.ipEdit.text() or '').strip()
@@ -665,6 +669,16 @@ class _WirelessAdbDialog(MessageBoxBase):
             self.statusLabel.setText('状态：' + msg)
         except Exception:
             pass
+
+        if ok and (self._last_action == 'connect'):
+            try:
+                self.connected.emit()
+            except Exception:
+                pass
+            try:
+                self.close()
+            except Exception:
+                pass
 
     def _on_thread_finished(self):
         try:
@@ -1104,6 +1118,10 @@ class DeviceInfoTab(QWidget):
     def _open_wireless_dialog(self):
         try:
             dlg = _WirelessAdbDialog(self)
+            try:
+                dlg.connected.connect(lambda: QTimer.singleShot(0, self.refresh))
+            except Exception:
+                pass
             dlg.exec()
         except Exception as e:
             try:
