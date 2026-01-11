@@ -4,3 +4,4 @@ requests>=2.31,<3.0
 qrcode[pil]>=7.4,<8.0
 Pillow>=10.0,<12.0
 zeroconf>=0.131.0
+git+https://github.com/5ec1cff/payload-dumper.git

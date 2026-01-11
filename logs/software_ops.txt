@@ -23,3 +23,10 @@
 2026-01-07 04:13:00	X5A10AWCVt57Dp	-	install  WeChat_8.0.47_APKPure.apk
 2026-01-07 04:13:28	X5A10AWCVt57Dp	-	install  WeChatPad.apk
 2026-01-07 04:15:19	X5A10AWCVt57Dp	com.example.app	uninstall
+2026-01-10 09:19:07	X5A10AWCVt57Dp	-	install SKY_国服_0.15.1.apk
+2026-01-10 09:31:17	X5A10AWCVt57Dp	-	install 跨进程配合软件.apk
+2026-01-10 09:31:18	X5A10AWCVt57Dp	-	install SKY·鲸鸣_0.6.5.apk
+2026-01-10 09:33:53	X5A10AWCVt57Dp	-	install 跨进程配合软件.apk
+2026-01-10 09:46:13	X5A10AWCVt57Dp	com.app.jm	uninstall
+2026-01-10 09:46:20	X5A10AWCVt57Dp	com.tencent.jm	uninstall
+2026-01-10 09:46:37	X5A10AWCVt57Dp	-	install 秋落插件-最新.apk

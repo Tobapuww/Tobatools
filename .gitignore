@@ -67,10 +67,6 @@ ehthumbs.db
 Thumbs.db
 
 # Project specific
-bin/adb.exe
-bin/fastboot.exe
-bin/*.exe
-bin/*.dll
 dist/
 build/
 *.log
@@ -171,11 +167,6 @@ cython_debug/
 *.zip
 *.tar.gz
 *.rar
-7z.dll
-sqlite3.exe
-payload-dumper-go.exe
-adb-device.exe
-lpmake.exe
 
 # Temporary files
 *.tmp

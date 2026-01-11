@@ -177,63 +177,66 @@ class _ForegroundWorker(QObject):
         pkg = ''
         act = ''
         try:
-            # Try resumed activity first (Android 10+)
+            # 优化：只使用一个命令，减少开销
+            # 使用 dumpsys activity top 代替 activities，输出更少
             try:
                 r = subprocess.run(
-                    [adb, '-s', serial, 'shell', 'dumpsys', 'activity', 'activities'],
+                    [adb, '-s', serial, 'shell', 'dumpsys', 'activity', 'top'],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     text=True,
                     encoding='utf-8',
                     errors='replace',
-                    timeout=3,
+                    timeout=2,  # 从3秒减少到2秒
                     **_silent_popen_kwargs(),
                 )
                 out = r.stdout or ""
-                for line in out.splitlines():
+                # 只读取前100行，避免解析大量数据
+                lines = out.splitlines()[:100]
+                for line in lines:
                     s = line.strip()
-                    if 'ResumedActivity' in s or 'mResumedActivity' in s:
-                        parts = s.split()
-                        for p in parts:
-                            if '/' in p and '.' in p and p.count('/') == 1:
-                                act = p.strip('}').strip()
-                                if act.startswith('u0'):
-                                    continue
-                                break
-                        break
+                    if 'ACTIVITY' in s and '/' in s:
+                        # 提取 ACTIVITY 行中的包名/Activity
+                        for tok in s.split():
+                            if '/' in tok and '.' in tok and tok.count('/') == 1:
+                                act = tok.strip('}').strip()
+                                if not act.startswith('u0'):
+                                    pkg = act.split('/', 1)[0]
+                                    break
+                        if pkg:
+                            break
+            except subprocess.TimeoutExpired:
+                # 超时时不再尝试fallback，直接返回空
+                pass
             except Exception:
                 pass
 
-            if act and '/' in act:
-                pkg = act.split('/', 1)[0]
-
+            # 如果top命令失败，尝试更轻量的方法
             if not pkg:
-                # Fallback: window current focus
                 try:
+                    # 使用 am stack list 命令，输出更简洁
                     r = subprocess.run(
-                        [adb, '-s', serial, 'shell', 'dumpsys', 'window', 'windows'],
+                        [adb, '-s', serial, 'shell', 'am', 'stack', 'list'],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
                         text=True,
                         encoding='utf-8',
                         errors='replace',
-                        timeout=3,
+                        timeout=1,
                         **_silent_popen_kwargs(),
                     )
                     out = r.stdout or ""
-                    for line in out.splitlines():
-                        s = line.strip()
-                        if 'mCurrentFocus' in s or 'mFocusedApp' in s:
-                            for tok in s.replace('{', ' ').replace('}', ' ').split():
+                    for line in out.splitlines()[:20]:  # 只读前20行
+                        if 'topActivity' in line or 'TaskRecord' in line:
+                            for tok in line.split():
                                 if '/' in tok and '.' in tok:
-                                    act = tok
+                                    act = tok.strip()
+                                    pkg = act.split('/', 1)[0]
                                     break
-                            if act:
+                            if pkg:
                                 break
                 except Exception:
                     pass
-                if act and '/' in act:
-                    pkg = act.split('/', 1)[0]
         finally:
             self._busy = False
             try:
@@ -278,10 +281,12 @@ class SoftwareManagerTab(QWidget):
         self._current_pkg: str = ""
         self._current_activity: str = ""
         self._timer: QTimer | None = None
+        self._auto_refresh_enabled: bool = False  # 默认关闭自动刷新
 
         self._build_ui()
         self._start_foreground_worker()
-        self._start_foreground_timer()
+        # 不再自动启动定时器，由用户手动控制
+        # self._start_foreground_timer()
 
         try:
             app = QApplication.instance()
@@ -457,7 +462,12 @@ class SoftwareManagerTab(QWidget):
         h_state.addWidget(icon_state)
         h_state.addWidget(QLabel("当前前台信息"))
         h_state.addStretch(1)
-        self.btn_refresh_state = PushButton("刷新", card_state)
+        # 添加自动刷新开关
+        self.chk_auto_refresh = CheckBox("自动刷新", card_state)
+        self.chk_auto_refresh.setToolTip("开启后每3秒自动获取前台应用信息")
+        h_state.addWidget(self.chk_auto_refresh)
+        
+        self.btn_refresh_state = PushButton("立即刷新", card_state)
         try:
             self.btn_refresh_state.setIcon(FluentIcon.SYNC)
         except Exception:
@@ -687,6 +697,7 @@ class SoftwareManagerTab(QWidget):
 
         # signals
         self.btn_refresh_state.clicked.connect(self._refresh_foreground_now)
+        self.chk_auto_refresh.stateChanged.connect(self._toggle_auto_refresh)
         self.btn_clear_selected.clicked.connect(self._clear_selected_pkg)
         self.btn_refresh_apps.clicked.connect(self._refresh_apps)
         self.edt_app_search.textChanged.connect(self._apply_app_filter)
@@ -1604,12 +1615,53 @@ class SoftwareManagerTab(QWidget):
         self._thread.finished.connect(self._on_thread_finished)
         self._thread.start()
 
+    def _toggle_auto_refresh(self, state):
+        """切换自动刷新状态"""
+        self._auto_refresh_enabled = (state == Qt.CheckState.Checked.value or state == 2)
+        
+        if self._auto_refresh_enabled:
+            # 开启自动刷新
+            if self._timer is None:
+                self._timer = QTimer(self)
+                self._timer.setInterval(3000)
+                self._timer.timeout.connect(self._refresh_foreground_now)
+            if not self._timer.isActive():
+                self._timer.start()
+                # 立即执行一次
+                QTimer.singleShot(100, self._refresh_foreground_now)
+            try:
+                InfoBar.success(
+                    "自动刷新",
+                    "已开启自动刷新，每3秒更新一次",
+                    parent=self,
+                    position=InfoBarPosition.TOP,
+                    duration=2000
+                )
+            except Exception:
+                pass
+        else:
+            # 关闭自动刷新
+            if self._timer is not None and self._timer.isActive():
+                self._timer.stop()
+            try:
+                InfoBar.info(
+                    "自动刷新",
+                    "已关闭自动刷新，点击“立即刷新”按钮手动获取",
+                    parent=self,
+                    position=InfoBarPosition.TOP,
+                    duration=2000
+                )
+            except Exception:
+                pass
+    
     def _start_foreground_timer(self):
-        self._timer = QTimer(self)
-        self._timer.setInterval(1500)
-        self._timer.timeout.connect(self._refresh_foreground_now)
-        self._timer.start()
-        self._refresh_foreground_now()
+        """仅在用户开启自动刷新时调用"""
+        if self._timer is None:
+            self._timer = QTimer(self)
+            self._timer.setInterval(3000)
+            self._timer.timeout.connect(self._refresh_foreground_now)
+        if not self._timer.isActive():
+            self._timer.start()
 
     def _start_foreground_worker(self):
         if self._fg_thread is not None:
@@ -1652,14 +1704,30 @@ class SoftwareManagerTab(QWidget):
         self._fg_request.emit(adb, serial)
 
     def cleanup(self):
+        # 优化清理顺序，先停止定时器，再清理线程
         try:
             if self._timer is not None:
                 try:
                     self._timer.stop()
+                    self._timer.deleteLater()
+                    self._timer = None
                 except Exception:
                     pass
         except Exception:
             pass
+        
+        # 清理前台刷新线程
+        try:
+            if self._fg_thread and self._fg_thread.isRunning():
+                self._fg_thread.quit()
+                if not self._fg_thread.wait(1000):
+                    self._fg_thread.terminate()
+                self._fg_thread = None
+                self._fg_worker = None
+        except Exception:
+            pass
+        
+        # 清理命令执行线程
         try:
             if self._worker:
                 self._worker.stop()
@@ -1668,7 +1736,8 @@ class SoftwareManagerTab(QWidget):
         try:
             if self._thread and self._thread.isRunning():
                 self._thread.quit()
-                self._thread.wait(1500)
+                if not self._thread.wait(1000):
+                    self._thread.terminate()
         except Exception:
             pass
 

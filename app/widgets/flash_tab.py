@@ -19,7 +19,7 @@ from qfluentwidgets import (
 )
 
 from app.services import adb_service
-from app.logic import ArchiveFlashLogic, SideloadFlashLogic, MiFlashLogic
+from app.logic import SideloadFlashLogic, MiFlashLogic
 
 
 class _DeviceWatcher(QObject):
@@ -91,12 +91,9 @@ class _FlashWorker(QObject):
         try:
             if self.mode == 0:  # 散包刷机
                 self._flash_scattered()
-            elif self.mode == 1:  # 压缩包刷机
-                self.finished.emit(False, "压缩包刷机（ZIP/7z）暂不支持，后续版本再开放")
-                return
-            elif self.mode == 2:  # ADB Sideload
+            elif self.mode == 1:  # ADB Sideload
                 self._flash_sideload()
-            elif self.mode == 3:  # 小米线刷脚本
+            elif self.mode == 2:  # 小米线刷脚本
                 self._flash_miflash()
         except Exception as e:
             self.log_signal.emit(f"刷机异常: {e}")
@@ -148,23 +145,6 @@ class _FlashWorker(QObject):
             
         except Exception as e:
             self.log_signal.emit(f"散包刷机异常: {e}")
-            self.finished.emit(False, str(e))
-    
-    def _flash_archive(self):
-        """压缩包刷机逻辑"""
-        self.log_signal.emit(f"准备解压固件包: {os.path.basename(self.path)}")
-        try:
-            logic = ArchiveFlashLogic(log_callback=self.log_signal.emit)
-            images_dir = logic.extract_and_process(self.path)
-            
-            if images_dir:
-                self.log_signal.emit(f"解压完成，镜像目录: {images_dir}")
-                # TODO: 继续刷机流程
-                self.finished.emit(True, "压缩包刷机完成")
-            else:
-                self.finished.emit(False, "解压失败")
-        except Exception as e:
-            self.log_signal.emit(f"压缩包刷机异常: {e}")
             self.finished.emit(False, str(e))
     
     def _flash_sideload(self):
@@ -329,7 +309,6 @@ class FlashTab(QWidget):
         self.combo_mode = ComboBox()
         self.combo_mode.addItems([
             "散包刷机（文件夹）",
-            "压缩包刷机（ZIP/7z，暂不支持）",
             "ADB Sideload",
             "小米线刷脚本"
         ])
@@ -569,24 +548,12 @@ class FlashTab(QWidget):
             self.btn_pick.setText("选择目录")
             if hasattr(self, 'card_config'):
                 self.card_config.setVisible(True)  # 显示配置文件
-        elif index == 1:  # 压缩包刷机（暂不支持）
-            self._toast_info("提示", "压缩包刷机（ZIP/7z）暂不支持，后续版本再开放")
-            try:
-                self.combo_mode.blockSignals(True)
-                self.combo_mode.setCurrentIndex(0)
-            finally:
-                try:
-                    self.combo_mode.blockSignals(False)
-                except Exception:
-                    pass
-            self._on_mode_changed(0)
-            return
-        elif index == 2:  # ADB Sideload
+        elif index == 1:  # ADB Sideload
             self.path_edit.setPlaceholderText("选择 OTA 升级包 (.zip)")
             self.btn_pick.setText("选择文件")
             if hasattr(self, 'card_config'):
                 self.card_config.setVisible(False)  # 隐藏配置文件
-        elif index == 3:  # 小米线刷脚本
+        elif index == 2:  # 小米线刷脚本
             self.path_edit.setPlaceholderText("选择线刷包目录（包含 flash_all.bat）")
             self.btn_pick.setText("选择目录")
             if hasattr(self, 'card_config'):
@@ -598,18 +565,12 @@ class FlashTab(QWidget):
     
     def _pick_source(self):
         mode = self.combo_mode.currentIndex()
-
-        if mode == 1:
-            self._toast_info("提示", "压缩包刷机（ZIP/7z）暂不支持")
-            return
         
         if mode == 0:  # 散包刷机
             path = QFileDialog.getExistingDirectory(self, "选择刷机包目录")
-        elif mode == 1:  # 压缩包刷机
-            path, _ = QFileDialog.getOpenFileName(self, "选择压缩包", "", "压缩包 (*.zip *.7z *.rar);;All (*.*)")
-        elif mode == 2:  # ADB Sideload
+        elif mode == 1:  # ADB Sideload
             path, _ = QFileDialog.getOpenFileName(self, "选择 OTA 包", "", "OTA 包 (*.zip);;All (*.*)")
-        elif mode == 3:  # 小米线刷脚本
+        elif mode == 2:  # 小米线刷脚本
             path = QFileDialog.getExistingDirectory(self, "选择小米线刷包目录")
 
         if path:
@@ -702,37 +663,33 @@ class FlashTab(QWidget):
         mode = self.combo_mode.currentIndex()
         path = self.path_edit.text().strip()
 
-        if mode == 1:
-            self._toast_info("提示", "压缩包刷机（ZIP/7z）暂不支持，后续版本再开放")
-            return
-
         if not path:
             self._toast_warning("提示", "请先选择文件或目录。")
             return
 
         # 验证路径
-        if mode in [0, 3]:  # 散包刷机、小米线刷脚本需要文件夹
+        if mode in [0, 2]:  # 散包刷机、小米线刷脚本需要文件夹
             if not os.path.isdir(path):
                 self._toast_warning("提示", "选择的路径不是有效的文件夹。")
                 return
-        elif mode in [1, 2]:  # 压缩包刷机、Sideload 需要文件
+        elif mode == 1:  # Sideload 需要文件
             if not os.path.isfile(path):
                 self._toast_warning("提示", "选择的路径不是有效的文件。")
                 return
         
-        # 配置文件（散包/压缩包刷机需要）
+        # 配置文件（散包刷机需要）
         config_path = None
-        if mode in [0, 1]:
+        if mode == 0:
             if not self._config_path:
                 self._toast_warning("提示", "请先选择刷机配置文件！")
                 return
             config_path = str(self._config_path)
 
         # 设备模式检查
-        # - 散包/压缩包：强制要求 bootloader/fastbootd
+        # - 散包：强制要求 bootloader/fastbootd
         # - Sideload：不检查 fastboot
         # - 小米线刷脚本：不强制拦截（脚本失败与否由脚本自行决定）
-        if mode in [0, 1]:
+        if mode == 0:
             from app.services import adb_service
             device_mode, serial = adb_service.detect_connection_mode()
             if device_mode not in ['bootloader', 'fastbootd']:
@@ -741,7 +698,7 @@ class FlashTab(QWidget):
                     "设备不在 Bootloader/Fastbootd 模式，无法开始刷机\n请先重启到 fastboot / fastbootd"
                 )
                 return
-        elif mode == 3:
+        elif mode == 2:
             try:
                 from app.services import adb_service
                 device_mode, serial = adb_service.detect_connection_mode()
@@ -753,7 +710,7 @@ class FlashTab(QWidget):
             except Exception:
                 pass
         from qfluentwidgets import MessageBox
-        mode_names = ["散包刷机", "压缩包刷机", "ADB Sideload", "小米线刷脚本"]
+        mode_names = ["散包刷机", "ADB Sideload", "小米线刷脚本"]
         
         msg_box = MessageBox(
             "确认刷机",

@@ -114,13 +114,39 @@ def check_adb_available() -> bool:
 
 def list_devices() -> List[str]:
     adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
-    out = _run([adb, "devices"], timeout=2)  # 减少超时到 2 秒
-    serials: List[str] = []
-    for line in out.splitlines()[1:]:
-        parts = line.split()
-        if len(parts) >= 2 and parts[1] == "device":
-            serials.append(parts[0])
-    return serials
+    
+    # 首次调用可能触发 ADB server 启动，需要等待和重试
+    max_retries = 3
+    retry_delay = 1.0  # 秒
+    
+    for attempt in range(max_retries):
+        out = _run([adb, "devices"], timeout=5)  # 增加超时以等待 server 启动
+        
+        # 检查是否包含 "daemon started" 或 "starting" 等启动信息
+        if "daemon" in out.lower() and "start" in out.lower():
+            # ADB server 正在启动，等待后重试
+            if attempt < max_retries - 1:
+                import time
+                time.sleep(retry_delay)
+                continue
+        
+        # 解析设备列表
+        serials: List[str] = []
+        for line in out.splitlines()[1:]:
+            parts = line.split()
+            if len(parts) >= 2 and parts[1] == "device":
+                serials.append(parts[0])
+        
+        # 如果找到设备或已是最后一次尝试，返回结果
+        if serials or attempt == max_retries - 1:
+            return serials
+        
+        # 没找到设备但可能是 server 刚启动，等待后重试
+        if attempt < max_retries - 1:
+            import time
+            time.sleep(retry_delay)
+    
+    return []
 
 
 def _getprop(serial: str, key: str) -> str:

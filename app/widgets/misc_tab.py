@@ -1,4 +1,4 @@
-import os
+﻿import os
 import subprocess
 import shlex
 import time
@@ -380,24 +380,14 @@ class MiscTab(QWidget):
         self.card_payload = PushSettingCard(
             "打开",
             FluentIcon.ZIP_FOLDER if hasattr(FluentIcon, "ZIP_FOLDER") else FluentIcon.FOLDER,
-            "payload.bin 提取",
-            "使用 payload-dumper-go 提取",
+            "payload.bin 处理",
+            "在线或本地提取 payload.bin，支持全量和指定分区",
             self.common_group,
         )
         self.card_payload.clicked.connect(self._open_payload_extract)
 
-        self.card_7z = PushSettingCard(
-            "打开",
-            FluentIcon.FOLDER,
-            "7z 解压",
-            "调用 bin/7z.exe 快速解压固件压缩包",
-            self.common_group,
-        )
-        self.card_7z.clicked.connect(self._open_7z_extract)
-
         self.common_group.addSettingCard(self.card_flash)
         self.common_group.addSettingCard(self.card_payload)
-        self.common_group.addSettingCard(self.card_7z)
         layout.addWidget(self.common_group)
 
         # 高级操作分组
@@ -484,16 +474,6 @@ class MiscTab(QWidget):
         if path:
             self.img_edit.setText(path)
 
-    def _pick_payload(self):
-        path, _ = QFileDialog.getOpenFileName(self, "选择 payload.bin", "", "payload.bin (payload.bin);;所有文件 (*.*)")
-        if path:
-            self.payload_edit.setText(path)
-
-    def _pick_payload_out(self):
-        path = QFileDialog.getExistingDirectory(self, "选择输出目录")
-        if path:
-            self.payload_out_edit.setText(path)
-
     def _ensure_mode(self, target: str) -> bool:
         fb = self.fastboot_path
         try:
@@ -530,84 +510,6 @@ class MiscTab(QWidget):
                 return
         cmd = [self.fastboot_path, 'flash', part, img]
         self._run_proc(cmd)
-
-    def _run_payload_extract(self):
-        payload = self.payload_edit.text().strip()
-        out_dir = self.payload_out_edit.text().strip()
-        if not payload or not os.path.isfile(payload):
-            MessageDialog("提示", "请选择有效的 payload.bin", self).exec()
-            return
-        if not out_dir:
-            out_dir = str(Path(payload).parent / 'payload_extract')
-            self.payload_out_edit.setText(out_dir)
-        os.makedirs(out_dir, exist_ok=True)
-        base = Path(__file__).resolve().parents[2]  # project root
-        candidates = [
-            base / 'bin' / 'payload-dumper-go.exe',
-            base / 'bin' / 'payload-dumper.exe',
-        ]
-        tool = None
-        for c in candidates:
-            if c.exists():
-                tool = str(c)
-                break
-        if not tool:
-            MessageDialog("提示", "未找到 payload dumper，可将 payload-dumper-go.exe 放至 bin 目录。", self).exec()
-            return
-        # 在 Windows 下以原生控制台窗口运行，避免日志捕获带来的兼容问题
-        if os.name == 'nt':
-            self._run_payload_native_console(tool, out_dir, payload)
-        else:
-            cmd = [tool, '-o', out_dir, payload]
-            self._run_proc(cmd)
-
-    def _run_payload_native_console(self, tool: str, out_dir: str, payload: str):
-        # 避免与正在进行的任务冲突
-        if self._thread and self._thread.isRunning():
-            InfoBar.info("提示", "已有任务在执行中", parent=self, position=InfoBarPosition.TOP, isClosable=True)
-            return
-        if self._native_proc is not None:
-            InfoBar.info("提示", "已有 payload 提取任务在进行中", parent=self, position=InfoBarPosition.TOP, isClosable=True)
-            return
-
-        cmd = [tool, '-o', out_dir, payload]
-        # self.out.clear()
-        self._append("运行(原生控制台)：" + " ".join(cmd))
-        self._append("已在新控制台窗口显示进度，完成后会在此处显示退出码。")
-
-        creationflags = 0
-        try:
-            # 新开控制台窗口
-            creationflags |= subprocess.CREATE_NEW_CONSOLE
-        except Exception:
-            pass
-        try:
-            self._native_proc = subprocess.Popen(cmd, creationflags=creationflags)
-        except Exception as e:
-            self._native_proc = None
-            self._append(f"启动失败：{e}")
-            return
-
-        # 轮询进程结束并回报退出码（不捕获输出）
-        self._native_timer = QTimer(self)
-        self._native_timer.setInterval(1000)
-
-        def _poll_done():
-            if not self._native_proc:
-                return
-            ret = self._native_proc.poll()
-            if ret is not None:
-                self._append(f"完成，退出码: {ret}")
-                try:
-                    self._native_timer.stop()
-                    self._native_timer.deleteLater()
-                except Exception:
-                    pass
-                self._native_timer = None
-                self._native_proc = None
-
-        self._native_timer.timeout.connect(_poll_done)
-        self._native_timer.start()
 
     def _run_adb(self):
         # 已改为独立终端界面，不再在此处实现
@@ -860,9 +762,6 @@ class MiscTab(QWidget):
         dlg = _ConfigCheckDialog(path, errors, warnings, self)
         dlg.exec()
 
-    def _open_7z_extract(self):
-        dlg = _SevenZipExtractDialog(self)
-        dlg.exec()
 
     def _open_bootloader_unlock(self):
         dlg = _BootloaderUnlockDialog(self.fastboot_path, self)
@@ -1149,151 +1048,6 @@ class _PartitionFlashDialog(QDialog):
         self._worker = None
 
 
-class _PayloadExtractDialog(QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("payload.bin 提取")
-        layout = QVBoxLayout(self)
-
-        r1 = QHBoxLayout()
-        self.payload_edit = QLineEdit(); self.payload_edit.setPlaceholderText("选择 payload.bin")
-        btn1 = QPushButton("选择文件"); btn1.clicked.connect(self._pick_payload)
-        r1.addWidget(QLabel("payload.bin")); r1.addWidget(self.payload_edit); r1.addWidget(btn1)
-        layout.addLayout(r1)
-
-        r2 = QHBoxLayout()
-        self.out_edit = QLineEdit(); self.out_edit.setPlaceholderText("选择输出目录")
-        btn2 = QPushButton("选择输出"); btn2.clicked.connect(self._pick_out)
-        self.run_btn = QPushButton("提取"); self.run_btn.clicked.connect(self._run)
-        r2.addWidget(QLabel("输出目录")); r2.addWidget(self.out_edit); r2.addWidget(btn2); r2.addWidget(self.run_btn)
-        layout.addLayout(r2)
-
-        self.tip = QTextEdit(); self.tip.setReadOnly(True)
-        try:
-            from PySide6.QtCore import Qt as _Qt
-            self.tip.setVerticalScrollBarPolicy(_Qt.ScrollBarAlwaysOff)
-            self.tip.setHorizontalScrollBarPolicy(_Qt.ScrollBarAlwaysOff)
-        except Exception:
-            pass
-        self.tip_view = SmoothScrollArea(self)
-        try:
-            self.tip_view.setWidget(self.tip)
-            self.tip_view.setWidgetResizable(True)
-        except Exception:
-            pass
-        layout.addWidget(self.tip_view)
-
-    def _pick_payload(self):
-        path, _ = QFileDialog.getOpenFileName(self, "选择 payload.bin", "", "payload.bin (payload.bin);;所有文件 (*.*)")
-        if path:
-            self.payload_edit.setText(path)
-
-    def _pick_out(self):
-        path = QFileDialog.getExistingDirectory(self, "选择输出目录")
-        if path:
-            self.out_edit.setText(path)
-
-    def _run(self):
-        payload = self.payload_edit.text().strip()
-        out_dir = self.out_edit.text().strip()
-        if not payload or not os.path.isfile(payload):
-            QMessageBox.warning(self, "提示", "请选择有效的 payload.bin")
-            return
-        if not out_dir:
-            out_dir = str(Path(payload).parent / 'payload_extract')
-            self.out_edit.setText(out_dir)
-        os.makedirs(out_dir, exist_ok=True)
-        base = Path(__file__).resolve().parents[2]
-        candidates = [base / 'bin' / 'payload-dumper-go.exe', base / 'bin' / 'payload-dumper.exe']
-        tool = None
-        for c in candidates:
-            if c.exists():
-                tool = str(c); break
-        if not tool:
-            QMessageBox.warning(self, "提示", "未找到 payload dumper，可将 payload-dumper-go.exe 放至 bin 目录。")
-            return
-        if os.name == 'nt':
-            try:
-                subprocess.Popen([tool, '-o', out_dir, payload], creationflags=subprocess.CREATE_NEW_CONSOLE)
-                self.tip.append("已在新控制台窗口显示进度。可在完成后关闭窗口。")
-            except Exception as e:
-                self.tip.append(f"启动失败：{e}")
-        else:
-            try:
-                subprocess.Popen([tool, '-o', out_dir, payload])
-                self.tip.append("已启动提取进程。")
-            except Exception as e:
-                self.tip.append(f"启动失败：{e}")
-
-
-class _SevenZipExtractDialog(QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("7z 解压")
-        layout = QVBoxLayout(self)
-
-        r1 = QHBoxLayout()
-        self.archive_edit = QLineEdit(); self.archive_edit.setPlaceholderText("选择压缩包，如 .7z/.zip/.tar 等")
-        btn1 = QPushButton("选择文件"); btn1.clicked.connect(self._pick_archive)
-        r1.addWidget(QLabel("压缩包")); r1.addWidget(self.archive_edit); r1.addWidget(btn1)
-        layout.addLayout(r1)
-
-        r2 = QHBoxLayout()
-        self.out_edit = QLineEdit(); self.out_edit.setPlaceholderText("选择输出目录")
-        btn2 = QPushButton("选择输出"); btn2.clicked.connect(self._pick_out)
-        self.run_btn = QPushButton("解压"); self.run_btn.clicked.connect(self._run)
-        r2.addWidget(QLabel("输出目录")); r2.addWidget(self.out_edit); r2.addWidget(btn2); r2.addWidget(self.run_btn)
-        layout.addLayout(r2)
-
-        self.tip = QTextEdit(); self.tip.setReadOnly(True)
-        layout.addWidget(self.tip)
-
-    def _pick_archive(self):
-        path, _ = QFileDialog.getOpenFileName(self, "选择压缩包", "", "压缩包 (*.7z *.zip *.rar *.tar *.tgz *.tar.gz *.xz *.bz2);;所有文件 (*.*)")
-        if path:
-            self.archive_edit.setText(path)
-
-    def _pick_out(self):
-        path = QFileDialog.getExistingDirectory(self, "选择输出目录")
-        if path:
-            self.out_edit.setText(path)
-
-    def _run(self):
-        archive = self.archive_edit.text().strip()
-        out_dir = self.out_edit.text().strip()
-        if not archive or not os.path.isfile(archive):
-            MessageDialog("提示", "请选择有效的压缩包", self).exec()
-            return
-        if not out_dir:
-            out_dir = str(Path(archive).parent / (Path(archive).stem + "_extract"))
-            self.out_edit.setText(out_dir)
-        os.makedirs(out_dir, exist_ok=True)
-
-        base = Path(__file__).resolve().parents[2]
-        candidates = [base / 'bin' / '7z.exe', base / 'bin' / '7za.exe']
-        tool = None
-        for c in candidates:
-            if c.exists():
-                tool = str(c)
-                break
-        # 若本地未找到，尝试使用 PATH 中的 7z
-        if not tool:
-            tool = '7z'
-
-        cmd = [tool, 'x', archive, f'-o{out_dir}', '-y']
-        try:
-            if os.name == 'nt':
-                subprocess.Popen(cmd, creationflags=subprocess.CREATE_NEW_CONSOLE)
-                self.tip.append("已在新控制台窗口显示进度。可在完成后关闭窗口。")
-            else:
-                subprocess.Popen(cmd)
-                self.tip.append("已启动解压进程。")
-        except FileNotFoundError:
-            MessageDialog("提示", "未找到 7z，可将 7z.exe 放至 bin 目录。", self).exec()
-        except Exception as e:
-            self.tip.append(f"启动失败：{e}")
-
-
 class _ConfigCheckDialog(QDialog):
     def __init__(self, config_path: str, errors: list, warnings: list, parent=None):
         super().__init__(parent)
@@ -1389,3 +1143,273 @@ class _BootloaderUnlockDialog(QDialog):
             MessageDialog("提示", "未找到 fastboot，可将 fastboot.exe 放至 bin 目录或配置系统 PATH。", self).exec()
         except Exception as e:
             self.out.append(f"启动失败：{e}")
+
+
+class _PayloadExtractDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("payload.bin 处理")
+        self.resize(700, 500)
+        self._worker = None
+        self._thread = None
+        
+        layout = QVBoxLayout(self)
+        
+        # 模式选择
+        mode_group = QWidget()
+        mode_layout = QHBoxLayout(mode_group)
+        mode_layout.setContentsMargins(0, 0, 0, 0)
+        self.mode_local = QCheckBox("本地文件提取")
+        self.mode_local.setChecked(True)
+        self.mode_online = QCheckBox("在线提取")
+        mode_layout.addWidget(QLabel("提取模式:"))
+        mode_layout.addWidget(self.mode_local)
+        mode_layout.addWidget(self.mode_online)
+        mode_layout.addStretch(1)
+        layout.addWidget(mode_group)
+        
+        # 本地文件输入
+        self.local_widget = QWidget()
+        local_layout = QHBoxLayout(self.local_widget)
+        local_layout.setContentsMargins(0, 0, 0, 0)
+        self.local_edit = QLineEdit()
+        self.local_edit.setPlaceholderText("选择 payload.bin 或包含 payload.bin 的 ZIP 文件")
+        btn_browse = QPushButton("浏览...")
+        btn_browse.clicked.connect(self._browse_local)
+        local_layout.addWidget(QLabel("文件路径:"))
+        local_layout.addWidget(self.local_edit)
+        local_layout.addWidget(btn_browse)
+        layout.addWidget(self.local_widget)
+        
+        # 在线 URL 输入
+        self.online_widget = QWidget()
+        online_layout = QHBoxLayout(self.online_widget)
+        online_layout.setContentsMargins(0, 0, 0, 0)
+        self.url_edit = QLineEdit()
+        self.url_edit.setPlaceholderText("输入 OTA 更新包 URL（包含 payload.bin 的 ZIP）")
+        online_layout.addWidget(QLabel("URL:"))
+        online_layout.addWidget(self.url_edit)
+        layout.addWidget(self.online_widget)
+        self.online_widget.setVisible(False)
+        
+        # 分区选择
+        partition_group = QWidget()
+        partition_layout = QVBoxLayout(partition_group)
+        partition_layout.setContentsMargins(0, 0, 0, 0)
+        partition_label = QLabel("要提取的分区（留空提取全部）:")
+        self.partition_edit = QLineEdit()
+        self.partition_edit.setPlaceholderText("例如: boot,vendor,system 或留空提取全部")
+        partition_layout.addWidget(partition_label)
+        partition_layout.addWidget(self.partition_edit)
+        layout.addWidget(partition_group)
+        
+        # 输出目录
+        out_group = QWidget()
+        out_layout = QHBoxLayout(out_group)
+        out_layout.setContentsMargins(0, 0, 0, 0)
+        self.out_edit = QLineEdit()
+        self.out_edit.setPlaceholderText("选择输出目录")
+        btn_out = QPushButton("浏览...")
+        btn_out.clicked.connect(self._browse_output)
+        out_layout.addWidget(QLabel("输出目录:"))
+        out_layout.addWidget(self.out_edit)
+        out_layout.addWidget(btn_out)
+        layout.addWidget(out_group)
+        
+        # 操作按钮
+        btn_layout = QHBoxLayout()
+        self.run_btn = QPushButton("开始提取")
+        self.run_btn.clicked.connect(self._run_extract)
+        self.cancel_btn = QPushButton("取消")
+        self.cancel_btn.clicked.connect(self._cancel)
+        self.cancel_btn.setEnabled(False)
+        btn_layout.addStretch(1)
+        btn_layout.addWidget(self.run_btn)
+        btn_layout.addWidget(self.cancel_btn)
+        layout.addLayout(btn_layout)
+        
+        # 日志输出
+        self.log = QTextEdit()
+        self.log.setReadOnly(True)
+        layout.addWidget(self.log)
+        
+        # 信号连接
+        self.mode_local.toggled.connect(self._on_mode_changed)
+        self.mode_online.toggled.connect(self._on_mode_changed)
+    
+    def _on_mode_changed(self):
+        if self.mode_local.isChecked():
+            self.mode_online.setChecked(False)
+            self.local_widget.setVisible(True)
+            self.online_widget.setVisible(False)
+        elif self.mode_online.isChecked():
+            self.mode_local.setChecked(False)
+            self.local_widget.setVisible(False)
+            self.online_widget.setVisible(True)
+    
+    def _browse_local(self):
+        path, _ = QFileDialog.getOpenFileName(
+            self, "选择文件", "", 
+            "Payload 文件 (payload.bin *.zip);;所有文件 (*.*)"
+        )
+        if path:
+            self.local_edit.setText(path)
+    
+    def _browse_output(self):
+        path = QFileDialog.getExistingDirectory(self, "选择输出目录")
+        if path:
+            self.out_edit.setText(path)
+    
+    def _run_extract(self):
+        # 验证输入
+        if self.mode_local.isChecked():
+            source = self.local_edit.text().strip()
+            if not source or not os.path.exists(source):
+                QMessageBox.warning(self, "提示", "请选择有效的文件")
+                return
+        else:
+            source = self.url_edit.text().strip()
+            if not source or not source.startswith('http'):
+                QMessageBox.warning(self, "提示", "请输入有效的 HTTP/HTTPS URL")
+                return
+        
+        out_dir = self.out_edit.text().strip()
+        if not out_dir:
+            QMessageBox.warning(self, "提示", "请选择输出目录")
+            return
+        
+        os.makedirs(out_dir, exist_ok=True)
+        
+        partitions = self.partition_edit.text().strip()
+        
+        # 禁用按钮
+        self.run_btn.setEnabled(False)
+        self.cancel_btn.setEnabled(True)
+        self.log.clear()
+        self.log.append(f"开始提取...")
+        self.log.append(f"源: {source}")
+        self.log.append(f"输出: {out_dir}")
+        if partitions:
+            self.log.append(f"分区: {partitions}")
+        else:
+            self.log.append("分区: 全部")
+        self.log.append("")
+        
+        # 创建工作线程
+        self._thread = QThread(self)
+        self._worker = _PayloadWorker(source, out_dir, partitions)
+        self._worker.moveToThread(self._thread)
+        
+        self._thread.started.connect(self._worker.run)
+        self._worker.log.connect(self._on_log)
+        self._worker.finished.connect(self._on_finished)
+        self._worker.error.connect(self._on_error)
+        
+        self._thread.start()
+    
+    def _cancel(self):
+        if self._worker:
+            self._worker.stop()
+        self.log.append("\n用户取消操作")
+        self._cleanup()
+    
+    def _on_log(self, msg):
+        self.log.append(msg)
+    
+    def _on_finished(self):
+        self.log.append("\n✅ 提取完成！")
+        self._cleanup()
+    
+    def _on_error(self, error):
+        self.log.append(f"\n❌ 错误: {error}")
+        self._cleanup()
+    
+    def _cleanup(self):
+        if self._thread and self._thread.isRunning():
+            self._thread.quit()
+            self._thread.wait(2000)
+        self._thread = None
+        self._worker = None
+        self.run_btn.setEnabled(True)
+        self.cancel_btn.setEnabled(False)
+    
+    def closeEvent(self, event):
+        if self._thread and self._thread.isRunning():
+            reply = QMessageBox.question(
+                self, "确认", "提取正在进行中，确定要关闭吗？",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if reply == QMessageBox.No:
+                event.ignore()
+                return
+            if self._worker:
+                self._worker.stop()
+        self._cleanup()
+        super().closeEvent(event)
+
+
+class _PayloadWorker(QObject):
+    log = Signal(str)
+    finished = Signal()
+    error = Signal(str)
+    
+    def __init__(self, source, output_dir, partitions):
+        super().__init__()
+        self.source = source
+        self.output_dir = output_dir
+        self.partitions = partitions
+        self._stop = False
+    
+    def stop(self):
+        self._stop = True
+    
+    def run(self):
+        try:
+            # 构建命令
+            cmd = ['python', '-m', 'payload_dumper']
+            
+            # 添加分区参数
+            if self.partitions:
+                cmd.extend(['--partitions', self.partitions])
+            
+            # 添加输出目录
+            cmd.extend(['--out', self.output_dir])
+            
+            # 添加源文件/URL
+            cmd.append(self.source)
+            
+            self.log.emit(f"执行命令: {' '.join(cmd)}")
+            self.log.emit("")
+            
+            # 执行命令
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding='utf-8',
+                errors='replace'
+            )
+            
+            # 实时输出日志
+            while True:
+                if self._stop:
+                    process.terminate()
+                    return
+                
+                line = process.stdout.readline()
+                if not line and process.poll() is not None:
+                    break
+                
+                if line:
+                    self.log.emit(line.rstrip())
+            
+            # 检查退出码
+            returncode = process.wait()
+            if returncode == 0:
+                self.finished.emit()
+            else:
+                self.error.emit(f"进程退出码: {returncode}")
+                
+        except Exception as e:
+            self.error.emit(str(e))
