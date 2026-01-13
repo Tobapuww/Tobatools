@@ -1,4 +1,5 @@
 ﻿import os
+import sys
 import subprocess
 import shlex
 import time
@@ -1366,7 +1367,7 @@ class _PayloadWorker(QObject):
     def run(self):
         try:
             # 构建命令
-            cmd = ['python', '-m', 'payload_dumper']
+            cmd = [sys.executable, '-m', 'payload_dumper']
             
             # 添加分区参数
             if self.partitions:
