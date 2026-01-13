@@ -1,5 +1,8 @@
 ﻿import os
 import sys
+import argparse
+from multiprocessing import cpu_count
+from payload_dumper import http_file, dumper, mtio
 import subprocess
 import shlex
 import time
@@ -1366,51 +1369,64 @@ class _PayloadWorker(QObject):
     
     def run(self):
         try:
-            # 构建命令
-            cmd = [sys.executable, '-m', 'payload_dumper']
+            self.log.emit(f"开始提取: {self.source}")
+            self.log.emit(f"输出目录: {self.output_dir}")
             
-            # 添加分区参数
-            if self.partitions:
-                cmd.extend(['--partitions', self.partitions])
+            # 确保输出目录存在
+            if not os.path.exists(self.output_dir):
+                os.makedirs(self.output_dir)
+
+            # 准备参数
+            payload_path = self.source
+            partitions = self.partitions if self.partitions else ""
             
-            # 添加输出目录
-            cmd.extend(['--out', self.output_dir])
+            # 处理输入源
+            if payload_path.startswith("http://") or payload_path.startswith("https://"):
+                payload_file = http_file.HttpRangeFileMTIO(payload_path)
+            else:
+                payload_file = mtio.MTFile(payload_path, "r")
+                
+            # 初始化 Dumper
+            # 注意：payload_dumper 的 Dumper 类通常会直接打印到 stdout
+            # 为了能在 GUI 显示日志，我们需要重定向 stdout/stderr 或者修改 payload_dumper 的行为
+            # 但由于无法修改第三方库，且那是运行在线程中，我们可以尝试暂时重定向 stdout
             
-            # 添加源文件/URL
-            cmd.append(self.source)
+            import io
+            from contextlib import redirect_stdout, redirect_stderr
             
-            self.log.emit(f"执行命令: {' '.join(cmd)}")
-            self.log.emit("")
+            class LogWriter:
+                def __init__(self, signal):
+                    self.signal = signal
+                    self.buffer = ""
+                def write(self, text):
+                    self.signal.emit(text.rstrip())
+                def flush(self):
+                    pass
+
+            writer = LogWriter(self.log)
             
-            # 执行命令
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                encoding='utf-8',
-                errors='replace'
+            # 使用 Dumper 提取
+            # 参数对应: (payloadfile, out, diff=False, old='old', images='', workers=cpu_count(), list_partitions=False, extract_metadata=False)
+            task_dumper = dumper.Dumper(
+                payload_file=payload_file,
+                out=self.output_dir,
+                diff=False,
+                old="old", # 默认值，不实际使用
+                images=partitions,
+                workers=cpu_count(),
+                list_partitions=False,
+                extract_metadata=False
             )
             
-            # 实时输出日志
-            while True:
-                if self._stop:
-                    process.terminate()
-                    return
+            # 重定向输出并在当前线程执行
+            with redirect_stdout(writer), redirect_stderr(writer):
+                task_dumper.run()
                 
-                line = process.stdout.readline()
-                if not line and process.poll() is not None:
-                    break
-                
-                if line:
-                    self.log.emit(line.rstrip())
+            if isinstance(payload_file, http_file.HttpRangeFileMTIO):
+                 self.log.emit(f"\n网络传输总字节数: {payload_file.transferred_bytes}")
+
+            self.finished.emit()
             
-            # 检查退出码
-            returncode = process.wait()
-            if returncode == 0:
-                self.finished.emit()
-            else:
-                self.error.emit(f"进程退出码: {returncode}")
-                
         except Exception as e:
             self.error.emit(str(e))
+            self.log.emit(f"发生异常: {str(e)}")
