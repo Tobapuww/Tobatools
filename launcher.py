@@ -26,4 +26,22 @@ except Exception:
     from app.main import main
 
 if __name__ == "__main__":
+    # Support for multiprocessing in frozen apps (payload_dumper uses it)
+    import multiprocessing
+    multiprocessing.freeze_support()
+
+    # Sub-command dispatch for payload-dumper
+    if len(sys.argv) > 1 and sys.argv[1] == '--payload-dumper':
+        import runpy
+        # Remove the flag so payload_dumper receives correct arguments
+        sys.argv.pop(1)
+        try:
+            # Execute payload_dumper as if run with python -m payload_dumper
+            runpy.run_module('payload_dumper', run_name='__main__', alter_sys=True)
+        except SystemExit:
+            pass
+        except Exception as e:
+            print(f"Error executing payload_dumper: {e}", file=sys.stderr)
+        sys.exit(0)
+
     main()
