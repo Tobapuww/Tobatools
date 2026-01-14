@@ -290,5 +290,5 @@ python -m app.main
 
 ---
 
-**Tobatools - 真·全机型通刷，无界刷机，无限可能 ✨**
+**Tobatools - 真·全机型通刷，无界刷机，无限可能！ ✨**
 
