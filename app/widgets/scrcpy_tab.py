@@ -1,10 +1,9 @@
 import os
-import shlex
 import subprocess
-from PySide6.QtCore import Qt, QThread, Signal, QObject
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit,
-    QCheckBox, QSpinBox, QComboBox, QTextEdit, QDialog, QDialogButtonBox
+    QCheckBox, QSpinBox, QComboBox, QDialog, QDialogButtonBox
 )
 from pathlib import Path
 from qfluentwidgets import CardWidget, PushButton as FluentPushButton, PrimaryPushButton as FluentPrimaryPushButton, FluentIcon, CheckBox, ComboBox, InfoBar, InfoBarPosition, MessageDialog, SmoothScrollArea
@@ -21,54 +20,10 @@ def _silent_popen_kwargs() -> dict:
     return {}
 
 
-class _ScrcpyWorker(QObject):
-    finished = Signal(int)
-    output = Signal(str)
-
-    def __init__(self, cmd: list[str], cwd: str | None = None):
-        super().__init__()
-        self._cmd = cmd
-        self._cwd = cwd
-        self._proc: subprocess.Popen | None = None
-
-    def run(self):
-        try:
-            self.output.emit("启动命令: " + " ".join(shlex.quote(x) for x in self._cmd))
-            self._proc = subprocess.Popen(
-                self._cmd,
-                cwd=self._cwd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                universal_newlines=True,
-            )
-            for line in iter(self._proc.stdout.readline, ""):
-                if not line:
-                    break
-                self.output.emit(line.rstrip())
-            code = self._proc.wait()
-        except FileNotFoundError:
-            self.output.emit("未找到 scrcpy 可执行文件，请确认 f:/pythonflash/bin/scrcpy.exe 是否存在")
-            code = -1
-        except Exception as e:
-            self.output.emit(f"运行 scrcpy 失败: {e}")
-            code = -1
-        finally:
-            self.finished.emit(code)
-
-    def terminate(self):
-        try:
-            if self._proc and self._proc.poll() is None:
-                self._proc.terminate()
-        except Exception:
-            pass
-
-
 class ScrcpyTab(QWidget):
     def __init__(self):
         super().__init__()
-        self._thread: QThread | None = None
-        self._worker: _ScrcpyWorker | None = None
+        self._proc: subprocess.Popen | None = None
         self._scrcpy_path = self._resolve_scrcpy()
         self._build_ui()
 
@@ -314,20 +269,6 @@ class ScrcpyTab(QWidget):
         row5.addStretch(1)
         #
 
-        self.log = QTextEdit(); self.log.setReadOnly(True)
-        try:
-            from PySide6.QtCore import Qt as _Qt
-            self.log.setVerticalScrollBarPolicy(_Qt.ScrollBarAlwaysOff)
-            self.log.setHorizontalScrollBarPolicy(_Qt.ScrollBarAlwaysOff)
-            self.log.setStyleSheet("background: transparent;")
-        except Exception:
-            pass
-        self.log_view = SmoothScrollArea(self)
-        try:
-            self.log_view.setWidget(self.log)
-            self.log_view.setWidgetResizable(True)
-        except Exception:
-            pass
         # 采用卡片式布局容纳以上各块
         from PySide6.QtWidgets import QGridLayout as _Grid
         grid = _Grid(); grid.setHorizontalSpacing(12); grid.setVerticalSpacing(12)
@@ -377,21 +318,11 @@ class ScrcpyTab(QWidget):
         h_act.addWidget(h_act_icon); h_act.addWidget(h_act_title); h_act.addStretch(1)
         v_act.addLayout(h_act); v_act.addLayout(row5)
 
-        # 日志卡片
-        card_log = CardWidget(self)
-        v_log = QVBoxLayout(card_log); v_log.setContentsMargins(16,16,16,16); v_log.setSpacing(10)
-        h_log = QHBoxLayout(); h_log.setSpacing(8)
-        h_log_icon = QLabel("📝"); h_log_icon.setStyleSheet("font-size:16px;")
-        h_log_title = QLabel("日志输出"); h_log_title.setStyleSheet("font-size:16px; font-weight:600;")
-        h_log.addWidget(h_log_icon); h_log.addWidget(h_log_title); h_log.addStretch(1)
-        v_log.addLayout(h_log); v_log.addWidget(self.log_view)
-
         grid.addWidget(card_video, 0, 0, 1, 2)
         grid.addWidget(card_buf, 1, 0, 1, 2)
         grid.addWidget(card_win, 2, 0)
         grid.addWidget(card_clip, 2, 1)
         grid.addWidget(card_act, 3, 0, 1, 2)
-        grid.addWidget(card_log, 4, 0, 1, 2)
         lay.addLayout(grid)
 
         self.run_btn.clicked.connect(self._start)
@@ -452,7 +383,7 @@ class ScrcpyTab(QWidget):
         return cmd
 
     def _start(self):
-        if self._thread and self._thread.isRunning():
+        if self._proc and self._proc.poll() is None:
             InfoBar.info("提示", "投屏已在运行中。", parent=self, position=InfoBarPosition.TOP, isClosable=True)
             return
 
@@ -464,49 +395,36 @@ class ScrcpyTab(QWidget):
         # Force scrcpy to use the chosen device when multiple ADB devices exist.
         if len(cmd) >= 1:
             cmd = [cmd[0], "-s", str(serial)] + cmd[1:]
-        self.log.clear()
-        self._thread = QThread(self)
-        self._worker = _ScrcpyWorker(cmd)
-        self._worker.moveToThread(self._thread)
-        self._thread.started.connect(self._worker.run)
-        self._worker.output.connect(self.log.append)
-        self._worker.finished.connect(lambda code: self.log.append(f"scrcpy 退出，代码 {code}"))
-        self._worker.finished.connect(self._thread.quit)
-        self._worker.finished.connect(self._worker.deleteLater)
-        self._thread.finished.connect(self._thread.deleteLater)
-        self._thread.finished.connect(self._on_thread_finished)
-        self._thread.finished.connect(lambda: self.stop_btn.setEnabled(False))
-        self._thread.finished.connect(lambda: self.run_btn.setEnabled(True))
-        self.run_btn.setEnabled(False)
-        self.stop_btn.setEnabled(True)
-        self._thread.start()
+        
+        try:
+            # 直接启动 scrcpy 进程，不捕获输出，让它在独立窗口运行
+            self._proc = subprocess.Popen(cmd)
+            InfoBar.success("成功", "scrcpy 已启动", parent=self, position=InfoBarPosition.TOP, duration=2000, isClosable=True)
+            self.run_btn.setEnabled(False)
+            self.stop_btn.setEnabled(True)
+        except FileNotFoundError:
+            InfoBar.error("错误", "未找到 scrcpy 可执行文件", parent=self, position=InfoBarPosition.TOP, duration=3000, isClosable=True)
+        except Exception as e:
+            InfoBar.error("错误", f"启动 scrcpy 失败: {e}", parent=self, position=InfoBarPosition.TOP, duration=3000, isClosable=True)
 
     def _stop(self):
-        if self._worker:
-            self._worker.terminate()
-        # 等待线程结束，避免 QThread 未退出被销毁
-        if self._thread:
-            self._thread.wait(2000)
+        try:
+            if self._proc and self._proc.poll() is None:
+                self._proc.terminate()
+                InfoBar.info("提示", "已发送停止信号", parent=self, position=InfoBarPosition.TOP, duration=2000, isClosable=True)
+        except Exception as e:
+            InfoBar.warning("提示", f"停止失败: {e}", parent=self, position=InfoBarPosition.TOP, duration=2000, isClosable=True)
+        finally:
+            self._proc = None
+            self.run_btn.setEnabled(True)
+            self.stop_btn.setEnabled(False)
 
-    def _on_thread_finished(self):
-        # 清理引用，防止悬挂
-        self._worker = None
-        self._thread = None
-
-    # 退出清理，避免 QThread: Destroyed while thread is still running
     def cleanup(self):
         try:
-            if hasattr(self, '_worker') and self._worker:
-                try:
-                    self._worker.terminate()
-                except Exception:
-                    pass
-        except Exception:
-            pass
-        try:
-            if hasattr(self, '_thread') and self._thread:
-                if self._thread.isRunning():
-                    self._thread.quit(); self._thread.wait(1500)
+            if hasattr(self, '_proc') and self._proc:
+                if self._proc.poll() is None:
+                    self._proc.terminate()
+                    self._proc.wait(timeout=2)
         except Exception:
             pass
 
