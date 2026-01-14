@@ -1028,8 +1028,11 @@ class DeviceInfoTab(QWidget):
         except Exception:
             pass
         self.reboot_btn = PrimaryPushButton("执行重启")
+        self.device_manager_btn = PushButton("设备管理器")
+        self.device_manager_btn.setIcon(FluentIcon.SETTING)
         row_rb.addWidget(self.reboot_target)
         row_rb.addWidget(self.reboot_btn)
+        row_rb.addWidget(self.device_manager_btn)
         row_rb.addStretch(1)
         v4.addLayout(row_rb)
 
@@ -1145,6 +1148,7 @@ class DeviceInfoTab(QWidget):
         self.refresh_btn.clicked.connect(self.refresh)
         self.install_btn.clicked.connect(self._install_driver)
         self.reboot_btn.clicked.connect(self._on_reboot_clicked)
+        self.device_manager_btn.clicked.connect(self._open_device_manager)
 
     def _open_wireless_dialog(self):
         try:
@@ -1641,6 +1645,39 @@ class DeviceInfoTab(QWidget):
                     pass
         except Exception:
             pass
+
+    def _open_device_manager(self):
+        """打开 Windows 设备管理器"""
+        try:
+            if os.name == 'nt':
+                # 使用 os.startfile 打开 devmgmt.msc，无需管理员权限
+                os.startfile('devmgmt.msc')
+                InfoBar.success(
+                    "成功",
+                    "已打开设备管理器",
+                    parent=self,
+                    position=InfoBarPosition.TOP,
+                    duration=2000,
+                    isClosable=True
+                )
+            else:
+                InfoBar.warning(
+                    "提示",
+                    "设备管理器仅支持 Windows 系统",
+                    parent=self,
+                    position=InfoBarPosition.TOP,
+                    duration=2000,
+                    isClosable=True
+                )
+        except Exception as e:
+            InfoBar.error(
+                "错误",
+                f"无法打开设备管理器: {e}",
+                parent=self,
+                position=InfoBarPosition.TOP,
+                duration=3000,
+                isClosable=True
+            )
 
     def _on_reboot_clicked(self):
         mapping = {
