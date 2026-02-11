@@ -782,6 +782,7 @@ class DeviceInfoTab(QWidget):
         self._wifi_worker = None
         # 顶部消息条状态去抖
         self._last_conn_banner = None  # 'connected' | 'disconnected' | None
+        self._did_first_show = False
 
         # 顶部渐变 Banner（~110px）
         from PySide6.QtWidgets import QWidget as _W
@@ -912,30 +913,11 @@ class DeviceInfoTab(QWidget):
         self.install_btn.setFixedHeight(38)
         self.install_btn.setMinimumWidth(100)
         
-        self.progress = QProgressBar()
-        self.progress.setRange(0, 0)
-        self.progress.setMaximumHeight(3)
-        self.progress.setFixedWidth(140)
-        self.progress.setVisible(False)
-        self.progress.setStyleSheet("""
-            QProgressBar {
-                border: none;
-                border-radius: 2px;
-                background: rgba(0, 0, 0, 0.06);
-            }
-            QProgressBar::chunk {
-                border-radius: 2px;
-                background: #4098FF;
-            }
-            QProgressBar:dark {
-                background: rgba(255, 255, 255, 0.08);
-            }
-        """)
+        self._loading_infobar = None
         
         action_bar.addWidget(self.refresh_btn)
         action_bar.addWidget(self.wireless_btn)
         action_bar.addWidget(self.install_btn)
-        action_bar.addWidget(self.progress)
         action_bar.addStretch(1)
         conn_layout.addLayout(action_bar)
 
@@ -1149,6 +1131,22 @@ class DeviceInfoTab(QWidget):
         self.install_btn.clicked.connect(self._install_driver)
         self.reboot_btn.clicked.connect(self._on_reboot_clicked)
         self.device_manager_btn.clicked.connect(self._open_device_manager)
+
+    def showEvent(self, event):
+        try:
+            if not getattr(self, '_did_first_show', False):
+                self._did_first_show = True
+                try:
+                    self._start_watcher()
+                except Exception:
+                    pass
+                try:
+                    QTimer.singleShot(0, self.refresh)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        return super().showEvent(event)
 
     def _open_wireless_dialog(self):
         try:
@@ -1366,11 +1364,29 @@ class DeviceInfoTab(QWidget):
 
     def _start_loading(self):
         self.refresh_btn.setEnabled(False)
-        self.progress.setVisible(True)
+        try:
+            if self._loading_infobar is not None:
+                return
+            self._loading_infobar = InfoBar.info(
+                title="正在连接",
+                content="正在获取设备信息...",
+                parent=self,
+                orient=Qt.Horizontal,
+                isClosable=False,
+                position=InfoBarPosition.TOP_RIGHT,
+                duration=-1,
+            )
+        except Exception:
+            self._loading_infobar = None
 
     def _stop_loading(self):
         self.refresh_btn.setEnabled(True)
-        self.progress.setVisible(False)
+        try:
+            if self._loading_infobar is not None:
+                self._loading_infobar.close()
+        except Exception:
+            pass
+        self._loading_infobar = None
 
     def _on_collect_finished(self, info: dict):
         try:
@@ -1542,29 +1558,27 @@ class DeviceInfoTab(QWidget):
                     except Exception:
                         pass
                     return {}
-                adb = str(adb_service.ADB_BIN) if adb_service.ADB_BIN.exists() else "adb"
                 fb = str(adb_service.FASTBOOT_BIN) if adb_service.FASTBOOT_BIN.exists() else "fastboot"
+                last_adb = ""
                 last_fb = ""
-                proc = None
                 try:
-                    try:
-                        proc = subprocess.Popen([adb, "track-devices"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, universal_newlines=True, **_silent())
-                    except Exception:
-                        proc = None
                     last_emit = 0.0
                     while not self._stop:
                         emitted = False
-                        if proc and proc.stdout:
-                            try:
-                                line = proc.stdout.readline()
-                            except Exception:
-                                line = ""
-                            if line:
-                                now = time.time()
-                                if now - last_emit > 0.2:
-                                    self.changed.emit()
-                                    last_emit = now
-                                    emitted = True
+                        try:
+                            mode, serial = adb_service.detect_connection_mode()
+                            devs = adb_service.list_devices()
+                            cur = f"{mode}:{serial}:{','.join(devs or [])}"
+                        except Exception:
+                            cur = ""
+
+                        if cur != last_adb:
+                            last_adb = cur
+                            now = time.time()
+                            if now - last_emit > 0.2:
+                                self.changed.emit()
+                                last_emit = now
+                                emitted = True
                         # Light fastboot check if no adb events
                         if not emitted:
                             try:
@@ -1577,11 +1591,7 @@ class DeviceInfoTab(QWidget):
                                 self.changed.emit()
                         time.sleep(2.5)
                 finally:
-                    try:
-                        if proc and proc.poll() is None:
-                            proc.terminate()
-                    except Exception:
-                        pass
+                    return
 
         self._watch_thread = QThread(self)
         self._watch_worker = Watcher()
@@ -1691,6 +1701,7 @@ class DeviceInfoTab(QWidget):
         target = mapping.get(target_label, "bootloader")
 
         class Worker(QObject):
+            finished = Signal()
             def __init__(self, t: str):
                 super().__init__()
                 self.t = t
@@ -1698,6 +1709,10 @@ class DeviceInfoTab(QWidget):
                 # fire-and-forget，不关心结果
                 try:
                     adb_service.reboot_to(self.t)
+                except Exception:
+                    pass
+                try:
+                    self.finished.emit()
                 except Exception:
                     pass
 
@@ -1712,8 +1727,18 @@ class DeviceInfoTab(QWidget):
         self._worker2 = Worker(target)
         self._worker2.moveToThread(self._thread2)
         self._thread2.started.connect(self._worker2.run)
-        self._thread2.finished.connect(self._thread2.deleteLater)
-        self._thread2.finished.connect(self._thread2.deleteLater)
+        try:
+            self._worker2.finished.connect(self._thread2.quit)
+        except Exception:
+            pass
+        try:
+            self._worker2.finished.connect(self._worker2.deleteLater)
+        except Exception:
+            pass
+        try:
+            self._thread2.finished.connect(self._thread2.deleteLater)
+        except Exception:
+            pass
         self._thread2.start()
         # 立即可再次点击
         self.reboot_btn.setEnabled(True)

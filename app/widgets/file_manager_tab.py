@@ -87,114 +87,38 @@ class _StreamTransferWorker(QObject):
         self.src = src
         self.dst = dst
         self.total = total_bytes or 0
-        self._proc = None
         self._stopped = False
 
     def run(self):
         try:
-            adb = str(adb_service.ADB_BIN) if getattr(adb_service, 'ADB_BIN', None) and adb_service.ADB_BIN.exists() else 'adb'
-            cmd = [adb, 'pull' if self.mode == 'pull' else 'push', '-p', self.src, self.dst]
-            
-            startupinfo = None
-            if os.name == 'nt':
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                
-            self._proc = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,  # -p 进度通常输出到 stderr
-                bufsize=1,
-                universal_newlines=True,
-                startupinfo=startupinfo,
-                creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
-            )
-            
-            total_bytes = self.total if (self.total and self.total > 0) else 0
-            percent_pat = re.compile(r"(\d+)%")
-            bracket_pat = re.compile(r"\[(\d+)%\]")
-            bytes_pat = re.compile(r"\((\d+)\s+bytes")
-            last_emit = 0.0
-            last_busy = 0.0
-            buf = ''
-            saw_pct = False
-            done_bytes = 0
-            
-            while True:
-                if self._stopped:
-                    if self._proc.poll() is None:
-                        self._proc.kill()
-                    break
-                    
-                ch = self._proc.stderr.read(1)
-                
-                if not ch:
-                    if self._proc.poll() is not None:
-                        break
-                    time.sleep(0.05)
-                    # 周期性发出忙碌信号，驱动不确定进度条
-                    nowb = time.time()
-                    if not saw_pct and nowb - last_busy >= 0.2:
-                        self.progress.emit(-1)
-                        last_busy = nowb
-                    continue
-                    
-                if ch in ['\r', '\n']:
-                    line = buf
-                    buf = ''
-                    if not line:
-                        continue
-                    m_pct = percent_pat.search(line) or bracket_pat.search(line)
-                    if m_pct:
-                        pct = int(m_pct.group(1))
-                        saw_pct = True
-                        now = time.time()
-                        if now - last_emit >= 0.05:
-                            self.progress.emit(pct)
-                            last_emit = now
-                        continue
-                    m_bytes = bytes_pat.search(line)
-                    if m_bytes:
-                        done_bytes = int(m_bytes.group(1))
-                        if total_bytes > 0:
-                            pct = min(100, int(done_bytes * 100 / total_bytes))
-                            saw_pct = True
-                            now = time.time()
-                            if now - last_emit >= 0.05:
-                                self.progress.emit(pct)
-                                last_emit = now
-                        else:
-                            self.progress.emit(-1)
-                        continue
-                else:
-                    buf += ch
-                    
+            self.progress.emit(-1)
             if self._stopped:
-                 self.finished.emit(False, "已取消")
-                 return
+                self.finished.emit(False, "已取消")
+                return
 
-            code = self._proc.wait()
-            if code == 0:
-                self.progress.emit(100)
-                self.finished.emit(True, '')
+            ok = False
+            msg = ""
+            if self.mode == 'pull':
+                ok, msg = adb_service.pull_path(self.src, self.dst)
             else:
-                self.finished.emit(False, '传输失败')
+                ok, msg = adb_service.push_path(self.src, self.dst)
+
+            if self._stopped:
+                self.finished.emit(False, "已取消")
+                return
+
+            if ok:
+                self.progress.emit(100)
+                self.finished.emit(True, msg or '')
+            else:
+                self.finished.emit(False, msg or '传输失败')
                 
         except Exception as e:
-            try:
-                if self._proc and self._proc.poll() is None:
-                    self._proc.kill()
-            except Exception:
-                pass
             self.finished.emit(False, str(e))
 
     def stop(self):
         self._stopped = True
-        try:
-            if self._proc and self._proc.poll() is None:
-                self._proc.kill()
-        except Exception:
-            pass
+        return
 
 
     

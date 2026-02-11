@@ -1,5 +1,10 @@
 import subprocess
 import re
+import socket
+import struct
+import time
+import uuid
+import shutil
 from typing import Dict, List, Tuple
 from pathlib import Path
 
@@ -8,6 +13,245 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 BIN_DIR = ROOT_DIR / "bin"
 ADB_BIN = BIN_DIR / "adb.exe" if (BIN_DIR / "adb.exe").exists() else BIN_DIR / "adb"
 FASTBOOT_BIN = BIN_DIR / "fastboot.exe" if (BIN_DIR / "fastboot.exe").exists() else BIN_DIR / "fastboot"
+
+
+class AdbServerError(RuntimeError):
+    pass
+
+
+class _AdbServerClient:
+    def __init__(self, host: str = "127.0.0.1", port: int = 5037, timeout: float = 8.0):
+        self._host = host
+        self._port = int(port)
+        self._timeout = float(timeout)
+
+    def _connect(self) -> socket.socket:
+        s = socket.create_connection((self._host, self._port), timeout=self._timeout)
+        s.settimeout(self._timeout)
+        return s
+
+    @staticmethod
+    def _encode_service(service: str) -> bytes:
+        b = (service or "").encode("utf-8")
+        return f"{len(b):04x}".encode("ascii") + b
+
+    @staticmethod
+    def _read_exact(sock: socket.socket, n: int) -> bytes:
+        buf = bytearray()
+        while len(buf) < n:
+            chunk = sock.recv(n - len(buf))
+            if not chunk:
+                raise AdbServerError("adb server closed connection")
+            buf.extend(chunk)
+        return bytes(buf)
+
+    def _read_status(self, sock: socket.socket) -> None:
+        status = self._read_exact(sock, 4)
+        if status == b"OKAY":
+            return
+        if status == b"FAIL":
+            msg = self._read_string(sock)
+            raise AdbServerError(msg or "adb server FAIL")
+        raise AdbServerError(f"unexpected adb status: {status!r}")
+
+    def _read_string(self, sock: socket.socket) -> str:
+        ln_hex = self._read_exact(sock, 4)
+        try:
+            ln = int(ln_hex.decode("ascii"), 16)
+        except Exception as e:
+            raise AdbServerError(f"invalid length prefix: {ln_hex!r}") from e
+        if ln <= 0:
+            return ""
+        data = self._read_exact(sock, ln)
+        return data.decode("utf-8", errors="replace")
+
+    def _request(self, service: str, *, timeout: float | None = None, expect_string: bool = True) -> str:
+        s = self._connect()
+        try:
+            if timeout is not None:
+                s.settimeout(float(timeout))
+            s.sendall(self._encode_service(service))
+            self._read_status(s)
+            if not expect_string:
+                return ""
+            return self._read_string(s)
+        finally:
+            try:
+                s.close()
+            except Exception:
+                pass
+
+    def host_devices(self, *, timeout: float = 5.0) -> list[tuple[str, str]]:
+        payload = self._request("host:devices", timeout=timeout, expect_string=True)
+        out: list[tuple[str, str]] = []
+        for line in (payload or "").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split("\t", 1)
+            if len(parts) != 2:
+                continue
+            out.append((parts[0].strip(), parts[1].strip()))
+        return out
+
+    def host_mdns_services(self, *, timeout: float = 5.0) -> str:
+        return self._request("host:mdns:services", timeout=timeout, expect_string=True)
+
+    def host_connect(self, hp: str, *, timeout: float = 10.0) -> str:
+        return self._request(f"host:connect:{hp}", timeout=timeout, expect_string=True)
+
+    def host_disconnect(self, hp: str | None = None, *, timeout: float = 10.0) -> str:
+        if hp:
+            return self._request(f"host:disconnect:{hp}", timeout=timeout, expect_string=True)
+        return self._request("host:disconnect:", timeout=timeout, expect_string=True)
+
+    def host_pair(self, hp: str, code: str, *, timeout: float = 15.0) -> str:
+        return self._request(f"host:pair:{hp}:{code}", timeout=timeout, expect_string=True)
+
+    def shell(self, serial: str, cmd: str, *, timeout: float = 20.0) -> str:
+        s = self._connect()
+        try:
+            s.settimeout(float(timeout))
+            s.sendall(self._encode_service(f"host:transport:{serial}"))
+            self._read_status(s)
+            s.sendall(self._encode_service(f"shell:{cmd}"))
+            self._read_status(s)
+            chunks: list[bytes] = []
+            while True:
+                try:
+                    b = s.recv(64 * 1024)
+                except socket.timeout:
+                    break
+                if not b:
+                    break
+                chunks.append(b)
+            return b"".join(chunks).decode("utf-8", errors="ignore").strip()
+        finally:
+            try:
+                s.close()
+            except Exception:
+                pass
+
+    def _sync_open(self, serial: str, *, timeout: float = 30.0) -> socket.socket:
+        s = self._connect()
+        s.settimeout(float(timeout))
+        s.sendall(self._encode_service(f"host:transport:{serial}"))
+        self._read_status(s)
+        s.sendall(self._encode_service("sync:"))
+        self._read_status(s)
+        return s
+
+    @staticmethod
+    def _sync_send_cmd(sock: socket.socket, cmd4: bytes, payload: bytes = b"") -> None:
+        sock.sendall(cmd4 + struct.pack("<I", len(payload)) + payload)
+
+    @staticmethod
+    def _sync_recv_header(sock: socket.socket) -> tuple[bytes, int]:
+        hdr = _AdbServerClient._read_exact(sock, 8)
+        cmd4 = hdr[:4]
+        ln = struct.unpack("<I", hdr[4:])[0]
+        return cmd4, int(ln)
+
+    def sync_list(self, serial: str, remote_dir: str, *, timeout: float = 20.0) -> list[dict]:
+        s = self._sync_open(serial, timeout=timeout)
+        try:
+            self._sync_send_cmd(s, b"LIST", (remote_dir or "").encode("utf-8"))
+            items: list[dict] = []
+            while True:
+                cmd4, ln = self._sync_recv_header(s)
+                if cmd4 == b"DONE":
+                    break
+                if cmd4 == b"DENT":
+                    dent = self._read_exact(s, 16 + ln)
+                    mode, size, mtime = struct.unpack("<III", dent[:12])
+                    name = dent[16:].decode("utf-8", errors="replace")
+                    items.append({"name": name, "mode": int(mode), "size": int(size), "mtime": int(mtime)})
+                    continue
+                if cmd4 == b"FAIL":
+                    msg = self._read_exact(s, ln).decode("utf-8", errors="replace")
+                    raise AdbServerError(msg or "sync LIST fail")
+                if ln > 0:
+                    _ = self._read_exact(s, ln)
+            return items
+        finally:
+            try:
+                s.close()
+            except Exception:
+                pass
+
+    def sync_pull_file(self, serial: str, remote: str, local: str, *, timeout: float = 600.0) -> None:
+        s = self._sync_open(serial, timeout=timeout)
+        try:
+            self._sync_send_cmd(s, b"RECV", (remote or "").encode("utf-8"))
+            with open(local, "wb") as f:
+                while True:
+                    cmd4, ln = self._sync_recv_header(s)
+                    if cmd4 == b"DATA":
+                        if ln:
+                            f.write(self._read_exact(s, ln))
+                        continue
+                    if cmd4 == b"DONE":
+                        break
+                    if cmd4 == b"FAIL":
+                        msg = self._read_exact(s, ln).decode("utf-8", errors="replace")
+                        raise AdbServerError(msg or "sync RECV fail")
+                    if ln:
+                        _ = self._read_exact(s, ln)
+        finally:
+            try:
+                s.close()
+            except Exception:
+                pass
+
+    def sync_push_file(self, serial: str, local: str, remote: str, *, mode: int = 0o644, timeout: float = 600.0) -> None:
+        s = self._sync_open(serial, timeout=timeout)
+        try:
+            r = (remote or "").encode("utf-8") + f",{int(mode)}".encode("utf-8")
+            self._sync_send_cmd(s, b"SEND", r)
+            with open(local, "rb") as f:
+                while True:
+                    chunk = f.read(64 * 1024)
+                    if not chunk:
+                        break
+                    self._sync_send_cmd(s, b"DATA", chunk)
+            self._sync_send_cmd(s, b"DONE", struct.pack("<I", int(time.time())))
+            cmd4, ln = self._sync_recv_header(s)
+            if cmd4 == b"OKAY":
+                if ln:
+                    _ = self._read_exact(s, ln)
+                return
+            if cmd4 == b"FAIL":
+                msg = self._read_exact(s, ln).decode("utf-8", errors="replace")
+                raise AdbServerError(msg or "sync SEND fail")
+            if ln:
+                _ = self._read_exact(s, ln)
+            raise AdbServerError("unexpected sync response")
+        finally:
+            try:
+                s.close()
+            except Exception:
+                pass
+
+
+def _adb_server(timeout: float = 8.0) -> _AdbServerClient:
+    return _AdbServerClient(timeout=timeout)
+
+
+def _ensure_adb_server_running() -> bool:
+    try:
+        _adb_server(timeout=1.0).host_devices(timeout=1.0)
+        return True
+    except Exception:
+        pass
+    try:
+        run_adb(["start-server"], timeout=6)
+    except Exception:
+        pass
+    try:
+        _adb_server(timeout=2.0).host_devices(timeout=2.0)
+        return True
+    except Exception:
+        return False
 
 
 def _silent_kwargs():
@@ -78,25 +322,50 @@ def adb_pair(host: str, port: str | int, pairing_code: str, timeout: int = 15) -
     code = str(pairing_code or '').strip()
     if not hp or not code:
         return 2, 'missing host/port or pairing code'
-    return run_adb(['pair', hp, code], timeout=timeout)
+    try:
+        _ensure_adb_server_running()
+        out = _adb_server(timeout=float(timeout)).host_pair(hp, code, timeout=float(timeout))
+        return 0, (out or '').strip()
+    except Exception:
+        return run_adb(['pair', hp, code], timeout=timeout)
 
 
 def adb_connect(host: str, port: str | int, timeout: int = 10) -> Tuple[int, str]:
     hp = _normalize_host_port(host, port)
     if not hp:
         return 2, 'missing host/port'
-    return run_adb(['connect', hp], timeout=timeout)
+    try:
+        _ensure_adb_server_running()
+        out = _adb_server(timeout=float(timeout)).host_connect(hp, timeout=float(timeout))
+        return 0, (out or '').strip()
+    except Exception:
+        return run_adb(['connect', hp], timeout=timeout)
 
 
 def adb_disconnect(host: str | None = None, port: str | int | None = None, timeout: int = 10) -> Tuple[int, str]:
     if host:
         hp = _normalize_host_port(host, port or '')
-        return run_adb(['disconnect', hp], timeout=timeout)
-    return run_adb(['disconnect'], timeout=timeout)
+        try:
+            _ensure_adb_server_running()
+            out = _adb_server(timeout=float(timeout)).host_disconnect(hp, timeout=float(timeout))
+            return 0, (out or '').strip()
+        except Exception:
+            return run_adb(['disconnect', hp], timeout=timeout)
+    try:
+        _ensure_adb_server_running()
+        out = _adb_server(timeout=float(timeout)).host_disconnect(None, timeout=float(timeout))
+        return 0, (out or '').strip()
+    except Exception:
+        return run_adb(['disconnect'], timeout=timeout)
 
 
 def adb_mdns_services(timeout: int = 5) -> Tuple[int, str]:
-    return run_adb(['mdns', 'services'], timeout=timeout)
+    try:
+        _ensure_adb_server_running()
+        out = _adb_server(timeout=float(timeout)).host_mdns_services(timeout=float(timeout))
+        return 0, (out or '').strip()
+    except Exception:
+        return run_adb(['mdns', 'services'], timeout=timeout)
 
 
 def adb_kill_server() -> Tuple[int, str]:
@@ -108,60 +377,96 @@ def adb_start_server() -> Tuple[int, str]:
 
 
 def check_adb_available() -> bool:
-    adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
-    return bool(_run([adb, "version"]))
+    # Must be fast and non-blocking (used on UI thread).
+    try:
+        if ADB_BIN.exists():
+            return True
+    except Exception:
+        pass
+    try:
+        if shutil.which("adb"):
+            return True
+    except Exception:
+        pass
+    # As a last resort, check whether adb server is reachable.
+    try:
+        c = _adb_server(timeout=0.3)
+        c.host_devices(timeout=0.3)
+        return True
+    except Exception:
+        return False
 
 
 def list_devices() -> List[str]:
-    adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
-    
-    # 首次调用可能触发 ADB server 启动，需要等待和重试
-    max_retries = 3
-    retry_delay = 1.0  # 秒
-    
-    for attempt in range(max_retries):
-        out = _run([adb, "devices"], timeout=5)  # 增加超时以等待 server 启动
-        
-        # 检查是否包含 "daemon started" 或 "starting" 等启动信息
-        if "daemon" in out.lower() and "start" in out.lower():
-            # ADB server 正在启动，等待后重试
+    try:
+        if not _ensure_adb_server_running():
+            return []
+        devs = _adb_server(timeout=5.0).host_devices(timeout=5.0)
+        return [s for (s, st) in devs if st == "device"]
+    except Exception:
+        adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
+
+        # 首次调用可能触发 ADB server 启动，需要等待和重试
+        max_retries = 3
+        retry_delay = 1.0  # 秒
+
+        for attempt in range(max_retries):
+            out = _run([adb, "devices"], timeout=5)
+            if "daemon" in out.lower() and "start" in out.lower():
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                    continue
+
+            serials: List[str] = []
+            for line in out.splitlines()[1:]:
+                parts = line.split()
+                if len(parts) >= 2 and parts[1] == "device":
+                    serials.append(parts[0])
+
+            if serials or attempt == max_retries - 1:
+                return serials
+
             if attempt < max_retries - 1:
-                import time
                 time.sleep(retry_delay)
-                continue
-        
-        # 解析设备列表
-        serials: List[str] = []
-        for line in out.splitlines()[1:]:
-            parts = line.split()
-            if len(parts) >= 2 and parts[1] == "device":
-                serials.append(parts[0])
-        
-        # 如果找到设备或已是最后一次尝试，返回结果
-        if serials or attempt == max_retries - 1:
-            return serials
-        
-        # 没找到设备但可能是 server 刚启动，等待后重试
-        if attempt < max_retries - 1:
-            import time
-            time.sleep(retry_delay)
-    
-    return []
+
+        return []
 
 
 def _getprop(serial: str, key: str) -> str:
-    adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
-    return _run([adb, "-s", serial, "shell", "getprop", key], timeout=3)  # 减少超时到 3 秒
+    try:
+        if not serial:
+            return ""
+        if not _ensure_adb_server_running():
+            return ""
+        return _adb_server(timeout=3.0).shell(serial, f"getprop {key}", timeout=3.0)
+    except Exception:
+        adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
+        return _run([adb, "-s", serial, "shell", "getprop", key], timeout=3)
 
 
 def _shell(serial: str, cmd: str) -> str:
-    adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
-    return _run([adb, "-s", serial, "shell", cmd], timeout=8)
+    try:
+        if not serial:
+            return ""
+        if not _ensure_adb_server_running():
+            return ""
+        return _adb_server(timeout=8.0).shell(serial, cmd, timeout=8.0)
+    except Exception:
+        adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
+        return _run([adb, "-s", serial, "shell", cmd], timeout=8)
 
 
 def _adb_get_state(serial: str) -> str:
-    adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
-    return _run([adb, "-s", serial, "get-state"], timeout=2)  # 减少超时到 2 秒
+    try:
+        if not serial:
+            return ""
+        if not _ensure_adb_server_running():
+            return ""
+        out = _adb_server(timeout=2.0)._request(f"host-serial:{serial}:get-state", timeout=2.0, expect_string=True)
+        return (out or "").strip()
+    except Exception:
+        adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
+        return _run([adb, "-s", serial, "get-state"], timeout=2)
 
 
 def _fastboot(cmds: List[str], timeout: int = 5) -> str:
@@ -236,7 +541,15 @@ def detect_connection_mode() -> Tuple[str, str]:
     """Return (mode, serial). mode in: system, sideload, fastbootd, bootloader, offline, none"""
     adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
     # 减少 ADB 超时时间到 2 秒（设备存在时响应很快）
-    out = _run([adb, "devices"], timeout=2)
+    out = ""
+    try:
+        if _ensure_adb_server_running():
+            devs = _adb_server(timeout=2.0).host_devices(timeout=2.0)
+            out = "List of devices attached\n" + "\n".join([f"{s}\t{st}" for (s, st) in devs])
+    except Exception:
+        out = ""
+    if not out:
+        out = _run([adb, "devices"], timeout=2)
     found_serial = ""
     if out:
         lines = [line.strip() for line in out.splitlines() if line.strip()]
@@ -511,8 +824,41 @@ def list_dir(path: str) -> Tuple[List[Dict[str, str]], str]:
     """List directory on device. Returns (items, err).
     Each item: {name, size, type: 'dir'|'file'}
     """
-    adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
     p = path or "/"
+    try:
+        serials = list_devices()
+        serial = serials[0] if serials else ""
+        if serial and _ensure_adb_server_running():
+            # Fast path: avoid heavy `ls -l` parsing and avoid SYNC metadata overhead.
+            # `ls -1p` appends '/' to dirs (toybox/busybox compatible in most ROMs).
+            out = _adb_server(timeout=6.0).shell(serial, f"sh -c \"ls -1p '{p}' 2>/dev/null || toybox ls -1p '{p}' 2>/dev/null\"", timeout=6.0)
+            if out and ("No such file" not in out) and ("Permission denied" not in out):
+                items: List[Dict[str, str]] = []
+                for line in (out or "").splitlines():
+                    name = (line or "").strip()
+                    if not name:
+                        continue
+                    is_dir = name.endswith('/')
+                    if is_dir:
+                        name = name[:-1]
+                    items.append({"name": name, "size": "-", "type": ("dir" if is_dir else "file")})
+                return items, ""
+
+            # Fallback: SYNC LIST for cases where shell `ls` is restricted/unavailable.
+            entries = _adb_server(timeout=10.0).sync_list(serial, p, timeout=10.0)
+            items2: List[Dict[str, str]] = []
+            for e in entries:
+                name = (e.get("name") or "").strip()
+                if not name or name in (".", ".."): 
+                    continue
+                mode = int(e.get("mode") or 0)
+                is_dir = bool(mode & 0o040000)
+                items2.append({"name": name, "size": str(e.get("size") or "-"), "type": ("dir" if is_dir else "file")})
+            return items2, ""
+    except Exception:
+        pass
+
+    adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
     out = _run([adb, "shell", "ls", "-l", p], timeout=10)
     if out is None:
         out = ""
@@ -552,21 +898,137 @@ def list_dir(path: str) -> Tuple[List[Dict[str, str]], str]:
 
 def pull_file(remote: str, local: str) -> Tuple[bool, str]:
     """adb pull remote local. Returns (ok, msg)."""
-    adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
     try:
-        out = _run([adb, "pull", remote, local], timeout=600)
-        if out is None:
-            out = ""
-        # adb pull returns 0 already if _run succeeded; provide brief message
-        return True, out or "完成"
+        serials = list_devices()
+        serial = serials[0] if serials else ""
+        if serial and _ensure_adb_server_running():
+            _adb_server(timeout=600.0).sync_pull_file(serial, remote, local, timeout=600.0)
+            return True, "完成"
+        raise RuntimeError("no device")
     except Exception as e:
-        return False, str(e)
+        adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
+        try:
+            out = _run([adb, "pull", remote, local], timeout=600)
+            if out is None:
+                out = ""
+            return True, out or "完成"
+        except Exception:
+            return False, str(e)
 
 
 # -------- Mobile-side Ops (ADB shell) --------
 def _adb_shell(args: List[str], timeout: int = 20) -> str:
+    try:
+        serials = list_devices()
+        serial = serials[0] if serials else ""
+        if serial and _ensure_adb_server_running():
+            cmd = " ".join([str(x) for x in (args or [])])
+            return _adb_server(timeout=float(timeout)).shell(serial, cmd, timeout=float(timeout))
+    except Exception:
+        pass
     adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
     return _run([adb, "shell"] + args, timeout=timeout)
+
+
+def _sh_quote(s: str) -> str:
+    t = str(s or "")
+    if not t:
+        return "''"
+    if "'" not in t:
+        return f"'{t}'"
+    # close-open pattern: 'foo'"'"'bar'
+    return "'" + t.replace("'", "'\"'\"'") + "'"
+
+
+def adb_shell_serial(serial: str, args: List[str] | str, timeout: int = 20) -> str:
+    """Execute a shell command on a specific device serial via adb server socket.
+
+    args can be:
+    - list[str]: will be shell-quoted and joined
+    - str: passed as-is to shell
+    """
+    try:
+        if not serial:
+            return ""
+        if not _ensure_adb_server_running():
+            return ""
+        if isinstance(args, str):
+            cmd = args
+        else:
+            cmd = " ".join([_sh_quote(x) for x in (args or [])])
+        return _adb_server(timeout=float(timeout)).shell(serial, cmd, timeout=float(timeout))
+    except Exception:
+        adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
+        if isinstance(args, str):
+            return _run([adb, "-s", serial, "shell", args], timeout=timeout)
+        return _run([adb, "-s", serial, "shell"] + list(args or []), timeout=timeout)
+
+
+def adb_pm_path(serial: str, pkg: str, timeout: int = 6) -> str:
+    out = adb_shell_serial(serial, ["pm", "path", str(pkg or "").strip()], timeout=timeout)
+    remote = ""
+    for line in (out or "").splitlines():
+        s = (line or "").strip()
+        if s.startswith("package:"):
+            remote = s.split(":", 1)[1].strip()
+            break
+    return remote
+
+
+def adb_pull_file_serial(serial: str, remote: str, local: str, timeout: int = 600) -> Tuple[bool, str]:
+    try:
+        if not serial:
+            return False, "未检测到设备"
+        if not _ensure_adb_server_running():
+            return False, "ADB server 未就绪"
+        _adb_server(timeout=float(timeout)).sync_pull_file(serial, remote, local, timeout=float(timeout))
+        return True, "完成"
+    except Exception as e:
+        adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
+        try:
+            out = _run([adb, "-s", serial, "pull", remote, local], timeout=timeout)
+            return True, out or "完成"
+        except Exception:
+            return False, str(e)
+
+
+def adb_install_apk(serial: str, apk_path: str, *, reinstall: bool = False, downgrade: bool = False, timeout: int = 600) -> Tuple[bool, str]:
+    """Install APK without invoking `adb install` subprocess.
+
+    Strategy:
+    - SYNC push to /data/local/tmp/<uuid>.apk
+    - pm install [-r] [-d] <remote>
+    - cleanup remote file (best-effort)
+    """
+    p = str(apk_path or "").strip()
+    if not p:
+        return False, "APK 路径为空"
+    try:
+        if not serial:
+            return False, "未检测到设备"
+        if not _ensure_adb_server_running():
+            return False, "ADB server 未就绪"
+
+        remote = f"/data/local/tmp/{uuid.uuid4().hex}.apk"
+        _adb_server(timeout=float(timeout)).sync_push_file(serial, p, remote, timeout=float(timeout))
+
+        flags: list[str] = []
+        if reinstall:
+            flags.append("-r")
+        if downgrade:
+            flags.append("-d")
+
+        cmd = ["pm", "install"] + flags + [remote]
+        out = adb_shell_serial(serial, cmd, timeout=timeout)
+        ok = ("Success" in (out or "")) and ("Failure" not in (out or ""))
+        # cleanup (ignore failure)
+        try:
+            adb_shell_serial(serial, ["rm", "-f", remote], timeout=10)
+        except Exception:
+            pass
+        return ok, (out or "").strip()
+    except Exception as e:
+        return False, str(e)
 
 
 def path_exists(path: str) -> bool:
@@ -631,26 +1093,86 @@ def stat_path(path: str) -> dict:
 
 def pull_path(remote: str, local_dest: str) -> Tuple[bool, str]:
     """adb pull remote local_dest (支持文件或目录)."""
-    adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
     try:
-        out = _run([adb, "pull", remote, local_dest], timeout=3600)
-        if out is None:
-            out = ""
-        return True, out or "完成"
+        serials = list_devices()
+        serial = serials[0] if serials else ""
+        if not serial or not _ensure_adb_server_running():
+            raise RuntimeError("未检测到设备")
+
+        # Try directory listing; if it fails, treat as file.
+        try:
+            entries = _adb_server(timeout=20.0).sync_list(serial, remote, timeout=20.0)
+        except Exception:
+            entries = []
+
+        if entries:
+            import os
+            os.makedirs(local_dest, exist_ok=True)
+            for e in entries:
+                name = (e.get('name') or '').strip()
+                if not name or name in ('.', '..'):
+                    continue
+                rpath = (remote.rstrip('/') + '/' + name) if remote not in ('/', '') else ('/' + name)
+                mode = int(e.get('mode') or 0)
+                is_dir = bool(mode & 0o040000)
+                lpath = str(Path(local_dest) / name)
+                if is_dir:
+                    ok, msg = pull_path(rpath, lpath)
+                    if not ok:
+                        return False, msg
+                else:
+                    _adb_server(timeout=3600.0).sync_pull_file(serial, rpath, lpath, timeout=3600.0)
+            return True, "完成"
+
+        _adb_server(timeout=3600.0).sync_pull_file(serial, remote, local_dest, timeout=3600.0)
+        return True, "完成"
     except Exception as e:
-        return False, str(e)
+        adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
+        try:
+            out = _run([adb, "pull", remote, local_dest], timeout=3600)
+            if out is None:
+                out = ""
+            return True, out or "完成"
+        except Exception:
+            return False, str(e)
 
 
 def push_path(local_path: str, remote_dir: str) -> Tuple[bool, str]:
     """adb push local_path remote_dir (支持文件或目录)."""
-    adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
     try:
-        out = _run([adb, "push", local_path, remote_dir], timeout=3600)
-        if out is None:
-            out = ""
-        return True, out or "完成"
+        serials = list_devices()
+        serial = serials[0] if serials else ""
+        if not serial or not _ensure_adb_server_running():
+            raise RuntimeError("未检测到设备")
+
+        lp = Path(local_path)
+        if not lp.exists():
+            return False, "本地文件不存在"
+
+        if lp.is_dir():
+            mkdir_p(remote_dir)
+            for child in lp.iterdir():
+                dst = (remote_dir.rstrip('/') + '/' + child.name) if remote_dir not in ('/', '') else ('/' + child.name)
+                ok, msg = push_path(str(child), dst)
+                if not ok:
+                    return False, msg
+            return True, "完成"
+
+        r = remote_dir
+        if r.endswith('/') or r in ('/', ''):
+            r = (r.rstrip('/') + '/' + lp.name) if r not in ('/', '') else ('/' + lp.name)
+
+        _adb_server(timeout=3600.0).sync_push_file(serial, str(lp), r, timeout=3600.0)
+        return True, "完成"
     except Exception as e:
-        return False, str(e)
+        adb = str(ADB_BIN) if ADB_BIN.exists() else "adb"
+        try:
+            out = _run([adb, "push", local_path, remote_dir], timeout=3600)
+            if out is None:
+                out = ""
+            return True, out or "完成"
+        except Exception:
+            return False, str(e)
 
 
 def get_board_id(serial: str) -> str:

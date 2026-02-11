@@ -30,3 +30,8 @@
 2026-01-10 09:46:13	X5A10AWCVt57Dp	com.app.jm	uninstall
 2026-01-10 09:46:20	X5A10AWCVt57Dp	com.tencent.jm	uninstall
 2026-01-10 09:46:37	X5A10AWCVt57Dp	-	install 秋落插件-最新.apk
+2026-02-04 02:55:52	MJ6XEITWEUBMPN69	-	install Netease IOS 1.2.apk
+2026-02-04 02:56:09	MJ6XEITWEUBMPN69	-	install SKY·鲸鸣_0.6.5.apk
+2026-02-04 03:10:59	MJ6XEITWEUBMPN69	-	install 光遇0.15.3.APK
+2026-02-05 01:58:15	MJ6XEITWEUBMPN69	-	install 秋落插件-最新.apk
+2026-02-11 23:09:18	MJ6XEITWEUBMPN69	-	install 水一插件-已混淆.apk

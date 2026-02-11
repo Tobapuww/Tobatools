@@ -1,9 +1,6 @@
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtCore import QThread, QTimer, QSettings, Qt
 import webbrowser
-import os
-import subprocess
-import time
 from qfluentwidgets import FluentWindow, NavigationItemPosition, FluentIcon, MessageBox
 
 from app.widgets.flash_tab import FlashTab
@@ -25,6 +22,9 @@ class FluentMainWindow(FluentWindow):
         super().__init__(parent)
         self._startup_upd_thread = None
         self._startup_upd_worker = None
+        self._init_queue = []
+        self._init_queue_i = 0
+        self._closing = False
         try:
             self.setWindowTitle("拖把工具箱")
         except Exception:
@@ -50,7 +50,15 @@ class FluentMainWindow(FluentWindow):
             self.resize(877, 1422)
         except Exception:
             pass
-        self._init_pages()
+        # Defer heavy tab construction to after window creation to avoid UI freeze.
+        # Pages will be created incrementally to keep the event loop responsive.
+        try:
+            QTimer.singleShot(0, self._init_pages_async)
+        except Exception:
+            try:
+                self._init_pages_async()
+            except Exception:
+                pass
         # 让左侧导航也使用亚克力材质（Win11下配合 Mica 更统一）
         try:
             self.navigationInterface.setAcrylicEnabled(True)
@@ -104,66 +112,70 @@ class FluentMainWindow(FluentWindow):
         except Exception:
             pass
 
-    def _init_pages(self):
-        self.flash_tab = FlashTab(); self.flash_tab.setObjectName("flash")
-        self.firmware_tab = FirmwareTab(); self.firmware_tab.setObjectName("firmware")
-        self.file_tab = FileManagerTab(); self.file_tab.setObjectName("file_manager")
-        self.backup_tab = BackupTab(); self.backup_tab.setObjectName("backup")
-        self.misc_tab = MiscTab(); self.misc_tab.setObjectName("misc")
-        self.info_tab = DeviceInfoTab(); self.info_tab.setObjectName("device_info")
-        self.settings_tab = SettingsTab(); self.settings_tab.setObjectName("settings")
-        self.scrcpy_tab = ScrcpyTab(); self.scrcpy_tab.setObjectName("scrcpy")
-        self.root_tab = RootTab(); self.root_tab.setObjectName("root")
-        self.software_tab = SoftwareManagerTab(); self.software_tab.setObjectName("software_manager")
+    def _init_pages_async(self):
+        try:
+            self._init_queue = [
+                ("info_tab", DeviceInfoTab, "device_info", FluentIcon.INFO, "设备信息", NavigationItemPosition.TOP),
+                ("flash_tab", FlashTab, "flash", getattr(FluentIcon, "COMMAND_PROMPT", FluentIcon.SEND), "刷机", NavigationItemPosition.TOP),
+                ("root_tab", RootTab, "root", getattr(FluentIcon, "IOT", FluentIcon.INFO), "一键ROOT", NavigationItemPosition.TOP),
+                ("scrcpy_tab", ScrcpyTab, "scrcpy", getattr(FluentIcon, "VIDEO", FluentIcon.PLAY), "投屏", NavigationItemPosition.TOP),
+                ("software_tab", SoftwareManagerTab, "software_manager", getattr(FluentIcon, "APPLICATION", FluentIcon.BASKETBALL), "软件管理", NavigationItemPosition.TOP),
+                ("file_tab", FileManagerTab, "file_manager", FluentIcon.FOLDER, "文件管理", NavigationItemPosition.TOP),
+                ("backup_tab", BackupTab, "backup", getattr(FluentIcon, "SAVE", FluentIcon.FOLDER), "基带备份", NavigationItemPosition.TOP),
+                ("misc_tab", MiscTab, "misc", getattr(FluentIcon, "TILES", FluentIcon.SETTING), "杂项", NavigationItemPosition.TOP),
+                ("firmware_tab", FirmwareTab, "firmware", FluentIcon.DOWNLOAD, "固件下载", NavigationItemPosition.TOP),
+                ("settings_tab", SettingsTab, "settings", FluentIcon.SETTING, "设置", NavigationItemPosition.BOTTOM),
+            ]
+            self._init_queue_i = 0
+            self._init_pages_step()
+        except Exception:
+            pass
 
-        # 从上到下：设备信息、刷机、投屏、杂项、设置
-        self.addSubInterface(self.info_tab, FluentIcon.INFO, "设备信息")
-        # 刷机使用命令提示符图标
+    def _init_pages_step(self):
         try:
-            self.addSubInterface(self.flash_tab, FluentIcon.COMMAND_PROMPT, "刷机")
-        except Exception:
-            self.addSubInterface(self.flash_tab, FluentIcon.SEND, "刷机")
-        # 一键ROOT 
-        try:
-            self.addSubInterface(self.root_tab, FluentIcon.IOT, "一键ROOT")
-        except Exception:
-            self.addSubInterface(self.root_tab, FluentIcon.INFO, "一键ROOT")
-        # 投屏（scrcpy）
-        try:
-            self.addSubInterface(self.scrcpy_tab, FluentIcon.VIDEO, "投屏")
-        except Exception:
-            self.addSubInterface(self.scrcpy_tab, FluentIcon.PLAY, "投屏")
-        # 软件管理
-        try:
-            self.addSubInterface(self.software_tab, FluentIcon.APPLICATION, "软件管理")
-        except Exception:
-            self.addSubInterface(self.software_tab, FluentIcon.BASKETBALL, "软件管理")
-        # 文件管理（置于杂项上方）
-        try:
-            self.addSubInterface(self.file_tab, FluentIcon.FOLDER, "文件管理")
-        except Exception:
-            self.addSubInterface(self.file_tab, FluentIcon.FOLDER, "文件管理")
-        # 备份还原
-        try:
-            self.addSubInterface(self.backup_tab, FluentIcon.SAVE, "基带备份")
-        except Exception:
-            self.addSubInterface(self.backup_tab, FluentIcon.FOLDER, "基带备份")
-        # 杂项使用 Tiles 图标
-        try:
-            self.addSubInterface(self.misc_tab, FluentIcon.TILES, "杂项")
-        except Exception:
-            self.addSubInterface(self.misc_tab, FluentIcon.SETTING, "杂项")
-        # 固件下载中心
-        try:
-            self.addSubInterface(self.firmware_tab, FluentIcon.DOWNLOAD, "固件下载")
-        except Exception:
-            self.addSubInterface(self.firmware_tab, FluentIcon.DOWNLOAD, "固件下载")
-        # 设置放到底部
-        self.addSubInterface(self.settings_tab, FluentIcon.SETTING, "设置", position=NavigationItemPosition.BOTTOM)
+            try:
+                if getattr(self, '_closing', False):
+                    return
+            except Exception:
+                pass
+            if self._init_queue_i >= len(self._init_queue):
+                try:
+                    if getattr(self, 'info_tab', None) is not None:
+                        self.navigationInterface.setCurrentItem(self.info_tab)
+                except Exception:
+                    pass
+                return
 
-        # 其余页面保留在底部（仅设置）
+            attr, ctor, obj_name, icon, title, pos = self._init_queue[self._init_queue_i]
+            self._init_queue_i += 1
 
-        self.navigationInterface.setCurrentItem(self.info_tab)
+            w = ctor()
+            try:
+                w.setObjectName(obj_name)
+            except Exception:
+                pass
+            try:
+                setattr(self, attr, w)
+            except Exception:
+                pass
+
+            try:
+                if pos == NavigationItemPosition.BOTTOM:
+                    self.addSubInterface(w, icon, title, position=NavigationItemPosition.BOTTOM)
+                else:
+                    self.addSubInterface(w, icon, title)
+            except Exception:
+                try:
+                    self.addSubInterface(w, icon, title)
+                except Exception:
+                    pass
+
+            try:
+                QTimer.singleShot(0, self._init_pages_step)
+            except Exception:
+                self._init_pages_step()
+        except Exception:
+            pass
 
     def _check_update_on_launch(self):
         try:
@@ -214,6 +226,10 @@ class FluentMainWindow(FluentWindow):
             pass
 
     def closeEvent(self, event):
+        try:
+            self._closing = True
+        except Exception:
+            pass
         for w in [
             getattr(self, 'flash_tab', None),
             getattr(self, 'firmware_tab', None),
@@ -230,20 +246,6 @@ class FluentMainWindow(FluentWindow):
                     w.cleanup()
             except Exception:
                 pass
-        # 额外保险：在 Windows 上结束 adb/fastboot 以避免残留线程/控制台
-        try:
-            if os.name == 'nt':
-                for exe in ('adb.exe', 'fastboot.exe'):
-                    try:
-                        subprocess.Popen([
-                            'taskkill', '/F', '/T', '/IM', exe
-                        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                    except Exception:
-                        pass
-                # 给子进程处理一点时间
-                time.sleep(0.2)
-        except Exception:
-            pass
         # 清理启动更新线程
         try:
             t = getattr(self, '_startup_upd_thread', None)

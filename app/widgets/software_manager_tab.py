@@ -110,52 +110,69 @@ class _AdbCmdWorker(QObject):
     output = Signal(str)
     finished = Signal(int)
 
-    def __init__(self, cmd: list[str]):
+    def __init__(self, serial: str, args: list[str], op_desc: str | None = None):
         super().__init__()
-        self._cmd = cmd
-        self._proc: subprocess.Popen | None = None
+        self._serial = str(serial or '').strip()
+        self._args = list(args or [])
+        self._op_desc = op_desc
         self._stop = False
 
     def stop(self):
         self._stop = True
-        try:
-            if self._proc is not None:
-                self._proc.terminate()
-        except Exception:
-            pass
+        return
 
     def run(self):
         code = -1
         try:
-            popen_kwargs = {}
-            try:
-                if os.name == 'nt':
-                    si = subprocess.STARTUPINFO()
-                    si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                    popen_kwargs = {'startupinfo': si, 'creationflags': subprocess.CREATE_NO_WINDOW}
-            except Exception:
-                pass
+            if not self._serial:
+                self.output.emit('未检测到设备')
+                code = 2
+                return
 
-            self.output.emit("启动命令: " + " ".join(self._cmd))
-            self._proc = subprocess.Popen(
-                self._cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                universal_newlines=True,
-                encoding='utf-8',
-                errors='replace',
-                **popen_kwargs,
-            )
-            assert self._proc.stdout is not None
-            for line in iter(self._proc.stdout.readline, ''):
-                if self._stop:
-                    break
-                self.output.emit(line.rstrip('\r\n'))
-            code = self._proc.wait()
-        except FileNotFoundError:
-            self.output.emit("未找到 adb，请确认 bin/adb.exe 存在或系统 PATH 已配置")
-            code = -1
+            if self._op_desc:
+                try:
+                    self.output.emit(self._op_desc)
+                except Exception:
+                    pass
+
+            if self._args and self._args[0] == 'install':
+                # install [-r] [-d] <apk>
+                reinstall = ('-r' in self._args)
+                downgrade = ('-d' in self._args)
+                apk_path = ''
+                for a in self._args[1:]:
+                    if not str(a).startswith('-'):
+                        apk_path = str(a)
+                ok, out = adb_service.adb_install_apk(self._serial, apk_path, reinstall=reinstall, downgrade=downgrade, timeout=600)
+                if out:
+                    for line in str(out).splitlines():
+                        self.output.emit(line.rstrip('\r\n'))
+                code = 0 if ok else 1
+                return
+
+            if self._args and self._args[0] == 'pull':
+                # pull <remote> <local>
+                remote = self._args[1] if len(self._args) > 1 else ''
+                local = self._args[2] if len(self._args) > 2 else ''
+                ok, out = adb_service.adb_pull_file_serial(self._serial, str(remote), str(local), timeout=600)
+                if out:
+                    for line in str(out).splitlines():
+                        self.output.emit(line.rstrip('\r\n'))
+                code = 0 if ok else 1
+                return
+
+            # Default: treat as adb shell invocation.
+            if self._args and self._args[0] == 'shell':
+                cmd_args = self._args[1:]
+            else:
+                cmd_args = self._args
+            out = adb_service.adb_shell_serial(self._serial, cmd_args, timeout=20)
+            if out:
+                for line in str(out).splitlines():
+                    if self._stop:
+                        break
+                    self.output.emit(line.rstrip('\r\n'))
+            code = 0
         except Exception as e:
             self.output.emit(f"ADB 执行异常: {e}")
             code = -1
@@ -170,62 +187,84 @@ class _ForegroundWorker(QObject):
         super().__init__()
         self._busy = False
 
-    def fetch(self, adb: str, serial: str):
+    def fetch(self, serial: str):
         if self._busy:
             return
         self._busy = True
         pkg = ''
         act = ''
         try:
-            # 优化：只使用一个命令，减少开销
-            # 使用 dumpsys activity top 代替 activities，输出更少
-            try:
-                r = subprocess.run(
-                    [adb, '-s', serial, 'shell', 'dumpsys', 'activity', 'top'],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    text=True,
-                    encoding='utf-8',
-                    errors='replace',
-                    timeout=2,  # 从3秒减少到2秒
-                    **_silent_popen_kwargs(),
-                )
-                out = r.stdout or ""
-                # 只读取前100行，避免解析大量数据
-                lines = out.splitlines()[:100]
-                for line in lines:
-                    s = line.strip()
-                    if 'ACTIVITY' in s and '/' in s:
-                        # 提取 ACTIVITY 行中的包名/Activity
-                        for tok in s.split():
-                            if '/' in tok and '.' in tok and tok.count('/') == 1:
-                                act = tok.strip('}').strip()
-                                if not act.startswith('u0'):
-                                    pkg = act.split('/', 1)[0]
-                                    break
-                        if pkg:
-                            break
-            except subprocess.TimeoutExpired:
-                # 超时时不再尝试fallback，直接返回空
-                pass
-            except Exception:
-                pass
+            # Strategy (fast + robust across Android versions):
+            # 1) dumpsys window windows: parse mCurrentFocus / mFocusedApp
+            # 2) dumpsys activity activities: parse mResumedActivity
+            # 3) dumpsys activity top (legacy)
+            # NOTE: Do NOT rely on grep/head existing in device shell.
+            import re
+
+            def _normalize_component(p: str, a: str) -> tuple[str, str]:
+                p = (p or '').strip()
+                a = (a or '').strip()
+                if not p or not a:
+                    return '', ''
+                if a.startswith('.'):
+                    a = p + a
+                return p, f"{p}/{a}"
+
+            # Patterns seen across devices:
+            # - mCurrentFocus=Window{.. u0 com.pkg/com.pkg.Act}
+            # - mFocusedApp=AppWindowToken{.. token=Token{.. ActivityRecord{.. com.pkg/.Act ..}}}
+            # - mResumedActivity: ActivityRecord{.. com.pkg/.Act ..}
+            pat_comp = re.compile(r"\b(u\d+\s+)?(?P<pkg>[a-zA-Z0-9_\.]+)\/(?P<act>[a-zA-Z0-9_\.$]+)")
+            pat_resumed = re.compile(r"mResumedActivity\s*:\s*ActivityRecord\{[^}]*\s(?P<pkg>[a-zA-Z0-9_\.]+)\/(?P<act>[a-zA-Z0-9_\.$]+)")
+            pat_focus = re.compile(r"m(CurrentFocus|FocusedApp)\s*=.*?\s(?P<pkg>[a-zA-Z0-9_\.]+)\/(?P<act>[a-zA-Z0-9_\.$]+)")
+
+            def _scan_lines_for_component(text: str) -> tuple[str, str]:
+                if not text:
+                    return '', ''
+                lines = (text or '').splitlines()
+                for raw in lines[:400]:
+                    s = (raw or '').strip()
+                    if not s:
+                        continue
+                    m = pat_focus.search(s)
+                    if m:
+                        return _normalize_component(m.group('pkg'), m.group('act'))
+                    m2 = pat_resumed.search(s)
+                    if m2:
+                        return _normalize_component(m2.group('pkg'), m2.group('act'))
+                    # fallback: any pkg/act token on this line
+                    if 'mCurrentFocus' in s or 'mFocusedApp' in s or 'mResumedActivity' in s:
+                        m3 = pat_comp.search(s)
+                        if m3:
+                            return _normalize_component(m3.group('pkg'), m3.group('act'))
+                return '', ''
+
+            if not pkg:
+                try:
+                    out1 = adb_service.adb_shell_serial(serial, ['dumpsys', 'window', 'windows'], timeout=2) or ''
+                    pkg, act = _scan_lines_for_component(out1)
+                except Exception:
+                    pass
+
+            if not pkg:
+                try:
+                    out2 = adb_service.adb_shell_serial(serial, ['dumpsys', 'activity', 'activities'], timeout=2) or ''
+                    pkg, act = _scan_lines_for_component(out2)
+                except Exception:
+                    pass
+
+            if not pkg:
+                try:
+                    out3 = adb_service.adb_shell_serial(serial, ['dumpsys', 'activity', 'top'], timeout=2) or ''
+                    pkg, act = _scan_lines_for_component(out3)
+                except Exception:
+                    pass
 
             # 如果top命令失败，尝试更轻量的方法
             if not pkg:
                 try:
                     # 使用 am stack list 命令，输出更简洁
-                    r = subprocess.run(
-                        [adb, '-s', serial, 'shell', 'am', 'stack', 'list'],
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT,
-                        text=True,
-                        encoding='utf-8',
-                        errors='replace',
-                        timeout=1,
-                        **_silent_popen_kwargs(),
-                    )
-                    out = r.stdout or ""
+                    out = adb_service.adb_shell_serial(serial, ['am', 'stack', 'list'], timeout=1) or ""
                     for line in out.splitlines()[:20]:  # 只读前20行
                         if 'topActivity' in line or 'TaskRecord' in line:
                             for tok in line.split():
@@ -240,13 +279,13 @@ class _ForegroundWorker(QObject):
         finally:
             self._busy = False
             try:
-                self.result.emit((pkg or '').strip(), (act or '').strip())
+                self.result.emit(pkg, act)
             except Exception:
                 pass
 
 
 class SoftwareManagerTab(QWidget):
-    _fg_request = Signal(str, str)  # adb, serial
+    _fg_request = Signal(str)  # serial
 
     def __init__(self):
         super().__init__()
@@ -281,12 +320,12 @@ class SoftwareManagerTab(QWidget):
         self._current_pkg: str = ""
         self._current_activity: str = ""
         self._timer: QTimer | None = None
-        self._auto_refresh_enabled: bool = False  # 默认关闭自动刷新
+        self._auto_refresh_enabled: bool = True  # 默认开启自动刷新
 
         self._build_ui()
         self._start_foreground_worker()
-        # 不再自动启动定时器，由用户手动控制
-        # self._start_foreground_timer()
+        # 前台实时刷新改为首次展示时启动，避免启动阶段阻塞/卡顿
+        self._did_first_show = False
 
         try:
             app = QApplication.instance()
@@ -294,6 +333,35 @@ class SoftwareManagerTab(QWidget):
                 app.aboutToQuit.connect(self.cleanup)
         except Exception:
             pass
+
+    def showEvent(self, event):
+        try:
+            if not getattr(self, '_did_first_show', False):
+                self._did_first_show = True
+                try:
+                    # 同步 UI 状态，但不弹 toast
+                    try:
+                        self.chk_auto_refresh.blockSignals(True)
+                        self.chk_auto_refresh.setChecked(bool(self._auto_refresh_enabled))
+                    finally:
+                        self.chk_auto_refresh.blockSignals(False)
+                except Exception:
+                    pass
+
+                if self._auto_refresh_enabled:
+                    try:
+                        if self._timer is None:
+                            self._timer = QTimer(self)
+                            self._timer.setInterval(1000)
+                            self._timer.timeout.connect(self._refresh_foreground_now)
+                        if not self._timer.isActive():
+                            self._timer.start()
+                        QTimer.singleShot(150, self._refresh_foreground_now)
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+        return super().showEvent(event)
 
     # -------- UI --------
     def _build_ui(self):
@@ -816,15 +884,6 @@ class SoftwareManagerTab(QWidget):
             return ''
         return serials[0]
 
-    def _resolve_adb(self) -> str:
-        try:
-            adb = adb_service.ADB_BIN
-            if adb and adb.exists():
-                return str(adb)
-        except Exception:
-            pass
-        return 'adb'
-
     def _run_adb_cmd(self, args: list[str], op_desc: str | None = None):
         if self._thread and self._thread.isRunning():
             self._toast('info', '提示', '任务正在运行中，请稍后…')
@@ -842,14 +901,13 @@ class SoftwareManagerTab(QWidget):
                 self._toast('warn', '提示', f'检测到多个设备({len(serials)})，请仅保留一个设备后再操作')
             return
 
-        adb = self._resolve_adb()
-        cmd = [adb, '-s', serial] + args
+        cmd_args = list(args or [])
 
         self._pause_foreground_timer()
         self._pending_op_desc = op_desc
 
         self._thread = QThread(self)
-        self._worker = _AdbCmdWorker(cmd)
+        self._worker = _AdbCmdWorker(serial, cmd_args, op_desc=op_desc)
         self._worker.moveToThread(self._thread)
         self._thread.started.connect(self._worker.run)
         self._worker.output.connect(self._noop)
@@ -1143,7 +1201,6 @@ class SoftwareManagerTab(QWidget):
                 self._toast('warn', '提示', f'检测到多个设备({len(serials)})，请仅保留一个设备后再操作')
             return
 
-        adb = self._resolve_adb()
         show_system = False
         try:
             show_system = bool(self.cb_show_system_apps.isChecked())
@@ -1153,11 +1210,10 @@ class SoftwareManagerTab(QWidget):
         args = ['shell', 'pm', 'list', 'packages']
         if not show_system:
             args.append('-3')
-        cmd = [adb, '-s', serial] + args
 
         self._apps_out = []
         self._apps_thread = QThread(self)
-        self._apps_worker = _AdbCmdWorker(cmd)
+        self._apps_worker = _AdbCmdWorker(serial, args)
         self._apps_worker.moveToThread(self._apps_thread)
         self._apps_thread.started.connect(self._apps_worker.run)
         self._apps_worker.output.connect(self._on_apps_output)
@@ -1221,12 +1277,11 @@ class SoftwareManagerTab(QWidget):
         serial = self._get_default_serial()
         if not serial:
             return
-        adb = self._resolve_adb()
-        cmd = [adb, '-s', serial, 'shell', 'dumpsys', 'package', pkg]
+        cmd = ['shell', 'dumpsys', 'package', pkg]
         self._label_pkg = pkg
         self._label_out = []
         self._label_thread = QThread(self)
-        self._label_worker = _AdbCmdWorker(cmd)
+        self._label_worker = _AdbCmdWorker(serial, cmd)
         self._label_worker.moveToThread(self._label_thread)
         self._label_thread.started.connect(self._label_worker.run)
         self._label_worker.output.connect(self._on_label_output)
@@ -1311,15 +1366,14 @@ class SoftwareManagerTab(QWidget):
             else:
                 self._toast('warn', '提示', f'检测到多个设备({len(serials)})，请仅保留一个设备后再操作')
             return
-        adb = self._resolve_adb()
-        cmd = [adb, '-s', serial, 'shell', 'dumpsys', 'package', pkg]
+        cmd = ['shell', 'dumpsys', 'package', pkg]
         self._disabled_out = []
         try:
             self.list_disabled.clear()
         except Exception:
             pass
         self._disabled_thread = QThread(self)
-        self._disabled_worker = _AdbCmdWorker(cmd)
+        self._disabled_worker = _AdbCmdWorker(serial, cmd)
         self._disabled_worker.moveToThread(self._disabled_thread)
         self._disabled_thread.started.connect(self._disabled_worker.run)
         self._disabled_worker.output.connect(self._on_disabled_output)
@@ -1504,36 +1558,18 @@ class SoftwareManagerTab(QWidget):
                 self._toast('warn', '提示', f'检测到多个设备({len(serials)})，请仅保留一个设备后再操作')
             return
 
-        adb = self._resolve_adb()
-        # get remote apk path
+        remote = ''
         try:
-            res = subprocess.run(
-                [adb, '-s', serial, 'shell', 'pm', 'path', pkg],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                encoding='utf-8',
-                errors='replace',
-                timeout=6,
-            )
-            out = (res.stdout or '').strip()
+            remote = adb_service.adb_pm_path(serial, pkg, timeout=6)
         except Exception as e:
             self._toast('warn', '错误', f'获取 APK 路径失败: {e}')
             return
-
-        remote = ''
-        for line in out.splitlines():
-            line = line.strip()
-            if line.startswith('package:'):
-                remote = line.split(':', 1)[1].strip()
-                break
         if not remote:
             self._toast('warn', '提示', f'未找到 {pkg} 的安装路径')
             return
 
         self._write_oplog(serial, pkg, f"pull-apk {dst}")
-        cmd = [adb, '-s', serial, 'pull', remote, dst]
-        self._run_host_cmd(cmd, op_desc='提取APK')
+        self._run_adb_cmd(['pull', remote, dst], op_desc='提取APK')
 
     def _normalize_component(self, pkg: str, act: str) -> str:
         s = (act or '').strip()
@@ -1596,29 +1632,17 @@ class SoftwareManagerTab(QWidget):
             # Disable component then force-stop to make effect visible immediately
             self._run_adb_cmd(['shell', 'sh', '-c', f'pm disable-user --user 0 {comp} && am force-stop {pkg}'], op_desc='禁用Activity')
 
-    def _run_host_cmd(self, cmd: list[str], op_desc: str | None = None):
-        if self._thread and self._thread.isRunning():
-            self._toast('info', '提示', '任务正在运行中，请稍后…')
-            return
-
-        self._pause_foreground_timer()
-        self._pending_op_desc = op_desc
-        self._thread = QThread(self)
-        self._worker = _AdbCmdWorker(cmd)
-        self._worker.moveToThread(self._thread)
-        self._thread.started.connect(self._worker.run)
-        self._worker.output.connect(self._noop)
-        self._worker.finished.connect(self._on_cmd_finished)
-        self._worker.finished.connect(self._thread.quit)
-        self._worker.finished.connect(self._worker.deleteLater)
-        self._thread.finished.connect(self._thread.deleteLater)
-        self._thread.finished.connect(self._on_thread_finished)
-        self._thread.start()
-
     def _toggle_auto_refresh(self, state):
         """切换自动刷新状态"""
         self._auto_refresh_enabled = (state == Qt.CheckState.Checked.value or state == 2)
         
+        # Avoid toasting when change is not from user interaction.
+        user_initiated = True
+        try:
+            user_initiated = bool(getattr(self, 'chk_auto_refresh', None) and self.chk_auto_refresh.hasFocus())
+        except Exception:
+            user_initiated = True
+
         if self._auto_refresh_enabled:
             # 开启自动刷新
             if self._timer is None:
@@ -1629,30 +1653,32 @@ class SoftwareManagerTab(QWidget):
                 self._timer.start()
                 # 立即执行一次
                 QTimer.singleShot(100, self._refresh_foreground_now)
-            try:
-                InfoBar.success(
-                    "自动刷新",
-                    "已开启自动刷新，每3秒更新一次",
-                    parent=self,
-                    position=InfoBarPosition.TOP,
-                    duration=2000
-                )
-            except Exception:
-                pass
+            if user_initiated:
+                try:
+                    InfoBar.success(
+                        "自动刷新",
+                        "已开启自动刷新，每3秒更新一次",
+                        parent=self,
+                        position=InfoBarPosition.TOP,
+                        duration=2000
+                    )
+                except Exception:
+                    pass
         else:
             # 关闭自动刷新
             if self._timer is not None and self._timer.isActive():
                 self._timer.stop()
-            try:
-                InfoBar.info(
-                    "自动刷新",
-                    "已关闭自动刷新，点击“立即刷新”按钮手动获取",
-                    parent=self,
-                    position=InfoBarPosition.TOP,
-                    duration=2000
-                )
-            except Exception:
-                pass
+            if user_initiated:
+                try:
+                    InfoBar.info(
+                        "自动刷新",
+                        "已关闭自动刷新，点击“立即刷新”按钮手动获取",
+                        parent=self,
+                        position=InfoBarPosition.TOP,
+                        duration=2000
+                    )
+                except Exception:
+                    pass
     
     def _start_foreground_timer(self):
         """仅在用户开启自动刷新时调用"""
@@ -1700,8 +1726,7 @@ class SoftwareManagerTab(QWidget):
 
         if self._fg_worker is None:
             return
-        adb = self._resolve_adb()
-        self._fg_request.emit(adb, serial)
+        self._fg_request.emit(serial)
 
     def cleanup(self):
         # 优化清理顺序，先停止定时器，再清理线程
