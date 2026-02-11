@@ -1,7 +1,7 @@
 from typing import Dict
 import requests
 
-REGISTRY_URL = "https://gitee.com/AQ16/Resilience/raw/Mellifluous/.github/workflows/Wanderlust"
+REGISTRY_URL = "https://gitee.com"
 
 
 def check_registration(serial: str) -> Dict:

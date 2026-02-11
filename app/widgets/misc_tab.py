@@ -431,8 +431,8 @@ class MiscTab(QWidget):
         self.card_tee = PushSettingCard(
             "修复",
             FluentIcon.FINGERPRINT if hasattr(FluentIcon, "FINGERPRINT") else FluentIcon.HELP,
-            "修复 TEE（可信执行环境）",
-            "修复 TEE 假死导致的无法绑定国铁/开启无敌裸奔环境",
+            "欧加真高通机型强行烧录可信执行环境TEE（实验性）",
+            "通过烧录修复 TEE 假死导致的无法绑定国铁/开启无敌裸奔环境",
             self.advanced_group,
         )
         self.card_tee.clicked.connect(self._repair_tee)
