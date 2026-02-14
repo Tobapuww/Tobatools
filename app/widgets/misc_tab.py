@@ -10,6 +10,8 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, QFileDialog,
     QLabel, QComboBox, QLineEdit, QMessageBox, QGridLayout, QDialog, QCheckBox
 )
+
+from app.logic.payload_extractor import PayloadExtractor
 from qfluentwidgets import (
     CardWidget, PrimaryPushButton, PushButton, TitleLabel, FluentIcon,
     InfoBar, InfoBarPosition, MessageDialog, SmoothScrollArea, ComboBox,
@@ -380,7 +382,7 @@ class MiscTab(QWidget):
         self.card_payload = PushSettingCard(
             "打开",
             FluentIcon.ZIP_FOLDER if hasattr(FluentIcon, "ZIP_FOLDER") else FluentIcon.FOLDER,
-            "payload.bin 处理",
+            "Payload.bin 处理",
             "在线或本地提取 payload.bin，支持全量和指定分区",
             self.common_group,
         )
@@ -1432,57 +1434,26 @@ class _PayloadWorker(QObject):
         self.output_dir = output_dir
         self.partitions = partitions
         self._stop = False
+        self._extractor = None
     
     def stop(self):
         self._stop = True
+        try:
+            if self._extractor is not None:
+                self._extractor.stop()
+        except Exception:
+            pass
     
     def run(self):
         try:
-            import sys
-            cmd = [sys.executable, '--payload-dumper']
-            
-            # 添加分区参数
-            if self.partitions:
-                cmd.extend(['--partitions', self.partitions])
-            
-            # 添加输出目录
-            cmd.extend(['--out', self.output_dir])
-            
-            # 添加源文件/URL
-            cmd.append(self.source)
-            
-            self.log.emit(f"执行命令: {' '.join(cmd)}")
-            self.log.emit("")
-            
-            # 执行命令
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                encoding='utf-8',
-                errors='replace'
-            )
-            
-            # 实时输出日志
-            while True:
-                if self._stop:
-                    process.terminate()
-                    return
-                
-                line = process.stdout.readline()
-                if not line and process.poll() is not None:
-                    break
-                
-                if line:
-                    self.log.emit(line.rstrip())
-            
-            # 检查退出码
-            returncode = process.wait()
-            if returncode == 0:
+            self._extractor = PayloadExtractor(log_callback=self.log.emit)
+            ok = self._extractor.extract(self.source, self.output_dir, self.partitions)
+            if ok:
                 self.finished.emit()
             else:
-                self.error.emit(f"进程退出码: {returncode}")
+                self.error.emit("提取失败")
                 
         except Exception as e:
             self.error.emit(str(e))
+        finally:
+            self._extractor = None
