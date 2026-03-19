@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt
 from qfluentwidgets import MessageBox
 
 ABOUT_TEXT = (
-    "拖把工具箱0.3.5公开版\n\n"
+    "拖把工具箱0.9公开版\n\n"
     "感谢以下贡献者与支持：\n\n"
     "• 移植包开发者&工具箱刷机逻辑：@秋詞、@Lucky\n"
     "• 刷机工具开发者：@Tobapuw、@人美心善且温柔\n"
@@ -13,7 +13,7 @@ ABOUT_TEXT = (
     "• 工具箱UI框架支持：@zhiyiYo PyQt-Fluent-Widgets \n"
     "该框架遵循 GNU General Public License v3.0（GPLv3）协议，其相关权利归属原作者所有，开源组件的源代码可通过其官方仓库获取\n\n"
     "注意：本工具下载页的移植包固件下载已获得作者@秋詞和@Lucky的正式授权，任何人未经授权不得二次分发。\n"
-    "2025 ©️ Tobapuw 版权所有，保留所有权利。\n\n"
+    "2025-2026 ©️ Tobapuw 版权所有，保留所有权利。\n\n"
     "工具开发技术栈：Python + PySide6 + PyQt-Fluent-Widgets\n"
 )
 

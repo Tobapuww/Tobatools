@@ -15,8 +15,10 @@ class PayloadExtractor:
     这样调试环境与打包后都无需依赖外部 exe，也无需特殊的 python 启动参数。
     """
 
-    def __init__(self, log_callback: Callable[[str], None]):
+    def __init__(self, log_callback: Callable[[str], None], step_start: Optional[Callable[[str, str], None]] = None, step_finish: Optional[Callable[[str, bool, str], None]] = None):
         self.log = log_callback
+        self.step_start = step_start
+        self.step_finish = step_finish
         self._cancel = Event()
 
     def stop(self):
@@ -37,5 +39,7 @@ class PayloadExtractor:
             output_dir,
             partitions,
             log_callback=self.log,
+            step_start=self.step_start,
+            step_finish=self.step_finish,
             cancel_event=self._cancel,
         )

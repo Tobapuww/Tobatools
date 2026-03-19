@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QCheckBox, QSpinBox, QComboBox, QDialog, QDialogButtonBox
 )
 from pathlib import Path
-from qfluentwidgets import CardWidget, PushButton as FluentPushButton, PrimaryPushButton as FluentPrimaryPushButton, FluentIcon, CheckBox, ComboBox, InfoBar, InfoBarPosition, MessageDialog, SmoothScrollArea
+from qfluentwidgets import CardWidget, PushButton as FluentPushButton, PrimaryPushButton as FluentPrimaryPushButton, FluentIcon, CheckBox, ComboBox, InfoBar, InfoBarPosition, MessageDialog, SmoothScrollArea, BodyLabel
 
 
 def _silent_popen_kwargs() -> dict:
@@ -185,148 +185,180 @@ class ScrcpyTab(QWidget):
         banner.addWidget(icon_lbl); banner.addLayout(title_col); banner.addStretch(1)
         lay.addWidget(banner_w)
 
-        # 行1：分辨率、帧率、码率（改用预设下拉）
-        row1 = QHBoxLayout()
-        row1.addWidget(QLabel("最大分辨率(像素):"))
-        self.max_size_cb = ComboBox()
-        self.max_size_cb.addItems(["默认", "720", "1080", "1440", "2160", "4320"])  # 4320=8K
-        row1.addWidget(self.max_size_cb)
-        row1.addSpacing(12)
-        row1.addWidget(QLabel("最大帧率(FPS):"))
-        self.fps_cb = ComboBox()
-        self.fps_cb.addItems(["默认", "30", "60", "90", "120", "144", "165"])  # 最高 165
-        row1.addWidget(self.fps_cb)
-        row1.addSpacing(12)
-        row1.addWidget(QLabel("视频码率:"))
-        self.bitrate_cb = ComboBox()
-        self.bitrate_cb.addItems(["默认", "4M", "6M", "8M", "12M", "20M", "30M", "50M"]) 
-        row1.addWidget(self.bitrate_cb)
-        row1.addStretch(1)
-        # 参数行先构造，稍后放入卡片
-
-        # 行2：缓冲、音频
-        row2 = QHBoxLayout()
-        row2.addWidget(QLabel("视频缓冲(ms):"))
-        self.vbuf_cb = ComboBox(); self.vbuf_cb.addItems(["默认", "50", "100", "150", "200", "300", "500", "1000"]) 
-        row2.addWidget(self.vbuf_cb)
-        row2.addSpacing(12)
-        row2.addWidget(QLabel("音频缓冲(ms):"))
-        self.abuf_cb = ComboBox(); self.abuf_cb.addItems(["默认", "50", "100", "150", "200", "300", "500", "1000"]) 
-        row2.addWidget(self.abuf_cb)
-        row2.addSpacing(12)
-        self.enable_audio = CheckBox("启用音频")
-        self.enable_audio.setChecked(True)
-        row2.addWidget(self.enable_audio)
-        row2.addStretch(1)
-        #
-
-        # 行3：窗口与交互
-        row3 = QHBoxLayout()
-        self.fullscreen = CheckBox("启动时全屏")
-        self.borderless = CheckBox("无边框窗口")
-        self.always_on_top = CheckBox("置顶")
-        self.disable_screensaver = CheckBox("禁用屏保")
-        self.stay_awake = CheckBox("保持唤醒")
-        self.turn_screen_off = CheckBox("关闭屏幕")
-        self.show_touches = CheckBox("显示触摸")
-        row3.addWidget(self.fullscreen)
-        row3.addWidget(self.borderless)
-        row3.addWidget(self.always_on_top)
-        row3.addWidget(self.disable_screensaver)
-        row3.addWidget(self.stay_awake)
-        row3.addWidget(self.turn_screen_off)
-        row3.addWidget(self.show_touches)
-        row3.setSpacing(6)
-        row3.addStretch(1)
-        #
-
-        # 行4：剪贴板与点击
-        row4 = QHBoxLayout()
-        self.clip_sync = CheckBox("剪切板同步")
-        self.clip_sync.setChecked(True)
-        self.legacy_paste = CheckBox("兼容粘贴(legacy)")
-        self.forward_all_clicks = CheckBox("转发所有点击")
-        self.print_fps = CheckBox("打印FPS")
-        row4.addWidget(self.clip_sync)
-        row4.addWidget(self.legacy_paste)
-        row4.addWidget(self.forward_all_clicks)
-        row4.addWidget(self.print_fps)
-        row4.addStretch(1)
-        #
-
-        # 行5：按钮与日志
-        row5 = QHBoxLayout()
-        self.run_btn = FluentPrimaryPushButton("开始投屏")
-        self.stop_btn = FluentPushButton("停止")
-        try:
-            self.run_btn.setFixedHeight(36)
-            self.stop_btn.setFixedHeight(32)
-        except Exception:
-            pass
-        self.stop_btn.setEnabled(False)
-        row5.addWidget(self.run_btn)
-        row5.addWidget(self.stop_btn)
-        row5.addStretch(1)
-        #
-
-        # 采用卡片式布局容纳以上各块
-        from PySide6.QtWidgets import QGridLayout as _Grid
-        grid = _Grid(); grid.setHorizontalSpacing(12); grid.setVerticalSpacing(12)
-
-        # 视频参数卡片
-        card_video = CardWidget(self)
-        v_video = QVBoxLayout(card_video); v_video.setContentsMargins(16,20,16,24); v_video.setSpacing(14)
-        h_video = QHBoxLayout(); h_video.setSpacing(8)
-        h_video_icon = QLabel("🎞"); h_video_icon.setStyleSheet("font-size:16px;")
-        h_video_title = QLabel("视频参数"); h_video_title.setStyleSheet("font-size:16px; font-weight:600;")
-        h_video.addWidget(h_video_icon); h_video.addWidget(h_video_title); h_video.addStretch(1)
-        v_video.addLayout(h_video); v_video.addLayout(row1)
-
-        # 缓冲与音频卡片
-        card_buf = CardWidget(self)
-        v_buf = QVBoxLayout(card_buf); v_buf.setContentsMargins(16,20,16,24); v_buf.setSpacing(14)
-        h_buf = QHBoxLayout(); h_buf.setSpacing(8)
-        h_buf_icon = QLabel("🔊"); h_buf_icon.setStyleSheet("font-size:16px;")
-        h_buf_title = QLabel("缓冲与音频"); h_buf_title.setStyleSheet("font-size:16px; font-weight:600;")
-        h_buf.addWidget(h_buf_icon); h_buf.addWidget(h_buf_title); h_buf.addStretch(1)
-        v_buf.addLayout(h_buf); v_buf.addLayout(row2)
-
-        # 窗口与交互卡片
-        card_win = CardWidget(self)
-        v_win = QVBoxLayout(card_win); v_win.setContentsMargins(16,16,16,16); v_win.setSpacing(10)
-        h_win = QHBoxLayout(); h_win.setSpacing(8)
-        h_win_icon = QLabel("🪟"); h_win_icon.setStyleSheet("font-size:16px;")
-        h_win_title = QLabel("窗口与交互"); h_win_title.setStyleSheet("font-size:16px; font-weight:600;")
-        h_win.addWidget(h_win_icon); h_win.addWidget(h_win_title); h_win.addStretch(1)
-        v_win.addLayout(h_win); v_win.addLayout(row3)
-
-        # 剪贴板与点击卡片
-        card_clip = CardWidget(self)
-        v_clip = QVBoxLayout(card_clip); v_clip.setContentsMargins(16,16,16,16); v_clip.setSpacing(10)
-        h_clip = QHBoxLayout(); h_clip.setSpacing(8)
-        h_clip_icon = QLabel("📋"); h_clip_icon.setStyleSheet("font-size:16px;")
-        h_clip_title = QLabel("剪贴板与点击"); h_clip_title.setStyleSheet("font-size:16px; font-weight:600;")
-        h_clip.addWidget(h_clip_icon); h_clip.addWidget(h_clip_title); h_clip.addStretch(1)
-        v_clip.addLayout(h_clip); v_clip.addLayout(row4)
-
-        # 操作卡片
-        card_act = CardWidget(self)
-        v_act = QVBoxLayout(card_act); v_act.setContentsMargins(16,20,16,24); v_act.setSpacing(14)
-        h_act = QHBoxLayout(); h_act.setSpacing(8)
-        h_act_icon = QLabel("▶️"); h_act_icon.setStyleSheet("font-size:16px;")
-        h_act_title = QLabel("操作"); h_act_title.setStyleSheet("font-size:16px; font-weight:600;")
-        h_act.addWidget(h_act_icon); h_act.addWidget(h_act_title); h_act.addStretch(1)
-        v_act.addLayout(h_act); v_act.addLayout(row5)
-
-        grid.addWidget(card_video, 0, 0, 1, 2)
-        grid.addWidget(card_buf, 1, 0, 1, 2)
-        grid.addWidget(card_win, 2, 0)
-        grid.addWidget(card_clip, 2, 1)
-        grid.addWidget(card_act, 3, 0, 1, 2)
-        lay.addLayout(grid)
+        main_h_layout = QHBoxLayout()
+        main_h_layout.setSpacing(24)
+        
+        left_col = QVBoxLayout()
+        left_col.setSpacing(24)
+        
+        self._build_config_card(left_col)
+        self._build_action_card(left_col)
+        left_col.addStretch(1)
+        
+        right_col = QVBoxLayout()
+        right_col.setSpacing(24)
+        self._build_info_card(right_col)
+        
+        left_w = QWidget()
+        left_w.setLayout(left_col)
+        right_w = QWidget()
+        right_w.setLayout(right_col)
+        
+        main_h_layout.addWidget(left_w, 6)
+        main_h_layout.addWidget(right_w, 4)
+        lay.addLayout(main_h_layout)
 
         self.run_btn.clicked.connect(self._start)
         self.stop_btn.clicked.connect(self._stop)
+
+    def _build_config_card(self, parent_lay):
+        card = CardWidget()
+        lay = QVBoxLayout(card)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(20)
+        
+        head = QHBoxLayout()
+        icon = QLabel("⚙️")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("投屏配置")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        lay.addLayout(head)
+        
+        from PySide6.QtWidgets import QGridLayout
+        grid = QGridLayout()
+        grid.setSpacing(16)
+        
+        # row 0
+        grid.addWidget(QLabel("分辨率:"), 0, 0)
+        self.max_size_cb = ComboBox()
+        self.max_size_cb.addItems(["默认", "720", "1080", "1440", "2160", "4320"])
+        self.max_size_cb.setFixedHeight(36)
+        grid.addWidget(self.max_size_cb, 0, 1)
+        
+        grid.addWidget(QLabel("帧率:"), 0, 2)
+        self.fps_cb = ComboBox()
+        self.fps_cb.addItems(["默认", "30", "60", "90", "120", "144", "165"])
+        self.fps_cb.setFixedHeight(36)
+        grid.addWidget(self.fps_cb, 0, 3)
+        
+        grid.addWidget(QLabel("码率:"), 0, 4)
+        self.bitrate_cb = ComboBox()
+        self.bitrate_cb.addItems(["默认", "4M", "6M", "8M", "12M", "20M", "30M", "50M"])
+        self.bitrate_cb.setFixedHeight(36)
+        grid.addWidget(self.bitrate_cb, 0, 5)
+        
+        # row 1
+        grid.addWidget(QLabel("视缓冲:"), 1, 0)
+        self.vbuf_cb = ComboBox()
+        self.vbuf_cb.addItems(["默认", "50", "100", "150", "200", "300", "500", "1000"])
+        self.vbuf_cb.setFixedHeight(36)
+        grid.addWidget(self.vbuf_cb, 1, 1)
+        
+        grid.addWidget(QLabel("音缓冲:"), 1, 2)
+        self.abuf_cb = ComboBox()
+        self.abuf_cb.addItems(["默认", "50", "100", "150", "200", "300", "500", "1000"])
+        self.abuf_cb.setFixedHeight(36)
+        grid.addWidget(self.abuf_cb, 1, 3)
+        
+        self.enable_audio = CheckBox("启用音频")
+        self.enable_audio.setChecked(True)
+        grid.addWidget(self.enable_audio, 1, 4, 1, 2)
+        
+        lay.addLayout(grid)
+        
+        # 行为复选框区
+        behaviors_lay = QGridLayout()
+        behaviors_lay.setSpacing(12)
+        self.fullscreen = CheckBox("启动全屏")
+        self.borderless = CheckBox("无边框")
+        self.always_on_top = CheckBox("置顶显示")
+        self.disable_screensaver = CheckBox("禁用屏保")
+        self.stay_awake = CheckBox("保持唤醒")
+        self.turn_screen_off = CheckBox("息屏投屏")
+        self.show_touches = CheckBox("显示触摸")
+        self.clip_sync = CheckBox("剪切板同步")
+        self.clip_sync.setChecked(True)
+        self.legacy_paste = CheckBox("兼容粘贴")
+        self.forward_all_clicks = CheckBox("转发所有点击")
+        self.print_fps = CheckBox("打印FPS")
+        
+        behaviors_lay.addWidget(self.fullscreen, 0, 0)
+        behaviors_lay.addWidget(self.borderless, 0, 1)
+        behaviors_lay.addWidget(self.always_on_top, 0, 2)
+        behaviors_lay.addWidget(self.disable_screensaver, 0, 3)
+        behaviors_lay.addWidget(self.stay_awake, 1, 0)
+        behaviors_lay.addWidget(self.turn_screen_off, 1, 1)
+        behaviors_lay.addWidget(self.show_touches, 1, 2)
+        behaviors_lay.addWidget(self.clip_sync, 1, 3)
+        behaviors_lay.addWidget(self.legacy_paste, 2, 0)
+        behaviors_lay.addWidget(self.forward_all_clicks, 2, 1)
+        behaviors_lay.addWidget(self.print_fps, 2, 2)
+        
+        lay.addLayout(behaviors_lay)
+        parent_lay.addWidget(card)
+        
+    def _build_action_card(self, parent_lay):
+        card = CardWidget()
+        lay = QVBoxLayout(card)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(16)
+        
+        head = QHBoxLayout()
+        icon = QLabel("🚀")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("操作控制")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        lay.addLayout(head)
+        
+        btn_lay = QHBoxLayout()
+        btn_lay.setSpacing(16)
+        self.run_btn = FluentPrimaryPushButton(FluentIcon.PLAY, "开始投屏")
+        self.run_btn.setFixedHeight(36)
+        self.stop_btn = FluentPushButton(FluentIcon.PAUSE, "停止投屏")
+        self.stop_btn.setFixedHeight(36)
+        self.stop_btn.setEnabled(False)
+        btn_lay.addWidget(self.run_btn, 1)
+        btn_lay.addWidget(self.stop_btn, 1)
+        lay.addLayout(btn_lay)
+        
+        parent_lay.addWidget(card)
+        
+    def _build_info_card(self, parent_lay):
+        card = CardWidget()
+        lay = QVBoxLayout(card)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(16)
+        
+        head = QHBoxLayout()
+        icon = QLabel("�")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("使用说明")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        lay.addLayout(head)
+        
+        content = BodyLabel(
+            "1. 投屏功能基于 scrcpy 实现，支持极低延迟。\n\n"
+            "2. 如果有多个设备，点击“开始投屏”时会弹出选择框。\n\n"
+            "3. 推荐使用有线连接，如使用无线投屏，可在“设备管理”页先连接设备。\n\n"
+            "4. 投屏窗口将以独立形式弹出，不会阻塞当前界面。\n\n"
+            "5. 音频转发功能仅支持 Android 11 及以上系统。\n\n"
+            "6. 若投屏黑屏，尝试降低分辨率或关闭音视频缓冲。"
+        )
+        content.setWordWrap(True)
+        content.setStyleSheet("color:#4e5969; font-size:14px; line-height: 1.6;")
+        lay.addWidget(content)
+        lay.addStretch(1)
+        
+        parent_lay.addWidget(card)
 
     def _build_command(self) -> list[str]:
         cmd: list[str] = [self._scrcpy_path]

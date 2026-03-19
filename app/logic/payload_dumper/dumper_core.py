@@ -90,6 +90,8 @@ class DumperCore:
         partitions: str = '',
         workers: int = cpu_count(),
         log_callback: Optional[Callable[[str], None]] = None,
+        step_start: Optional[Callable[[str, str], None]] = None,
+        step_finish: Optional[Callable[[str, bool, str], None]] = None,
         cancel_event: Optional[Event] = None,
     ):
         self.payloadfile = payload_file
@@ -97,6 +99,8 @@ class DumperCore:
         self.images = partitions
         self.workers = workers
         self.log = log_callback or (lambda _m: None)
+        self.step_start = step_start or (lambda _i, _t: None)
+        self.step_finish = step_finish or (lambda _i, _s, _m: None)
         self.cancel = cancel_event or Event()
 
         try:
@@ -122,32 +126,40 @@ class DumperCore:
             raise RuntimeError('cancelled')
 
     def parse_metadata(self):
-        head_len = 4 + 8 + 8 + 4
-        fp = 0
-        buffer = self._read_payload(fp, head_len)
-        fp += head_len
-        if len(buffer) != head_len:
-            raise RuntimeError('payload header too short')
-        magic = buffer[:4]
-        if magic != b'CrAU':
-            raise RuntimeError('invalid payload magic')
+        import uuid
+        sid = str(uuid.uuid4())
+        self.step_start(sid, "解析 Payload 元数据")
+        try:
+            head_len = 4 + 8 + 8 + 4
+            fp = 0
+            buffer = self._read_payload(fp, head_len)
+            fp += head_len
+            if len(buffer) != head_len:
+                raise RuntimeError('payload header too short')
+            magic = buffer[:4]
+            if magic != b'CrAU':
+                raise RuntimeError('invalid payload magic')
 
-        file_format_version = u64(buffer[4:12])
-        if file_format_version != 2:
-            raise RuntimeError(f'unsupported payload version: {file_format_version}')
+            file_format_version = u64(buffer[4:12])
+            if file_format_version != 2:
+                raise RuntimeError(f'unsupported payload version: {file_format_version}')
 
-        manifest_size = u64(buffer[12:20])
-        metadata_signature_size = u32(buffer[20:24])
+            manifest_size = u64(buffer[12:20])
+            metadata_signature_size = u32(buffer[20:24])
 
-        manifest = self._read_payload(fp, manifest_size)
-        fp += manifest_size
-        self.metadata_signature = self._read_payload(fp, metadata_signature_size)
-        fp += metadata_signature_size
-        self.data_offset = fp
+            manifest = self._read_payload(fp, manifest_size)
+            fp += manifest_size
+            self.metadata_signature = self._read_payload(fp, metadata_signature_size)
+            fp += metadata_signature_size
+            self.data_offset = fp
 
-        self.dam = um.DeltaArchiveManifest()
-        self.dam.ParseFromString(manifest)
-        self.block_size = self.dam.block_size
+            self.dam = um.DeltaArchiveManifest()
+            self.dam.ParseFromString(manifest)
+            self.block_size = self.dam.block_size
+            self.step_finish(sid, True, f"BlockSize={self.block_size}")
+        except Exception as e:
+            self.step_finish(sid, False, str(e))
+            raise e
 
     def run(self):
         if self.images == '':
@@ -178,7 +190,10 @@ class DumperCore:
             self._extract_partition(name, ops)
 
     def _extract_partition(self, name: str, ops: list[_Op]):
-        self.log(f'提取分区: {name} ops={len(ops)}')
+        import uuid
+        sid = str(uuid.uuid4())
+        self.step_start(sid, f"提取 {name}")
+        # self.log(f'提取分区: {name} ops={len(ops)}')
         out_path = os.path.join(self.out, f'{name}.img')
         out_file = mtio.MTFile(out_path, 'w')
         try:
@@ -194,6 +209,14 @@ class DumperCore:
                         t.cancel()
                     except Exception:
                         pass
+            self.step_finish(sid, True, "")
+        except Exception as e:
+            self.step_finish(sid, False, str(e))
+            try:
+                out_file.close()
+            except Exception:
+                pass
+            raise e
         finally:
             try:
                 out_file.close()

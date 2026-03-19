@@ -3,7 +3,6 @@ from PySide6.QtCore import Qt
 
 from app.widgets.device_info_tab import DeviceInfoTab
 from app.widgets.firmware_tab import FirmwareTab
-from app.widgets.flash_tab import FlashTab
 from app.widgets.settings_tab import SettingsTab
 from app.widgets.scrcpy_tab import ScrcpyTab
 from app.widgets.misc_tab import MiscTab
@@ -39,14 +38,12 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
         self.device_info_tab = DeviceInfoTab()
         self.firmware_tab = FirmwareTab()
-        self.flash_tab = FlashTab()
         self.scrcpy_tab = ScrcpyTab()
         self.root_tab = RootTab()
         self.misc_tab = MiscTab()
 
         self.tabs.addTab(self.device_info_tab, "设备信息")
         self.tabs.addTab(self.firmware_tab, "固件列表")
-        self.tabs.addTab(self.flash_tab, "刷机")
         self.tabs.addTab(self.scrcpy_tab, "投屏")
         self.tabs.addTab(self.root_tab, "一键Root")
         self.tabs.addTab(self.misc_tab, "杂项")

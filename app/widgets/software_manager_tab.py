@@ -12,16 +12,18 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QFileDialog,
-    QTextEdit,
     QListWidget,
     QListWidgetItem,
     QProgressBar,
+    QStackedWidget,
+    QSizePolicy,
 )
 
 from qfluentwidgets import (
     CardWidget,
     PrimaryPushButton,
     PushButton,
+    ComboBox,
     LineEdit,
     CheckBox,
     InfoBar,
@@ -32,9 +34,11 @@ from qfluentwidgets import (
     SubtitleLabel,
     BodyLabel,
     ListWidget,
+    CaptionLabel,
 )
 
 from app.services import adb_service
+from app.components.log_widget import LogWidget
 
 
 def _silent_popen_kwargs() -> dict:
@@ -180,6 +184,120 @@ class _AdbCmdWorker(QObject):
             self.finished.emit(code)
 
 
+class _BatchLabelWorker(QObject):
+    """Worker to fetch app labels for multiple packages in batch using aapt on device."""
+    finished = Signal(dict)  # {pkg: label}
+
+    def __init__(self, serial: str, pkgs: list[str]):
+        super().__init__()
+        self._serial = str(serial or '').strip()
+        self._pkgs = list(pkgs or [])
+        self._stop = False
+
+    def stop(self):
+        self._stop = True
+
+    def run(self):
+        result: dict[str, str] = {}
+        remote_aapt = '/data/local/tmp/aapt'
+
+        try:
+            # First try cmd package query-activities for apps with nonLocalizedLabel
+            out = adb_service.adb_shell_serial(
+                self._serial,
+                ['cmd', 'package', 'query-activities', '-a', 'android.intent.action.MAIN', '-c', 'android.intent.category.LAUNCHER'],
+                timeout=30
+            )
+            if out:
+                current_pkg = ''
+                for line in (out or '').splitlines():
+                    if self._stop:
+                        break
+                    s = (line or '').strip()
+                    if s.startswith('packageName='):
+                        current_pkg = s.split('=', 1)[1].strip()
+                    elif 'nonLocalizedLabel=' in s and current_pkg:
+                        try:
+                            idx = s.find('nonLocalizedLabel=')
+                            if idx >= 0:
+                                rest = s[idx + len('nonLocalizedLabel='):]
+                                end_idx = rest.find(' icon=')
+                                if end_idx > 0:
+                                    label = rest[:end_idx].strip()
+                                else:
+                                    label = rest.strip()
+                                if label and label != 'null' and current_pkg in self._pkgs:
+                                    result[current_pkg] = label
+                        except Exception:
+                            pass
+
+            # For remaining packages without labels, use aapt on device to parse APK
+            remaining = [p for p in self._pkgs if p not in result]
+            if remaining and not self._stop:
+                # Push aapt-arm-pie to device if not exists
+                local_aapt = Path(__file__).resolve().parents[2] / 'bin' / 'aapt-arm-pie'
+                if local_aapt.exists():
+                    # Check if aapt exists on device
+                    check = adb_service.adb_shell_serial(self._serial, ['ls', remote_aapt], timeout=5)
+                    if 'No such file' in (check or '') or not check or 'cannot' in (check or '').lower():
+                        # Push aapt to device using push_path
+                        adb_service.push_path(str(local_aapt), remote_aapt)
+                        adb_service.adb_shell_serial(self._serial, ['chmod', '755', remote_aapt], timeout=5)
+
+                    # Get APK paths for all packages in one call
+                    path_out = adb_service.adb_shell_serial(self._serial, ['pm', 'list', 'packages', '-f'], timeout=30)
+                    pkg_to_path: dict[str, str] = {}
+                    for line in (path_out or '').splitlines():
+                        if line.startswith('package:'):
+                            try:
+                                rest = line[8:]
+                                eq_idx = rest.rfind('=')
+                                if eq_idx > 0:
+                                    apk_path = rest[:eq_idx]
+                                    pkg_name = rest[eq_idx + 1:].strip()
+                                    if pkg_name in remaining:
+                                        pkg_to_path[pkg_name] = apk_path
+                            except Exception:
+                                pass
+
+                    # Parse APKs using aapt on device
+                    for pkg in remaining[:100]:  # Limit to 100 packages
+                        if self._stop:
+                            break
+                        if pkg not in pkg_to_path:
+                            continue
+                        apk_path = pkg_to_path[pkg]
+                        try:
+                            out = adb_service.adb_shell_serial(
+                                self._serial,
+                                [remote_aapt, 'dump', 'badging', apk_path],
+                                timeout=10
+                            )
+                            if out:
+                                # Prefer zh-CN > en > default label
+                                label_default = ''
+                                label_en = ''
+                                label_zh_cn = ''
+                                for line in out.splitlines():
+                                    if line.startswith('application-label-zh-CN:') or line.startswith('application-label-zh_CN:'):
+                                        label_zh_cn = line.split(':', 1)[1].strip().strip("'")
+                                    elif line.startswith('application-label-en:') or line.startswith('application-label-en-'):
+                                        if not label_en:
+                                            label_en = line.split(':', 1)[1].strip().strip("'")
+                                    elif line.startswith('application-label:'):
+                                        label_default = line.split(':', 1)[1].strip().strip("'")
+                                # Pick best label
+                                label = label_zh_cn or label_en or label_default
+                                if label:
+                                    result[pkg] = label
+                        except Exception:
+                            pass
+        except Exception:
+            pass
+        finally:
+            self.finished.emit(result)
+
+
 class _ForegroundWorker(QObject):
     result = Signal(str, str)  # pkg, act
 
@@ -284,6 +402,84 @@ class _ForegroundWorker(QObject):
                 pass
 
 
+class _AppCard(CardWidget):
+    """Card widget for a single installed app."""
+    selected = Signal(object)  # emits self when card is clicked
+
+    def __init__(self, pkg: str, label: str = '', parent=None):
+        super().__init__(parent)
+        self.pkg = pkg
+        self.label = label
+        self._selected = False
+        self.setObjectName("appCard")
+
+        self.setCursor(Qt.PointingHandCursor)
+        try:
+            self.setFixedHeight(56)
+        except Exception:
+            pass
+
+        lay = QHBoxLayout(self)
+        lay.setContentsMargins(12, 8, 12, 8)
+        lay.setSpacing(8)
+
+        col = QVBoxLayout()
+        col.setContentsMargins(0, 0, 0, 0)
+        col.setSpacing(2)
+
+        display = label if label else pkg
+        self.lbl_name = BodyLabel(display, self)
+        col.addWidget(self.lbl_name)
+
+        if label:
+            self.lbl_pkg = CaptionLabel(pkg, self)
+            try:
+                self.lbl_pkg.setStyleSheet('color: rgba(0,0,0,0.55);')
+            except Exception:
+                pass
+            col.addWidget(self.lbl_pkg)
+        else:
+            self.lbl_pkg = None
+
+        lay.addLayout(col, 1)
+
+        self._update_style()
+
+    def set_label(self, label: str):
+        self.label = label
+        try:
+            self.lbl_name.setText(label if label else self.pkg)
+            if label and self.lbl_pkg is None:
+                self.lbl_pkg = CaptionLabel(self.pkg, self)
+                try:
+                    self.lbl_pkg.setStyleSheet('color: rgba(0,0,0,0.55);')
+                except Exception:
+                    pass
+                self.layout().itemAt(0).layout().addWidget(self.lbl_pkg)
+        except Exception:
+            pass
+
+    def set_selected(self, selected: bool):
+        self._selected = bool(selected)
+        self._update_style()
+
+    def _update_style(self):
+        try:
+            if self._selected:
+                self.setStyleSheet('#appCard {background-color:rgba(42,116,218,0.15);border-radius:8px;}')
+            else:
+                self.setStyleSheet('#appCard {background-color:transparent;border-radius:8px;}')
+        except Exception:
+            pass
+
+    def mousePressEvent(self, event):
+        try:
+            self.selected.emit(self)
+        except Exception:
+            pass
+        return super().mousePressEvent(event)
+
+
 class SoftwareManagerTab(QWidget):
     _fg_request = Signal(str)  # serial
 
@@ -314,6 +510,12 @@ class SoftwareManagerTab(QWidget):
         self._label_out: list[str] = []
         self._label_pkg: str = ''
         self._label_cache: dict[str, str] = {}
+
+        self._batch_label_thread: QThread | None = None
+        self._batch_label_worker: _BatchLabelWorker | None = None
+        self._pending_pkgs: list[str] = []
+
+        self._app_cards: list[_AppCard] = []
 
         self._selected_apk: str = ""
         self._selected_pkg: str = ""
@@ -443,325 +645,33 @@ class SoftwareManagerTab(QWidget):
         banner.addStretch(1)
         lay.addWidget(banner_w)
 
-        body_row = QHBoxLayout()
-        body_row.setSpacing(GAP_LG)
-
-        # 左侧：已安装应用列表
-        card_apps = CardWidget(container)
-        v_apps = QVBoxLayout(card_apps)
-        v_apps.setContentsMargins(CARD_MARGIN, CARD_MARGIN, CARD_MARGIN, CARD_MARGIN)
-        v_apps.setSpacing(GAP_MD)
-
-        h_apps = QHBoxLayout(); h_apps.setSpacing(GAP_SM)
-        icon_apps = QLabel("")
-        try:
-            icon_apps.setFixedSize(16, 16)
-            icon_apps.setPixmap(FluentIcon.APPLICATION.icon().pixmap(16, 16))
-        except Exception:
-            pass
-        h_apps.addWidget(icon_apps)
-        h_apps.addWidget(QLabel("已安装应用"))
-        h_apps.addStretch(1)
-        self.btn_clear_selected = PushButton("清除选中", card_apps)
-        try:
-            self.btn_clear_selected.setIcon(FluentIcon.CLEAR_SELECTION)
-        except Exception:
-            pass
-        h_apps.addWidget(self.btn_clear_selected)
-        self.btn_refresh_apps = PushButton("刷新", card_apps)
-        try:
-            self.btn_refresh_apps.setIcon(FluentIcon.SYNC)
-        except Exception:
-            pass
-        h_apps.addWidget(self.btn_refresh_apps)
-        v_apps.addLayout(h_apps)
-
-        self.edt_app_search = LineEdit(card_apps)
-        try:
-            self.edt_app_search.setPlaceholderText("搜索包名…")
-        except Exception:
-            pass
-        try:
-            self.edt_app_search.setClearButtonEnabled(True)
-        except Exception:
-            pass
-        v_apps.addWidget(self.edt_app_search)
-
-        self.cb_show_system_apps = CheckBox("显示系统应用", card_apps)
-        v_apps.addWidget(self.cb_show_system_apps)
-
-        # Prefer Fluent ListWidget for modern look
-        try:
-            self.list_apps = ListWidget(card_apps)
-        except Exception:
-            self.list_apps = QListWidget(card_apps)
-        try:
-            self.list_apps.setMinimumWidth(420)
-            self.list_apps.setStyleSheet(
-                "QListWidget{background:transparent;border:none;}"
-                "QListWidget::item{padding:8px 10px;margin:2px 0;border-radius:8px;}"
-                "QListWidget::item:hover{background:rgba(0,0,0,0.04);}"
-                "QListWidget::item:selected{background:rgba(42,116,218,0.18);}"
-                "QListWidget::item:selected:hover{background:rgba(42,116,218,0.22);}"
-            )
-        except Exception:
-            pass
-        v_apps.addWidget(self.list_apps)
-
-        body_row.addWidget(card_apps, 5)
-
-        # 右侧：设备/安装/操作
-        right_col = QVBoxLayout()
-        right_col.setSpacing(GAP_LG)
-
-        # 设备与前台应用信息（实时）
-        card_state = CardWidget(container)
-        v_state = QVBoxLayout(card_state)
-        v_state.setContentsMargins(CARD_MARGIN, CARD_MARGIN, CARD_MARGIN, CARD_MARGIN)
-        v_state.setSpacing(GAP_MD)
-
-        h_state = QHBoxLayout(); h_state.setSpacing(GAP_SM)
-        icon_state = QLabel("")
-        try:
-            icon_state.setFixedSize(16, 16)
-            icon_state.setPixmap(FluentIcon.INFO.icon().pixmap(16, 16))
-        except Exception:
-            pass
-        h_state.addWidget(icon_state)
-        h_state.addWidget(QLabel("当前前台信息"))
-        h_state.addStretch(1)
-        # 添加自动刷新开关
-        self.chk_auto_refresh = CheckBox("自动刷新", card_state)
-        self.chk_auto_refresh.setToolTip("开启后每3秒自动获取前台应用信息")
-        h_state.addWidget(self.chk_auto_refresh)
+        # 主体布局：左(已装列表) 5 : 右(状态、操作) 7
+        main_h_layout = QHBoxLayout()
+        main_h_layout.setSpacing(24)
         
-        self.btn_refresh_state = PushButton("立即刷新", card_state)
-        try:
-            self.btn_refresh_state.setIcon(FluentIcon.SYNC)
-        except Exception:
-            pass
-        h_state.addWidget(self.btn_refresh_state)
-        v_state.addLayout(h_state)
+        left_col = QVBoxLayout()
+        left_col.setSpacing(24)
+        self._build_apps_list_card(left_col)
+        
+        right_col = QVBoxLayout()
+        right_col.setSpacing(24)
+        self._build_state_card(right_col)
+        self._build_ops_panel(right_col)
+        
+        left_w = QWidget()
+        left_w.setLayout(left_col)
+        right_w = QWidget()
+        right_w.setLayout(right_col)
+        
+        main_h_layout.addWidget(left_w, 5)
+        main_h_layout.addWidget(right_w, 7)
+        
+        lay.addLayout(main_h_layout)
 
-        self.lbl_pkg = QLabel("前台包名：-")
-        self.lbl_act = QLabel("当前Activity：-")
-        self.lbl_dev = QLabel("设备：-")
-        self.lbl_selected = QLabel("已选包名：-")
-        for w in (self.lbl_pkg, self.lbl_act, self.lbl_dev, self.lbl_selected):
-            w.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        try:
-            self.lbl_dev.setStyleSheet("font-size: 14px; color: rgba(0,0,0,0.72);")
-            self.lbl_pkg.setStyleSheet("font-size: 14px;")
-            self.lbl_act.setStyleSheet("font-size: 13px; color: rgba(0,0,0,0.62);")
-            self.lbl_selected.setStyleSheet("font-size: 15px; font-weight: 600; color: #2A74DA;")
-        except Exception:
-            pass
-        v_state.addWidget(self.lbl_dev)
-        v_state.addWidget(self.lbl_selected)
-        v_state.addWidget(self.lbl_pkg)
-        v_state.addWidget(self.lbl_act)
-        right_col.addWidget(card_state)
-
-        # APK 安装（简化）
-        card_apk = CardWidget(container)
-        v_apk = QVBoxLayout(card_apk)
-        v_apk.setContentsMargins(CARD_MARGIN, CARD_MARGIN, CARD_MARGIN, CARD_MARGIN)
-        v_apk.setSpacing(GAP_MD)
-
-        h_apk = QHBoxLayout(); h_apk.setSpacing(GAP_SM)
-        icon_apk = QLabel("")
-        try:
-            icon_apk.setFixedSize(16, 16)
-            icon_apk.setPixmap(FluentIcon.DOWNLOAD.icon().pixmap(16, 16))
-        except Exception:
-            pass
-        h_apk.addWidget(icon_apk)
-        h_apk.addWidget(QLabel("安装 APK（支持多选）"))
-        h_apk.addStretch(1)
-        v_apk.addLayout(h_apk)
-
-        row_install = QHBoxLayout(); row_install.setSpacing(GAP_SM)
-        self.cb_reinstall = CheckBox("覆盖安装（更新）", card_apk)
-        self.cb_downgrade = CheckBox("降级安装", card_apk)
-        self.btn_install = PrimaryPushButton("安装APK", card_apk)
-        try:
-            self.btn_install.setIcon(FluentIcon.FOLDER)
-        except Exception:
-            pass
-        row_install.addWidget(self.cb_reinstall)
-        row_install.addWidget(self.cb_downgrade)
-        row_install.addStretch(1)
-        row_install.addWidget(self.btn_install)
-        v_apk.addLayout(row_install)
-
-        try:
-            def _on_downgrade_changed():
-                try:
-                    on = bool(self.cb_downgrade.isChecked())
-                except Exception:
-                    on = False
-                if on:
-                    try:
-                        self.cb_reinstall.setChecked(True)
-                    except Exception:
-                        pass
-                try:
-                    self.cb_reinstall.setEnabled((not self._installing) and (not on))
-                except Exception:
-                    pass
-
-            self.cb_downgrade.stateChanged.connect(_on_downgrade_changed)
-            _on_downgrade_changed()
-        except Exception:
-            pass
-
-        self.install_progress = QProgressBar(card_apk)
-        try:
-            self.install_progress.setRange(0, 0)
-            self.install_progress.setTextVisible(True)
-            self.install_progress.setFormat("正在安装…")
-            self.install_progress.setVisible(False)
-            self.install_progress.setStyleSheet(
-                "QProgressBar{border:1px solid rgba(0,0,0,0.08);border-radius:8px;background:rgba(0,0,0,0.03);padding:2px;}"
-                "QProgressBar::chunk{border-radius:8px;background:rgba(42,116,218,0.55);}"
-            )
-        except Exception:
-            pass
-        v_apk.addWidget(self.install_progress)
-        right_col.addWidget(card_apk)
-
-        # 基于当前包名的操作
-        card_ops_hint = CardWidget(container)
-        v_ops_hint = QVBoxLayout(card_ops_hint)
-        v_ops_hint.setContentsMargins(CARD_MARGIN, CARD_MARGIN, CARD_MARGIN, CARD_MARGIN)
-        v_ops_hint.setSpacing(GAP_MD)
-        h_ops = QHBoxLayout(); h_ops.setSpacing(GAP_SM)
-        icon_ops = QLabel("")
-        try:
-            icon_ops.setFixedSize(16, 16)
-            icon_ops.setPixmap(FluentIcon.SETTING.icon().pixmap(16, 16))
-        except Exception:
-            pass
-        h_ops.addWidget(icon_ops)
-        h_ops.addWidget(QLabel("应用操作"))
-        h_ops.addStretch(1)
-        v_ops_hint.addLayout(h_ops)
-        hint = QLabel("默认基于当前前台包名；在左侧列表选择时基于已选中包名")
-        hint.setWordWrap(True)
-        try:
-            hint.setStyleSheet("font-size: 12px; color: rgba(0,0,0,0.62);")
-        except Exception:
-            pass
-        v_ops_hint.addWidget(hint)
-        right_col.addWidget(card_ops_hint)
-
-        # 应用状态管理
-        card_ops_state = CardWidget(container)
-        v_ops_state = QVBoxLayout(card_ops_state)
-        v_ops_state.setContentsMargins(CARD_MARGIN, CARD_MARGIN, CARD_MARGIN, CARD_MARGIN)
-        v_ops_state.setSpacing(GAP_MD)
-        v_ops_state.addWidget(QLabel("应用状态管理"))
-        row_ops1 = QHBoxLayout(); row_ops1.setSpacing(GAP_SM)
-        self.btn_freeze = PushButton("冻结", card_ops_state)
-        self.btn_unfreeze = PushButton("解冻", card_ops_state)
-        self.btn_force_stop = PushButton("强行停止", card_ops_state)
-        row_ops1.addWidget(self.btn_freeze)
-        row_ops1.addWidget(self.btn_unfreeze)
-        row_ops1.addWidget(self.btn_force_stop)
-        row_ops1.addStretch(1)
-        v_ops_state.addLayout(row_ops1)
-        row_ops_perm = QHBoxLayout(); row_ops_perm.setSpacing(GAP_SM)
-        self.btn_open_permissions = PushButton("权限设置", card_ops_state)
-        row_ops_perm.addWidget(self.btn_open_permissions)
-        row_ops_perm.addStretch(1)
-        v_ops_state.addLayout(row_ops_perm)
-        note = QLabel("提示：冻结/解冻可能需要更高权限（部分系统需 root/设备管理员）。")
-        note.setWordWrap(True)
-        try:
-            note.setStyleSheet("font-size: 12px; color: rgba(0,0,0,0.62);")
-        except Exception:
-            pass
-        v_ops_state.addWidget(note)
-        right_col.addWidget(card_ops_state)
-
-        # 数据与卸载
-        card_ops_data = CardWidget(container)
-        v_ops_data = QVBoxLayout(card_ops_data)
-        v_ops_data.setContentsMargins(CARD_MARGIN, CARD_MARGIN, CARD_MARGIN, CARD_MARGIN)
-        v_ops_data.setSpacing(GAP_MD)
-        v_ops_data.addWidget(QLabel("数据与卸载"))
-        row_ops2 = QHBoxLayout(); row_ops2.setSpacing(GAP_SM)
-        self.btn_uninstall = PushButton("卸载", card_ops_data)
-        self.btn_uninstall_keep = PushButton("保留数据卸载", card_ops_data)
-        self.btn_clear_data = PushButton("清除数据", card_ops_data)
-        self.btn_pull_apk = PushButton("提取APK到电脑", card_ops_data)
-        row_ops2.addWidget(self.btn_uninstall)
-        row_ops2.addWidget(self.btn_uninstall_keep)
-        row_ops2.addWidget(self.btn_clear_data)
-        row_ops2.addWidget(self.btn_pull_apk)
-        row_ops2.addStretch(1)
-        v_ops_data.addLayout(row_ops2)
-        right_col.addWidget(card_ops_data)
-
-        # 高级组件操作
-        card_ops_adv = CardWidget(container)
-        v_ops_adv = QVBoxLayout(card_ops_adv)
-        v_ops_adv.setContentsMargins(CARD_MARGIN, CARD_MARGIN, CARD_MARGIN, CARD_MARGIN)
-        v_ops_adv.setSpacing(GAP_MD)
-        v_ops_adv.addWidget(QLabel("高级"))
-        row_ops3 = QHBoxLayout(); row_ops3.setSpacing(GAP_SM)
-        self.btn_disable_activity = PushButton("禁用当前Activity", card_ops_adv)
-        self.cb_root_disable_activity = CheckBox("使用root权限禁用", card_ops_adv)
-        row_ops3.addWidget(self.btn_disable_activity)
-        row_ops3.addWidget(self.cb_root_disable_activity)
-        row_ops3.addStretch(1)
-        self.btn_open_oplog = PushButton("打开操作记录", card_ops_adv)
-        try:
-            self.btn_open_oplog.setIcon(FluentIcon.DOCUMENT)
-        except Exception:
-            pass
-        row_ops3.addWidget(self.btn_open_oplog)
-        v_ops_adv.addLayout(row_ops3)
-        right_col.addWidget(card_ops_adv)
-
-        # 应用信息
-        card_info = CardWidget(container)
-        v_info = QVBoxLayout(card_info)
-        v_info.setContentsMargins(CARD_MARGIN, CARD_MARGIN, CARD_MARGIN, CARD_MARGIN)
-        v_info.setSpacing(GAP_MD)
-        h_dis = QHBoxLayout(); h_dis.setSpacing(GAP_SM)
-        h_dis.addWidget(QLabel("已禁用组件"))
-        h_dis.addStretch(1)
-        self.btn_refresh_disabled = PushButton("刷新禁用列表", card_info)
-        h_dis.addWidget(self.btn_refresh_disabled)
-        v_info.addLayout(h_dis)
-
-        try:
-            self.list_disabled = ListWidget(card_info)
-        except Exception:
-            self.list_disabled = QListWidget(card_info)
-        try:
-            self.list_disabled.setMinimumHeight(140)
-        except Exception:
-            pass
-        v_info.addWidget(self.list_disabled)
-
-        row_enable = QHBoxLayout(); row_enable.setSpacing(GAP_SM)
-        self.edt_component = LineEdit(card_info)
-        try:
-            self.edt_component.setPlaceholderText("输入组件：包名/类名 或 直接从列表选择")
-        except Exception:
-            pass
-        self.btn_enable_component = PushButton("恢复组件", card_info)
-        row_enable.addWidget(self.edt_component)
-        row_enable.addWidget(self.btn_enable_component)
-        v_info.addLayout(row_enable)
-
-        right_col.addWidget(card_info)
-
-        right_col.addStretch(1)
-        body_row.addLayout(right_col, 7)
-        lay.addLayout(body_row)
+        # Log Widget
+        self.log_widget = LogWidget(container)
+        self.log_widget.setFixedHeight(150)
+        lay.addWidget(self.log_widget)
 
         # signals
         self.btn_refresh_state.clicked.connect(self._refresh_foreground_now)
@@ -770,7 +680,7 @@ class SoftwareManagerTab(QWidget):
         self.btn_refresh_apps.clicked.connect(self._refresh_apps)
         self.edt_app_search.textChanged.connect(self._apply_app_filter)
         self.cb_show_system_apps.stateChanged.connect(self._refresh_apps)
-        self.list_apps.itemSelectionChanged.connect(self._on_app_selected)
+        # Card selection is handled via _AppCard.clicked signal in _add_app_card
         self.btn_install.clicked.connect(self._install_apk)
         self.btn_freeze.clicked.connect(self._freeze_app)
         self.btn_unfreeze.clicked.connect(self._unfreeze_app)
@@ -785,9 +695,257 @@ class SoftwareManagerTab(QWidget):
         self.btn_refresh_disabled.clicked.connect(self._refresh_disabled_components)
         self.btn_enable_component.clicked.connect(self._enable_component)
 
+    def _build_apps_list_card(self, parent_lay):
+        card = CardWidget()
+        lay = QVBoxLayout(card)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(16)
+        
+        head = QHBoxLayout()
+        icon = QLabel("📦")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("已安装应用")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        
+        self.btn_clear_selected = PushButton(FluentIcon.CLEAR_SELECTION, "清除选中")
+        self.btn_refresh_apps = PushButton(FluentIcon.SYNC, "刷新")
+        head.addWidget(self.btn_clear_selected)
+        head.addWidget(self.btn_refresh_apps)
+        lay.addLayout(head)
+        
+        self.edt_app_search = LineEdit()
+        self.edt_app_search.setPlaceholderText("搜索包名/应用名...")
+        self.edt_app_search.setClearButtonEnabled(True)
+        lay.addWidget(self.edt_app_search)
+        
+        self.cb_show_system_apps = CheckBox("显示系统应用")
+        lay.addWidget(self.cb_show_system_apps)
+        
+        self.apps_scroll = SmoothScrollArea()
+        self.apps_scroll.setWidgetResizable(True)
+        self.apps_scroll.setStyleSheet('QScrollArea{border:none;background:transparent;}')
+        scroll_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.apps_scroll.setSizePolicy(scroll_policy)
+        self.apps_scroll.setMinimumHeight(320)
+        self.apps_container = QWidget()
+        self.apps_container.setStyleSheet('QWidget{background:transparent;}')
+        self.apps_scroll.setWidget(self.apps_container)
+        
+        self.apps_cards_lay = QVBoxLayout(self.apps_container)
+        self.apps_cards_lay.setContentsMargins(0, 0, 0, 0)
+        self.apps_cards_lay.setSpacing(6)
+        self.apps_cards_lay.addStretch(1)
+        
+        lay.addWidget(self.apps_scroll, 1)
+        self.list_apps = None
+        parent_lay.addWidget(card, 1)
+        
+    def _build_state_card(self, parent_lay):
+        card = CardWidget()
+        lay = QVBoxLayout(card)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(16)
+        
+        head = QHBoxLayout()
+        icon = QLabel("📱")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("前台状态监控")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        
+        self.chk_auto_refresh = CheckBox("自动刷新")
+        self.btn_refresh_state = PushButton(FluentIcon.SYNC, "立即刷新")
+        head.addWidget(self.chk_auto_refresh)
+        head.addWidget(self.btn_refresh_state)
+        lay.addLayout(head)
+        
+        from PySide6.QtWidgets import QGridLayout
+        grid = QGridLayout()
+        grid.setSpacing(12)
+        
+        # 采用2x2网格展示这四个信息
+        def _make_info_item(title_text):
+            w = QWidget()
+            w.setObjectName("infoItem")
+            l = QVBoxLayout(w)
+            l.setContentsMargins(12, 10, 12, 10)
+            l.setSpacing(4)
+            w.setStyleSheet("#infoItem {background: rgba(0,0,0,0.03); border-radius: 8px;}")
+            t = CaptionLabel(title_text)
+            t.setStyleSheet("color: #86909c;")
+            v = BodyLabel('-')
+            v.setStyleSheet("color: #1d2129;")
+            v.setTextInteractionFlags(Qt.TextSelectableByMouse)
+            l.addWidget(t)
+            l.addWidget(v)
+            return w, v
+            
+        w1, self.lbl_dev = _make_info_item("当前设备")
+        w2, self.lbl_selected = _make_info_item("列表中选中包名")
+        self.lbl_selected.setStyleSheet("color: #2A74DA; font-weight: 600;")
+        w3, self.lbl_pkg = _make_info_item("当前前台包名")
+        w4, self.lbl_act = _make_info_item("当前 Activity")
+        self.lbl_act.setStyleSheet("color: rgba(0,0,0,0.62);")
+        
+        grid.addWidget(w1, 0, 0)
+        grid.addWidget(w2, 0, 1)
+        grid.addWidget(w3, 1, 0)
+        grid.addWidget(w4, 1, 1)
+        
+        lay.addLayout(grid)
+        parent_lay.addWidget(card)
+        
+    def _build_ops_panel(self, parent_lay):
+        card = CardWidget()
+        lay = QVBoxLayout(card)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(16)
+        
+        head = QHBoxLayout()
+        icon = QLabel("🛠️")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("操作面板")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        
+        self.cmb_section = ComboBox()
+        self.cmb_section.addItems(["安装APK", "应用操作", "组件管理"])
+        self.cmb_section.setFixedWidth(140)
+        head.addWidget(self.cmb_section)
+        lay.addLayout(head)
+        
+        self.stack_section = QStackedWidget()
+        
+        # Page 1: Install APK
+        p1 = QWidget()
+        l1 = QVBoxLayout(p1)
+        l1.setContentsMargins(0, 0, 0, 0)
+        l1.setSpacing(16)
+        
+        h_apk = QHBoxLayout()
+        self.cb_reinstall = CheckBox("覆盖安装/降级")
+        self.cb_downgrade = CheckBox("允许降级(如需)")
+        h_apk.addWidget(self.cb_reinstall)
+        h_apk.addWidget(self.cb_downgrade)
+        h_apk.addStretch(1)
+        self.btn_install = PrimaryPushButton(FluentIcon.DOWNLOAD, "安装本地 APK")
+        h_apk.addWidget(self.btn_install)
+        l1.addLayout(h_apk)
+        
+        self.install_progress = QProgressBar()
+        self.install_progress.setRange(0, 0)
+        self.install_progress.setTextVisible(True)
+        self.install_progress.setFormat("正在安装…")
+        self.install_progress.setVisible(False)
+        self.install_progress.setStyleSheet(
+            "QProgressBar{border:1px solid rgba(0,0,0,0.08);border-radius:8px;background:rgba(0,0,0,0.03);padding:2px;}"
+            "QProgressBar::chunk{border-radius:8px;background:rgba(42,116,218,0.55);}"
+        )
+        l1.addWidget(self.install_progress)
+        l1.addStretch(1)
+        self.stack_section.addWidget(p1)
+        
+        def _on_downgrade_changed():
+            on = self.cb_downgrade.isChecked()
+            if on:
+                self.cb_reinstall.setChecked(True)
+            self.cb_reinstall.setEnabled(not self._installing and not on)
+        self.cb_downgrade.stateChanged.connect(_on_downgrade_changed)
+        
+        # Page 2: App Ops
+        p2 = QWidget()
+        l2 = QVBoxLayout(p2)
+        l2.setContentsMargins(0, 0, 0, 0)
+        l2.setSpacing(16)
+        
+        op_hint = BodyLabel("默认基于当前前台包名，在左侧列表选中时则基于选中包名。")
+        op_hint.setStyleSheet("color: #4e5969;")
+        l2.addWidget(op_hint)
+        
+        row1 = QHBoxLayout()
+        self.btn_freeze = PushButton("冻结应用")
+        self.btn_unfreeze = PushButton("解冻应用")
+        self.btn_force_stop = PushButton("强行停止")
+        self.btn_open_permissions = PushButton("权限设置页")
+        row1.addWidget(self.btn_freeze)
+        row1.addWidget(self.btn_unfreeze)
+        row1.addWidget(self.btn_force_stop)
+        row1.addWidget(self.btn_open_permissions)
+        row1.addStretch(1)
+        l2.addLayout(row1)
+        
+        row2 = QHBoxLayout()
+        self.btn_uninstall = PushButton("卸载")
+        self.btn_uninstall_keep = PushButton("保留数据卸载")
+        self.btn_clear_data = PushButton("清除数据")
+        self.btn_pull_apk = PushButton("提取APK到电脑")
+        row2.addWidget(self.btn_uninstall)
+        row2.addWidget(self.btn_uninstall_keep)
+        row2.addWidget(self.btn_clear_data)
+        row2.addWidget(self.btn_pull_apk)
+        row2.addStretch(1)
+        l2.addLayout(row2)
+        
+        row3 = QHBoxLayout()
+        self.btn_disable_activity = PushButton("禁用当前 Activity")
+        self.cb_root_disable_activity = CheckBox("Root禁用")
+        self.btn_open_oplog = PushButton(FluentIcon.DOCUMENT, "操作记录")
+        row3.addWidget(self.btn_disable_activity)
+        row3.addWidget(self.cb_root_disable_activity)
+        row3.addWidget(self.btn_open_oplog)
+        row3.addStretch(1)
+        l2.addLayout(row3)
+        l2.addStretch(1)
+        self.stack_section.addWidget(p2)
+        
+        # Page 3: Component Mgt
+        p3 = QWidget()
+        l3 = QVBoxLayout(p3)
+        l3.setContentsMargins(0, 0, 0, 0)
+        l3.setSpacing(16)
+        
+        h_dis = QHBoxLayout()
+        h_dis.addWidget(QLabel("已禁用组件:"))
+        h_dis.addStretch(1)
+        self.btn_refresh_disabled = PushButton(FluentIcon.SYNC, "刷新列表")
+        h_dis.addWidget(self.btn_refresh_disabled)
+        l3.addLayout(h_dis)
+        
+        self.list_disabled = ListWidget()
+        self.list_disabled.setMinimumHeight(140)
+        l3.addWidget(self.list_disabled)
+        
+        row_en = QHBoxLayout()
+        self.edt_component = LineEdit()
+        self.edt_component.setPlaceholderText("包名/类名，或从上方选择")
+        self.btn_enable_component = PushButton("恢复组件")
+        row_en.addWidget(self.edt_component)
+        row_en.addWidget(self.btn_enable_component)
+        l3.addLayout(row_en)
+        l3.addStretch(1)
+        self.stack_section.addWidget(p3)
+        
+        lay.addWidget(self.stack_section)
+        parent_lay.addWidget(card)
+        parent_lay.addStretch(1)
+        
+        self.cmb_section.currentIndexChanged.connect(self.stack_section.setCurrentIndex)
+        self.stack_section.setCurrentIndex(0)
+
     # -------- helpers --------
-    def _noop(self, _s: str):
-        return
+    def _append_log(self, text: str):
+        try:
+            if hasattr(self, 'log_widget'):
+                self.log_widget.append_log(str(text))
+        except Exception:
+            pass
 
     def _oplog_path(self) -> Path:
         root = Path(__file__).resolve().parents[2]
@@ -905,12 +1063,21 @@ class SoftwareManagerTab(QWidget):
 
         self._pause_foreground_timer()
         self._pending_op_desc = op_desc
+        
+        # 使用 Step-based logging
+        if op_desc and hasattr(self, 'log_widget'):
+            import uuid
+            self._pending_step_id = str(uuid.uuid4())
+            self.log_widget.start_step(self._pending_step_id, op_desc)
+        else:
+            self._pending_step_id = None
 
         self._thread = QThread(self)
-        self._worker = _AdbCmdWorker(serial, cmd_args, op_desc=op_desc)
+        # op_desc 置为 None，避免 worker 重复输出标题，标题已由 start_step 输出
+        self._worker = _AdbCmdWorker(serial, cmd_args, op_desc=None)
         self._worker.moveToThread(self._thread)
         self._thread.started.connect(self._worker.run)
-        self._worker.output.connect(self._noop)
+        self._worker.output.connect(self._append_log)
         self._worker.finished.connect(self._on_cmd_finished)
         self._worker.finished.connect(self._thread.quit)
         self._worker.finished.connect(self._worker.deleteLater)
@@ -923,7 +1090,20 @@ class SoftwareManagerTab(QWidget):
         try:
             title = '完成' if code == 0 else '失败'
             prefix = (self._pending_op_desc + ' - ') if self._pending_op_desc else ''
-            self._toast('ok' if code == 0 else 'warn', title, f"{prefix}命令返回码: {code}")
+            msg = f"{prefix}命令返回码: {code}"
+            self._toast('ok' if code == 0 else 'warn', title, msg)
+            
+            # Step based finish
+            if getattr(self, '_pending_step_id', None) and hasattr(self, 'log_widget'):
+                success = (code == 0)
+                detail = "" if success else f"Code {code}"
+                self.log_widget.finish_step(self._pending_step_id, success, detail)
+                self._pending_step_id = None
+            else:
+                if code != 0:
+                    self._append_log(f"Error: {msg}")
+                else:
+                    self._append_log(f"Success: {msg}")
         except Exception:
             pass
 
@@ -1106,51 +1286,19 @@ class SoftwareManagerTab(QWidget):
         return (self._current_pkg or '').strip()
 
     def _on_app_selected(self):
-        try:
-            items = self.list_apps.selectedItems() if self.list_apps else []
-        except Exception:
-            items = []
-        if not items:
-            self._selected_pkg = ''
-            try:
-                self.lbl_selected.setText('已选包名：-')
-            except Exception:
-                pass
-            return
-        pkg = ''
-        try:
-            pkg = str(items[0].data(Qt.UserRole) or '').strip()
-        except Exception:
-            pkg = ''
-        if not pkg:
-            pkg = str(items[0].text() or '').strip()
-        self._selected_pkg = pkg
-        try:
-            self.lbl_selected.setText(f'已选包名：{pkg}')
-        except Exception:
-            pass
-        try:
-            # 选中后滚动到可见区域
-            self.list_apps.scrollToItem(items[0])
-        except Exception:
-            pass
-
-        # Lazy load label
-        try:
-            if pkg and pkg not in self._label_cache:
-                self._fetch_label_for_pkg(pkg)
-        except Exception:
-            pass
+        # Legacy method for ListWidget - now handled by _on_app_card_clicked
+        pass
 
     def _clear_selected_pkg(self):
         self._selected_pkg = ''
+        # Deselect all cards
         try:
-            if self.list_apps:
-                self.list_apps.clearSelection()
+            for c in self._app_cards:
+                c.set_selected(False)
         except Exception:
             pass
         try:
-            self.lbl_selected.setText('已选包名：-')
+            self.lbl_selected.setText('-')
         except Exception:
             pass
         # revert to foreground package for operations; clear component UI
@@ -1172,16 +1320,10 @@ class SoftwareManagerTab(QWidget):
         except Exception:
             q = ''
         try:
-            for i in range(self.list_apps.count()):
-                it = self.list_apps.item(i)
-                # search both display text and raw package
-                pkg = ''
-                try:
-                    pkg = str(it.data(Qt.UserRole) or '')
-                except Exception:
-                    pkg = ''
-                txt = ((it.text() or '') + ' ' + pkg).lower()
-                it.setHidden(bool(q) and q not in txt)
+            for card in self._app_cards:
+                # search both label and package name
+                txt = ((card.label or '') + ' ' + (card.pkg or '')).lower()
+                card.setVisible((not q) or (q in txt))
         except Exception:
             pass
 
@@ -1239,35 +1381,130 @@ class SoftwareManagerTab(QWidget):
                     pkgs.append(s.split(':', 1)[1].strip())
             pkgs = sorted(set([p for p in pkgs if p]))
 
+            # Show cards immediately with cached labels
             cur = self._selected_pkg
-            self.list_apps.clear()
+            self._clear_app_cards()
             for p in pkgs:
                 label = self._label_cache.get(p, '')
-                text = f"{label}\n{p}" if label else p
-                it = QListWidgetItem(text)
-                try:
-                    it.setData(Qt.UserRole, p)
-                    it.setToolTip(p)
-                except Exception:
-                    pass
-                self.list_apps.addItem(it)
+                self._add_app_card(p, label)
             self._apply_app_filter()
             if cur:
-                for i in range(self.list_apps.count()):
-                    try:
-                        if str(self.list_apps.item(i).data(Qt.UserRole) or '') == cur:
-                            self.list_apps.setCurrentRow(i)
-                            break
-                    except Exception:
-                        pass
-                    if self.list_apps.item(i).text() == cur:
-                        self.list_apps.setCurrentRow(i)
+                for card in self._app_cards:
+                    if card.pkg == cur:
+                        self._on_app_card_clicked(card)
                         break
+
+            # Start batch label fetch in background to update labels
+            self._pending_pkgs = pkgs
+            to_fetch = [p for p in pkgs if p not in self._label_cache]
+            if to_fetch:
+                self._toast('info', '提示', f'正在获取 {len(to_fetch)} 个应用名称…', ms=3000)
+            self._start_batch_label_fetch(pkgs)
         except Exception:
             pass
         self._apps_worker = None
         self._apps_thread = None
         self._apps_out = []
+
+    def _start_batch_label_fetch(self, pkgs: list[str]):
+        # Filter out packages we already have labels for
+        to_fetch = [p for p in pkgs if p not in self._label_cache]
+
+        if not to_fetch:
+            # All labels cached, show cards immediately
+            self._show_app_cards_with_labels()
+            return
+
+        serial = self._get_default_serial()
+        if not serial:
+            # No device, show cards without labels
+            self._show_app_cards_with_labels()
+            return
+
+        if self._batch_label_thread and self._batch_label_thread.isRunning():
+            # Already fetching, will show when done
+            return
+
+        self._batch_label_thread = QThread(self)
+        self._batch_label_worker = _BatchLabelWorker(serial, to_fetch)
+        self._batch_label_worker.moveToThread(self._batch_label_thread)
+        self._batch_label_thread.started.connect(self._batch_label_worker.run)
+        self._batch_label_worker.finished.connect(self._on_batch_label_finished, Qt.QueuedConnection)
+        self._batch_label_worker.finished.connect(self._batch_label_thread.quit)
+        self._batch_label_worker.finished.connect(self._batch_label_worker.deleteLater)
+        self._batch_label_thread.finished.connect(self._batch_label_thread.deleteLater)
+        self._batch_label_thread.start()
+
+    def _on_batch_label_finished(self, labels: dict):
+        try:
+            # Update cache with new labels
+            if labels:
+                self._label_cache.update(labels)
+                # Update existing cards with new labels
+                updated = 0
+                for card in self._app_cards:
+                    if card.pkg in labels:
+                        card.set_label(labels[card.pkg])
+                        updated += 1
+                if updated > 0:
+                    self._toast('ok', '完成', f'已获取 {updated} 个应用名称', ms=2000)
+        except Exception:
+            pass
+        try:
+            self._batch_label_worker = None
+            self._batch_label_thread = None
+        except Exception:
+            pass
+        self._pending_pkgs = []
+
+    def _clear_app_cards(self):
+        try:
+            for c in self._app_cards:
+                try:
+                    c.setParent(None)
+                    c.deleteLater()
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        self._app_cards = []
+        try:
+            while self.apps_cards_lay.count() > 0:
+                item = self.apps_cards_lay.takeAt(0)
+                w = item.widget()
+                if w is not None:
+                    try:
+                        w.setParent(None)
+                        w.deleteLater()
+                    except Exception:
+                        pass
+            self.apps_cards_lay.addStretch(1)
+        except Exception:
+            pass
+
+    def _add_app_card(self, pkg: str, label: str = ''):
+        card = _AppCard(pkg, label, self.apps_container)
+        self._app_cards.append(card)
+        card.selected.connect(self._on_app_card_clicked)
+        # Insert before stretch
+        idx = max(0, self.apps_cards_lay.count() - 1)
+        self.apps_cards_lay.insertWidget(idx, card)
+
+    def _on_app_card_clicked(self, card: _AppCard):
+        # Deselect all other cards
+        for c in self._app_cards:
+            c.set_selected(c is card)
+        self._selected_pkg = card.pkg
+        try:
+            self.lbl_selected.setText(card.pkg)
+        except Exception:
+            pass
+        # Lazy load label
+        try:
+            if card.pkg and card.pkg not in self._label_cache:
+                self._fetch_label_for_pkg(card.pkg)
+        except Exception:
+            pass
 
     def _fetch_label_for_pkg(self, pkg: str):
         if not pkg:
@@ -1316,16 +1553,12 @@ class SoftwareManagerTab(QWidget):
             if pkg and label:
                 self._label_cache[pkg] = label
 
-            # update visible item if present
+            # update visible card if present
             if pkg and label:
-                for i in range(self.list_apps.count()):
-                    it = self.list_apps.item(i)
-                    try:
-                        if str(it.data(Qt.UserRole) or '') == pkg:
-                            it.setText(f"{label}\n{pkg}")
-                            break
-                    except Exception:
-                        continue
+                for card in self._app_cards:
+                    if card.pkg == pkg:
+                        card.set_label(label)
+                        break
         except Exception:
             pass
         self._label_worker = None
@@ -1702,8 +1935,8 @@ class SoftwareManagerTab(QWidget):
     def _on_foreground_result(self, pkg: str, act: str):
         self._current_pkg = (pkg or '').strip()
         self._current_activity = (act or '').strip()
-        self.lbl_pkg.setText(f"前台包名：{self._current_pkg or '-'}")
-        self.lbl_act.setText(f"当前Activity：{self._current_activity or '-'}")
+        self.lbl_pkg.setText(self._current_pkg or '-')
+        self.lbl_act.setText(self._current_activity or '-')
 
     def _refresh_foreground_now(self):
         serial = self._get_default_serial()
@@ -1713,16 +1946,16 @@ class SoftwareManagerTab(QWidget):
             except Exception:
                 serials = []
             if not serials:
-                self.lbl_dev.setText("设备：未检测到")
+                self.lbl_dev.setText('未检测到')
             else:
-                self.lbl_dev.setText(f"设备：检测到多个设备({len(serials)})")
-            self.lbl_pkg.setText("前台包名：-")
-            self.lbl_act.setText("当前Activity：-")
+                self.lbl_dev.setText(f'检测到多个设备({len(serials)})')
+            self.lbl_pkg.setText('-')
+            self.lbl_act.setText('-')
             self._current_pkg = ""
             self._current_activity = ""
             return
 
-        self.lbl_dev.setText(f"设备：{serial}")
+        self.lbl_dev.setText(serial)
 
         if self._fg_worker is None:
             return

@@ -4,22 +4,11 @@ import time
 import subprocess
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QFileDialog,
-    QTableWidgetItem, QMenu, QInputDialog, QProgressBar
+    QTableWidgetItem, QMenu, QInputDialog, QProgressBar, QAbstractItemView
 )
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt, QThread, QObject, Signal, QTimer
-from qfluentwidgets import (
-    CardWidget,
-    PrimaryPushButton,
-    PushButton,
-    InfoBar,
-    InfoBarPosition,
-    TitleLabel,
-    TableWidget,
-    FluentIcon,
-    MessageDialog,
-    SmoothScrollArea,
-)
+from qfluentwidgets import (CardWidget, PrimaryPushButton, PushButton, InfoBar, InfoBarPosition, TitleLabel, TableWidget, FluentIcon, MessageDialog, SmoothScrollArea, BodyLabel, CaptionLabel)
 
 from app.services import adb_service
 
@@ -163,106 +152,31 @@ class FileManagerTab(QWidget):
         except Exception:
             pass
 
-        # 顶部 Banner，与其它标签页风格一致
-        from PySide6.QtWidgets import QWidget as _W
-        banner_w = _W(self)
-        try:
-            banner_w.setFixedHeight(110)
-        except Exception:
-            pass
-        try:
-            banner_w.setStyleSheet("background: transparent;")
-        except Exception:
-            pass
-        try:
-            banner_w.setAttribute(Qt.WA_TranslucentBackground, True)
-        except Exception:
-            pass
-        banner = QHBoxLayout(banner_w)
-        banner.setContentsMargins(24, 18, 24, 18)
-        banner.setSpacing(16)
-        icon_lbl = QLabel("", banner_w)
-        try:
-            icon_lbl.setStyleSheet("background: transparent;")
-            icon_lbl.setFixedSize(48, 48)
-            icon_lbl.setAlignment(Qt.AlignCenter)
-            _ico = FluentIcon.FOLDER.icon()
-            icon_lbl.setPixmap(_ico.pixmap(48, 48))
-        except Exception:
-            pass
-        title_col = QVBoxLayout(); title_col.setContentsMargins(0,0,0,0); title_col.setSpacing(4)
-        t = QLabel("文件管理器", banner_w)
-        try:
-            t.setStyleSheet("font-size: 22px; font-weight: 600;")
-        except Exception:
-            pass
-        s = QLabel("包含基础功能的手机端文件管理工具（导入导出进度不准确，需要手动确认文件状态）", banner_w)
-        try:
-            s.setStyleSheet("font-size: 14px;")
-        except Exception:
-            pass
-        title_col.addWidget(t); title_col.addWidget(s)
-        banner.addWidget(icon_lbl); banner.addLayout(title_col); banner.addStretch(1)
-        root.addWidget(banner_w)
-
-        card = CardWidget(self)
-        lay = QVBoxLayout(card); lay.setContentsMargins(16,16,16,16); lay.setSpacing(10)
-
-        # path row
-        row = QHBoxLayout(); row.setSpacing(8)
-        self.path_edit = QLineEdit(self._cwd)
-        self.btn_up = PushButton('上级')
-        self.btn_go = PrimaryPushButton('打开')
-        self.btn_refresh = PushButton('刷新')
-        row.addWidget(QLabel('路径:'))
-        row.addWidget(self.path_edit)
-        row.addWidget(self.btn_up)
-        row.addWidget(self.btn_go)
-        row.addWidget(self.btn_refresh)
-        lay.addLayout(row)
-
-        # 列表表格（与其它页一致的 TableWidget）
-        self.table = TableWidget(self)
-        try:
-            self.table.setColumnCount(3)
-            self.table.setHorizontalHeaderLabels(["名称", "大小", "类型"])
-            header = self.table.horizontalHeader()
-            header.setStretchLastSection(False)
-            from PySide6.QtWidgets import QHeaderView
-            header.setSectionResizeMode(QHeaderView.Stretch)
-            self.table.setAlternatingRowColors(True)
-            self.table.setSelectionBehavior(self.table.SelectRows)
-            self.table.setEditTriggers(self.table.NoEditTriggers)
-            # 右键菜单绑定到 viewport，确保在单元格/空白处都能触发
-            self.table.viewport().setContextMenuPolicy(Qt.CustomContextMenu)
-            # 兼容部分环境：同时在表格本体也启用自定义菜单策略
-            self.table.setContextMenuPolicy(Qt.CustomContextMenu)
-        except Exception:
-            pass
-        lay.addWidget(self.table)
-
-        # actions
-        act = QHBoxLayout(); act.setSpacing(8)
-        self.btn_pull = PrimaryPushButton('拉取到本地')
-        act.addStretch(1)
-        act.addWidget(self.btn_pull)
-        lay.addLayout(act)
-
-        root.addWidget(card)
-
-        # 底部内嵌进度条（默认隐藏）
-        prog_row = QHBoxLayout(); prog_row.setContentsMargins(0, 0, 0, 0); prog_row.setSpacing(8)
-        self.prog_label = QLabel('0%', self)
-        self.prog_bar = QProgressBar(self)
-        self.prog_bar.setRange(0, 100)
-        self.prog_wrap = QWidget(self)
-        _wrap_l = QHBoxLayout(self.prog_wrap); _wrap_l.setContentsMargins(0,0,0,0); _wrap_l.setSpacing(8)
-        _wrap_l.addWidget(self.prog_label)
-        _wrap_l.addWidget(self.prog_bar, 1)
-        self.status_label = QLabel('', self)
-        _wrap_l.addWidget(self.status_label)
-        self.prog_wrap.setVisible(False)
-        root.addWidget(self.prog_wrap)
+        self._build_banner(root)
+        
+        # 主要工作区
+        main_h_layout = QHBoxLayout()
+        main_h_layout.setSpacing(24)
+        
+        left_col = QVBoxLayout()
+        left_col.setSpacing(24)
+        self._build_browser_card(left_col)
+        
+        right_col = QVBoxLayout()
+        right_col.setSpacing(24)
+        self._build_action_card(right_col)
+        self._build_progress_card(right_col)
+        self._build_info_card(right_col)
+        right_col.addStretch(1)
+        
+        left_w = QWidget()
+        left_w.setLayout(left_col)
+        right_w = QWidget()
+        right_w.setLayout(right_col)
+        
+        main_h_layout.addWidget(left_w, 7)
+        main_h_layout.addWidget(right_w, 3)
+        root.addLayout(main_h_layout)
 
         # signals
         self.btn_refresh.clicked.connect(self._refresh)
@@ -275,6 +189,165 @@ class FileManagerTab(QWidget):
             self.table.customContextMenuRequested.connect(self._on_ctx_menu_widget)
         except Exception:
             pass
+            
+    def _build_banner(self, parent_lay):
+        banner_w = QWidget()
+        banner_w.setFixedHeight(110)
+        banner_w.setStyleSheet("background: transparent;")
+        banner = QHBoxLayout(banner_w)
+        banner.setContentsMargins(24, 18, 24, 18)
+        banner.setSpacing(16)
+        
+        icon_lbl = QLabel()
+        icon_lbl.setStyleSheet("background: transparent;")
+        icon_lbl.setFixedSize(48, 48)
+        icon_lbl.setAlignment(Qt.AlignCenter)
+        icon_lbl.setPixmap(FluentIcon.FOLDER.icon().pixmap(48, 48))
+        
+        title_col = QVBoxLayout()
+        title_col.setContentsMargins(0,0,0,0)
+        title_col.setSpacing(4)
+        t = QLabel("文件管理器")
+        t.setStyleSheet("font-size: 22px; font-weight: 600;")
+        s = QLabel("包含基础功能的手机端文件管理工具")
+        s.setStyleSheet("font-size: 14px;")
+        title_col.addWidget(t)
+        title_col.addWidget(s)
+        
+        banner.addWidget(icon_lbl)
+        banner.addLayout(title_col)
+        banner.addStretch(1)
+        parent_lay.addWidget(banner_w)
+        
+    def _build_browser_card(self, parent_lay):
+        card = CardWidget()
+        lay = QVBoxLayout(card)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(16)
+        
+        head = QHBoxLayout()
+        icon = QLabel("📂")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("文件浏览")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        lay.addLayout(head)
+        
+        path_row = QHBoxLayout()
+        path_row.setSpacing(8)
+        self.btn_up = PushButton(FluentIcon.UP, '上级')
+        self.path_edit = QLineEdit(self._cwd)
+        self.btn_go = PrimaryPushButton('打开')
+        self.btn_refresh = PushButton(FluentIcon.SYNC, '刷新')
+        path_row.addWidget(self.btn_up)
+        path_row.addWidget(self.path_edit, 1)
+        path_row.addWidget(self.btn_go)
+        path_row.addWidget(self.btn_refresh)
+        lay.addLayout(path_row)
+        
+        self.table = TableWidget()
+        self.table.setColumnCount(3)
+        self.table.setHorizontalHeaderLabels(["名称", "大小", "类型"])
+        header = self.table.horizontalHeader()
+        header.setStretchLastSection(False)
+        from PySide6.QtWidgets import QHeaderView
+        header.setSectionResizeMode(QHeaderView.Stretch)
+        self.table.setAlternatingRowColors(True)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.viewport().setContextMenuPolicy(Qt.CustomContextMenu)
+        self.table.setContextMenuPolicy(Qt.CustomContextMenu)
+        
+        lay.addWidget(self.table, 1)
+        parent_lay.addWidget(card, 1)
+        
+    def _build_action_card(self, parent_lay):
+        card = CardWidget()
+        lay = QVBoxLayout(card)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(16)
+        
+        head = QHBoxLayout()
+        icon = QLabel("🛠️")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("快捷操作")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        lay.addLayout(head)
+        
+        self.btn_pull = PrimaryPushButton(FluentIcon.DOWNLOAD, '拉取选中项到本地')
+        self.btn_pull.setFixedHeight(36)
+        lay.addWidget(self.btn_pull)
+        
+        parent_lay.addWidget(card)
+        
+    def _build_progress_card(self, parent_lay):
+        self.prog_wrap = CardWidget()
+        lay = QVBoxLayout(self.prog_wrap)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(12)
+        
+        head = QHBoxLayout()
+        icon = QLabel("⏳")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("传输进度")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        self.prog_label = QLabel('0%')
+        self.prog_label.setStyleSheet("font-weight:bold; color:#1677ff;")
+        head.addWidget(self.prog_label)
+        lay.addLayout(head)
+        
+        self.prog_bar = QProgressBar()
+        self.prog_bar.setRange(0, 100)
+        self.prog_bar.setTextVisible(False)
+        self.prog_bar.setFixedHeight(6)
+        self.prog_bar.setStyleSheet(
+            "QProgressBar{border:none;border-radius:3px;background:rgba(0,0,0,0.05);}"
+            "QProgressBar::chunk{border-radius:3px;background:#1677ff;}"
+        )
+        lay.addWidget(self.prog_bar)
+        
+        self.status_label = BodyLabel('准备就绪')
+        self.status_label.setStyleSheet("color:#4e5969; font-size:13px;")
+        lay.addWidget(self.status_label)
+        
+        self.prog_wrap.setVisible(False)
+        parent_lay.addWidget(self.prog_wrap)
+        
+    def _build_info_card(self, parent_lay):
+        card = CardWidget()
+        lay = QVBoxLayout(card)
+        lay.setContentsMargins(20, 20, 20, 20)
+        lay.setSpacing(16)
+        
+        head = QHBoxLayout()
+        icon = QLabel("💡")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("使用提示")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        lay.addLayout(head)
+        
+        content = BodyLabel(
+            "1. 右键文件或目录可以执行高级操作，如复制、移动、删除等。\n\n"
+            "2. 双击文件夹可以进入该目录。\n\n"
+            "3. 拉取/推送超大文件时，UI 可能会有轻微卡顿。\n\n"
+            "4. Android 11+ 设备部分目录(如 Android/data) 权限受限，可能无法访问。"
+        )
+        content.setWordWrap(True)
+        content.setStyleSheet("color:#4e5969; font-size:14px; line-height: 1.6;")
+        lay.addWidget(content)
+        
+        parent_lay.addWidget(card)
         
 
     def _refresh(self):

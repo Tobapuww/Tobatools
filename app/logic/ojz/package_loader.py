@@ -8,8 +8,15 @@ from app.logic.payload_extractor import PayloadExtractor
 
 
 class OJZPackageLoader:
-    def __init__(self, log_callback: Callable[[str], None]):
+    def __init__(
+        self,
+        log_callback: Callable[[str], None],
+        step_start: Optional[Callable[[str, str], None]] = None,
+        step_finish: Optional[Callable[[str, bool, str], None]] = None,
+    ):
         self.log = log_callback
+        self.step_start = step_start
+        self.step_finish = step_finish
         self._extractor: Optional[PayloadExtractor] = None
 
     def stop(self):
@@ -32,7 +39,11 @@ class OJZPackageLoader:
         return sum(1 for f in p.glob('*.img'))
 
     def extract_all_from_ota(self, ota_path: str, out_dir: str) -> bool:
-        self._extractor = PayloadExtractor(log_callback=self.log)
+        self._extractor = PayloadExtractor(
+            log_callback=self.log,
+            step_start=self.step_start,
+            step_finish=self.step_finish,
+        )
         try:
             return self._extractor.extract(ota_path, out_dir, partitions="")
         finally:

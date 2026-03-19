@@ -17,6 +17,8 @@ def extract(
     *,
     workers: Optional[int] = None,
     log_callback: Optional[Callable[[str], None]] = None,
+    step_start: Optional[Callable[[str, str], None]] = None,
+    step_finish: Optional[Callable[[str, bool, str], None]] = None,
     cancel_event: Optional[Event] = None,
 ) -> bool:
     """Extract images from payload.bin or OTA zip containing payload.bin.
@@ -51,6 +53,8 @@ def extract(
             partitions=partitions,
             workers=workers,
             log_callback=log_callback,
+            step_start=step_start,
+            step_finish=step_finish,
             cancel_event=cancel_event,
         )
         dumper.run()

@@ -158,6 +158,15 @@ class SettingsTab(QWidget):
         )
         self.card_update.clicked.connect(self._check_update)
 
+        self.card_website = PushSettingCard(
+            "访问",
+            FluentIcon.GLOBE if hasattr(FluentIcon, "GLOBE") else FluentIcon.LINK,
+            "拖把工具箱官方网站",
+            "https://tobatools.top",
+            self.group_about
+        )
+        self.card_website.clicked.connect(lambda: self._open_url("https://tobatools.top"))
+
         self.card_repo = PushSettingCard(
             "打开",
             FluentIcon.GITHUB if hasattr(FluentIcon, "GITHUB") else FluentIcon.LINK,
@@ -187,6 +196,7 @@ class SettingsTab(QWidget):
         
         self.group_about.addSettingCard(self.card_about)
         self.group_about.addSettingCard(self.card_update)
+        self.group_about.addSettingCard(self.card_website)
         self.group_about.addSettingCard(self.card_repo)
         self.group_about.addSettingCard(self.card_qq_group)
         self.group_about.addSettingCard(self.card_tg_group)

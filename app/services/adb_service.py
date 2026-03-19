@@ -5,6 +5,7 @@ import struct
 import time
 import uuid
 import shutil
+import sys
 from typing import Dict, List, Tuple
 from pathlib import Path
 
@@ -269,7 +270,7 @@ def _silent_kwargs():
 def _run(cmd: List[str], timeout: int = 8) -> str:
     try:
         out = subprocess.check_output(cmd, stderr=subprocess.STDOUT, timeout=timeout, **_silent_kwargs())
-        return out.decode(errors='ignore').strip()
+        return out.decode(errors='ignore')
     except subprocess.TimeoutExpired:
         return ""  # 超时，返回空
     except FileNotFoundError:
@@ -590,7 +591,97 @@ def detect_connection_mode() -> Tuple[str, str]:
                 return ("fastbootd", serial)
             return ("bootloader", serial)
 
+    # Fallback: detect special USB/COM port modes (Windows)
+    try:
+        port_mode, port_id = _detect_special_port_mode()
+        if port_mode != "none":
+            return (port_mode, port_id)
+    except Exception:
+        pass
+
     return ("none", found_serial)
+
+
+def _detect_special_port_mode() -> Tuple[str, str]:
+    """Detect EDL(9008) / MTK BROM via Windows COM ports.
+
+    Returns (mode, id):
+    - ("edl", "COMx") for Qualcomm 9008
+    - ("brom", "COMx") for MediaTek preloader/brom/vcom
+    - ("none", "") otherwise
+    """
+    if not sys.platform.startswith("win"):
+        return ("none", "")
+
+    ps_script = r"""
+$ErrorActionPreference = 'SilentlyContinue'
+$items = @()
+$items += Get-CimInstance Win32_SerialPort | Select-Object DeviceID, Name, PNPDeviceID
+$items += Get-CimInstance Win32_PnPEntity | Where-Object {
+    $_.Name -match '\(COM\d+\)' -or $_.Caption -match '\(COM\d+\)'
+} | Select-Object @{Name='DeviceID';Expression={
+    if ($_.Name -match '\((COM\d+)\)') { $matches[1] }
+    elseif ($_.Caption -match '\((COM\d+)\)') { $matches[1] }
+    else { '' }
+}}, @{Name='Name';Expression={
+    if ($_.Name) { $_.Name } elseif ($_.Caption) { $_.Caption } else { '' }
+}}, PNPDeviceID
+$items | ForEach-Object {
+    $dev = [string]$_.DeviceID
+    $name = [string]$_.Name
+    $pnp = [string]$_.PNPDeviceID
+    if ($dev) { Write-Output ($dev + '|' + $name + '|' + $pnp) }
+}
+"""
+    cmd = ["powershell", "-NoProfile", "-Command", ps_script]
+    out = _run(cmd, timeout=4)
+    if not out:
+        return ("none", "")
+
+    seen: set[tuple[str, str]] = set()
+    for raw in out.splitlines():
+        line = (raw or "").strip()
+        if not line:
+            continue
+        parts = line.split("|", 2)
+        com = (parts[0].strip() if len(parts) > 0 else "")
+        name = (parts[1].strip() if len(parts) > 1 else "")
+        pnp = (parts[2].strip() if len(parts) > 2 else "")
+        if not re.match(r"^COM\d+$", com, re.IGNORECASE):
+            continue
+        key = (com.upper(), name)
+        if key in seen:
+            continue
+        seen.add(key)
+
+        text = f"{name} {pnp}".lower()
+        text = text.replace("_", "-")
+
+        # Qualcomm EDL / 9008
+        if (
+            "9008" in text
+            or "qdloader" in text
+            or "qualcomm hs-usb" in text
+            or "qualcomm usb" in text
+            or "emergency download" in text
+            or ("qualcomm" in text and "edl" in text)
+        ):
+            return ("edl", com)
+
+        # MediaTek BROM / Preloader / VCOM
+        if (
+            ("mediatek" in text or "mtk" in text)
+            and (
+                "preloader" in text
+                or "brom" in text
+                or "vcom" in text
+                or "usb port" in text
+                or "download port" in text
+            )
+        ):
+            return ("brom", com)
+
+    return ("none", "")
 
 
 def get_device_info(serial: str) -> Dict[str, str]:
@@ -607,6 +698,7 @@ def get_device_info(serial: str) -> Dict[str, str]:
     add("product", _getprop(serial, "ro.product.name"))
     add("android_version", _getprop(serial, "ro.build.version.release"))
     add("sdk", _getprop(serial, "ro.build.version.sdk"))
+    add("vndk", _getprop(serial, "ro.build.version.vndk"))
     add("build_display", _getprop(serial, "ro.build.display.id"))
     add("fingerprint", _getprop(serial, "ro.build.fingerprint"))
 
@@ -739,6 +831,90 @@ def get_device_info(serial: str) -> Dict[str, str]:
         elif vb == "green":
             unlocked = "locked"
     add("bootloader_unlock", unlocked)
+    
+    # 获取更多信息
+    # 代号
+    add("codename", _getprop(serial, "ro.product.device"))
+    
+    # 序列号（已存在serial字段，这里获取设备序列号）
+    device_serial = _shell(serial, "getprop ro.serialno")
+    if not device_serial:
+        device_serial = _shell(serial, "cat /proc/cmdline | tr ' ' '\\n' | grep androidboot.serialno | cut -d'=' -f2")
+    add("device_serial", device_serial.strip() if device_serial else "")
+    
+    # 已开机时间
+    uptime = _shell(serial, "cat /proc/uptime")
+    if uptime:
+        uptime_seconds = float(uptime.split()[0])
+        days = int(uptime_seconds // 86400)
+        hours = int((uptime_seconds % 86400) // 3600)
+        minutes = int((uptime_seconds % 3600) // 60)
+        if days > 0:
+            uptime_str = f"{days}天 {hours}小时 {minutes}分钟"
+        elif hours > 0:
+            uptime_str = f"{hours}小时 {minutes}分钟"
+        else:
+            uptime_str = f"{minutes}分钟"
+        add("uptime", uptime_str)
+    else:
+        add("uptime", "")
+    
+    # 分辨率
+    wm = _shell(serial, "wm size")
+    if wm and "Physical size:" in wm:
+        resolution = wm.split("Physical size:")[1].strip()
+        add("resolution", resolution)
+    else:
+        add("resolution", "")
+    
+    # 显示密度
+    density = _getprop(serial, "ro.sf.lcd_density")
+    if not density:
+        # 尝试从wm density获取
+        wm_density = _shell(serial, "wm density")
+        if wm_density and "Physical density:" in wm_density:
+            density = wm_density.split("Physical density:")[1].strip()
+    add("display_density", density)
+    
+    # 闪存类型
+    emmc = _read_sys_value(serial, [
+        "/sys/block/mmcblk0/device/type",
+        "/sys/block/mmcblk1/device/type"
+    ])
+    ufs = _read_sys_value(serial, [
+        "/sys/block/sda/device/type",
+        "/sys/block/sdb/device/type"
+    ])
+    storage_type = ""
+    if emmc and "mmc" in emmc.lower():
+        storage_type = "eMMC"
+    elif ufs and "ufs" in ufs.lower():
+        storage_type = "UFS"
+    else:
+        # 尝试通过其他方式判断
+        if _read_sys_value(serial, ["/sys/block/sda"]):
+            storage_type = "UFS"
+        elif _read_sys_value(serial, ["/sys/block/mmcblk0"]):
+            storage_type = "eMMC"
+    add("storage_type", storage_type)
+    
+    # Root权限状态
+    root_status = "未检测"
+    # 检查su命令是否存在
+    su_check = _shell(serial, "which su")
+    if su_check and su_check.strip():
+        root_status = "已Root"
+    else:
+        # 检查常见root管理器
+        magisk = _shell(serial, "which magisk")
+        if magisk and magisk.strip():
+            root_status = "已Root (Magisk)"
+        else:
+            # 检查system分区是否可写
+            system_rw = _shell(serial, "mount | grep ' /system ' | grep rw")
+            if system_rw and system_rw.strip():
+                root_status = "已Root"
+    add("root_status", root_status)
 
     return info
 
@@ -1197,6 +1373,8 @@ def _mode_cn(mode: str) -> str:
         "sideload": "Sideload",
         "fastbootd": "FastbootD",
         "bootloader": "Bootloader",
+        "edl": "9008 (EDL)",
+        "brom": "BROM",
         "offline": "离线",
         "none": "未连接",
     }
@@ -1210,7 +1388,7 @@ def connection_summary() -> Dict[str, str]:
     summary: Dict[str, str] = {
         "mode": mode,
         "serial": serial,
-        "connected": mode in ("system", "sideload", "fastbootd", "bootloader"),
+        "connected": mode in ("system", "sideload", "fastbootd", "bootloader", "edl", "brom"),
         "status_conn": "",
         "status_mode": "",
         "status_line": "",
@@ -1228,6 +1406,14 @@ def connection_summary() -> Dict[str, str]:
         summary["status_mode"] = f"模式：{cn}"
         summary["status_line"] = f"已连接：{cn}"
         summary["status_color"] = "#00b42a"
+        summary["banner_state"] = "connected"
+    elif mode in ("edl", "brom"):
+        # Port-based modes: no ADB/Fastboot, but device exists at a serial port.
+        port = f"（{serial}）" if serial else ""
+        summary["status_conn"] = f"设备：已连接（端口{port}）"
+        summary["status_mode"] = f"模式：{cn}"
+        summary["status_line"] = f"已连接：{cn}{port}"
+        summary["status_color"] = "#fa8c16"
         summary["banner_state"] = "connected"
     elif mode == "offline":
         summary["status_conn"] = "设备：已连接但未授权"
@@ -1254,23 +1440,65 @@ def collect_overall_info() -> Dict[str, str]:
         info.update(dev)
     elif mode in ("fastbootd", "bootloader"):
         # Query via fastboot where possible (使用较短的超时)
+        def clean_fastboot_output(output):
+            """去除fastboot输出中的冗余前缀和后缀"""
+            if not output:
+                return output
+            
+            # 处理多行输出，只取第一行（fastboot getvar通常第一行是结果，后面是finished）
+            lines = output.strip().split('\n')
+            if not lines:
+                return output
+                
+            first_line = lines[0].strip()
+            
+            # 去除 (bootloader) 前缀
+            clean_output = first_line.replace("(bootloader) ", "")
+            
+            # 如果第一行包含finish，则截断
+            if 'finish' in clean_output.lower():
+                finish_pos = clean_output.lower().find('finish')
+                clean_output = clean_output[:finish_pos].strip()
+            
+            return clean_output
+        
         prod = _fastboot(["getvar", "product"], timeout=2) or ""
-        info["product"] = prod.replace("(bootloader) ", "").strip()
+        prod = clean_fastboot_output(prod)
+        # 提取 product: 后面的值，去除冗余前缀
+        if "product:" in prod:
+            product_value = prod.split("product:")[1].strip()
+            info["product"] = product_value
+        else:
+            info["product"] = prod
+        
         cur_slot = _fastboot(["getvar", "current-slot"], timeout=2) or ""
-        info["current_slot"] = cur_slot.replace("(bootloader) ", "").strip()
+        cur_slot = clean_fastboot_output(cur_slot)
+        # 提取 current-slot: 或 SLOT: 后面的值，去除冗余前缀
+        if "current-slot:" in cur_slot:
+            slot_value = cur_slot.split("current-slot:")[1].strip()
+            info["current_slot"] = slot_value
+        elif "SLOT:" in cur_slot:
+            slot_value = cur_slot.split("SLOT:")[1].strip()
+            info["current_slot"] = slot_value
+        else:
+            info["current_slot"] = cur_slot
+        
         status = "unknown"
-        boot_state = _fastboot(["getvar", "secure"], timeout=2) or ""
-        if "no" in boot_state.lower():
+        # 使用 fastboot getvar unlocked 检测bootloader锁状态
+        unlock_state = _fastboot(["getvar", "unlocked"], timeout=2) or ""
+        unlock_state = clean_fastboot_output(unlock_state)
+        if "yes" in unlock_state.lower():
             status = "unlocked"
-        elif "yes" in boot_state.lower():
+        elif "no" in unlock_state.lower():
             status = "locked"
+        
         if status == "unknown":
-            # Try OEM device-info (OnePlus/Pixel etc.)
-            devinfo = _fastboot(["oem", "device-info"], timeout=3) or ""
-            lo = devinfo.lower()
-            if "device unlocked: true" in lo or "unlocked: yes" in lo:
+            # 备用方法：尝试 secure 变量
+            boot_state = _fastboot(["getvar", "secure"], timeout=2) or ""
+            boot_state = clean_fastboot_output(boot_state)
+            if "no" in boot_state.lower():
                 status = "unlocked"
-            elif "device unlocked: false" in lo or "unlocked: no" in lo:
+            elif "yes" in boot_state.lower():
                 status = "locked"
         info["bootloader_unlock"] = status
         # Not available in fastboot mode

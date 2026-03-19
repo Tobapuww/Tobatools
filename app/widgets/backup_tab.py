@@ -3,13 +3,15 @@ import time
 import subprocess
 import shutil
 import zipfile
+import uuid
 from pathlib import Path
 from typing import List, Optional
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QFileDialog, 
-    QTextEdit, QProgressBar, QCheckBox, QGridLayout, QGroupBox
+    QProgressBar, QCheckBox, QGridLayout, QGroupBox
 )
+from app.components.log_widget import LogWidget
 from PySide6.QtCore import Qt, QThread, QObject, Signal
 from qfluentwidgets import (
     CardWidget, PrimaryPushButton, PushButton, InfoBar, InfoBarPosition,
@@ -24,6 +26,8 @@ from app.services import adb_service as svc
 class _ScanWorker(QObject):
     finished = Signal(list, str)  # partitions, error_msg
     log = Signal(str)
+    step_start = Signal(str, str)
+    step_finish = Signal(str, bool, str)
 
     def __init__(self, adb_path: str, serial: str):
         super().__init__()
@@ -74,7 +78,8 @@ class _ScanWorker(QObject):
                 self.finished.emit([], f"ADB executable not found at: {self.adb_path}")
                 return
 
-            self.log.emit("检查 Root 权限...")
+            sid_root = str(uuid.uuid4())
+            self.step_start.emit(sid_root, "检查 Root 权限")
             print("[DEBUG] Checking root...")
             # 1. Check Root
             try:
@@ -85,14 +90,18 @@ class _ScanWorker(QObject):
                 res_su = self._adb_shell("su -c id", timeout=8)
                 print(f"[DEBUG] su check result: {res_su}")
                 if "uid=0" not in res_su:
+                    self.step_finish.emit(sid_root, False, "无 Root 权限")
                     self.finished.emit([], "未获取到 Root 权限，无法读取分区表。")
                     return
+                self.step_finish.emit(sid_root, True, "")
             except Exception as e:
                 print(f"[DEBUG] Root check failed: {e}")
+                self.step_finish.emit(sid_root, False, str(e))
                 self.finished.emit([], f"Root 权限检查失败: {e}\n请确认设备已 Root 并授予 Shell 权限。")
                 return
 
-            self.log.emit("正在查找分区路径...")
+            sid_scan = str(uuid.uuid4())
+            self.step_start.emit(sid_scan, "查找分区表")
             # 2. Find partitions
             search_paths = [
                 "/dev/block/bootdevice/by-name",
@@ -106,14 +115,14 @@ class _ScanWorker(QObject):
                 try:
                     if '*' in p:
                         base = p.split('*')[0]
-                        self.log.emit(f"解析通配符: {p}")
+                        # self.log.emit(f"解析通配符: {p}")
                         ls_base = self._adb_shell(f"ls -d {base}* 2>/dev/null", timeout=5).strip()
                         if ls_base and "No such" not in ls_base:
                             lines = ls_base.splitlines()
                             if lines:
                                 p = lines[0].strip() + "/by-name"
                     
-                    self.log.emit(f"扫描路径: {p}")
+                    # self.log.emit(f"扫描路径: {p}")
                     # Use ls -1 to ensure one entry per line
                     res = self._adb_shell(f"ls -1 {p}", timeout=5)
                     if res and "No such file" not in res and "Permission denied" not in res:
@@ -121,16 +130,18 @@ class _ScanWorker(QObject):
                         # Filter out obviously wrong entries
                         partitions = [x for x in found if not x.startswith('/') and not x.startswith('ls:') and x]
                         if partitions:
-                            self.log.emit(f"成功找到 {len(partitions)} 个分区。")
+                            # self.log.emit(f"成功找到 {len(partitions)} 个分区。")
                             break
                 except Exception as e:
                     print(f"[DEBUG] Path {p} scan error: {e}")
-                    self.log.emit(f"路径 {p} 扫描出错: {e}")
+                    # self.log.emit(f"路径 {p} 扫描出错: {e}")
                     continue
             
             if not partitions:
+                self.step_finish.emit(sid_scan, False, "未找到")
                 self.finished.emit([], "无法找到分区路径 (/dev/block/by-name 等)。")
             else:
+                self.step_finish.emit(sid_scan, True, f"找到 {len(partitions)} 个分区")
                 # Sort partitions
                 partitions.sort()
                 self.finished.emit(partitions, "")
@@ -144,6 +155,8 @@ class _BackupExecutorWorker(QObject):
     log = Signal(str)
     progress = Signal(int, int)  # current, total
     finished = Signal(bool, str)
+    step_start = Signal(str, str)
+    step_finish = Signal(str, bool, str)
 
     def __init__(self, adb_path: str, out_dir: str, serial: str, 
                  partitions: List[str], use_zip: bool, gen_script: bool):
@@ -189,7 +202,9 @@ class _BackupExecutorWorker(QObject):
                 self.finished.emit(False, "未选择任何分区")
                 return
 
-            self.log.emit(f"开始备份 {len(self.partitions)} 个分区...")
+            sid_init = str(uuid.uuid4())
+            self.step_start.emit(sid_init, f"初始化备份 ({len(self.partitions)} 个分区)")
+            # self.log.emit(f"开始备份 {len(self.partitions)} 个分区...")
             
             # Prepare local folder
             timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -220,7 +235,10 @@ class _BackupExecutorWorker(QObject):
                     continue
             
             if not target_path:
+                self.step_finish.emit(sid_init, False, "找不到分区路径")
                 raise RuntimeError("无法找到分区路径")
+            
+            self.step_finish.emit(sid_init, True, "")
 
             total = len(self.partitions)
             success_parts = []
@@ -230,7 +248,9 @@ class _BackupExecutorWorker(QObject):
                     break
                 
                 self.progress.emit(idx + 1, total)
-                self.log.emit(f"[{idx+1}/{total}] 正在备份: {part} ...")
+                # self.log.emit(f"[{idx+1}/{total}] 正在备份: {part} ...")
+                sid_part = str(uuid.uuid4())
+                self.step_start.emit(sid_part, f"[{idx+1}/{total}] 备份 {part}")
                 
                 remote_tmp = f"/sdcard/Download/tmp_backup_{part}.img"
                 self._adb_shell("mkdir -p /sdcard/Download")
@@ -240,7 +260,8 @@ class _BackupExecutorWorker(QObject):
                 try:
                     self._adb_shell(dd_cmd, timeout=3600) # super partition can be HUGE
                 except Exception as e:
-                    self.log.emit(f"  - 分区 {part} 备份失败 (DD): {e}")
+                    # self.log.emit(f"  - 分区 {part} 备份失败 (DD): {e}")
+                    self.step_finish.emit(sid_part, False, f"DD失败: {e}")
                     continue
 
                 # Pull
@@ -249,8 +270,10 @@ class _BackupExecutorWorker(QObject):
                     pull_cmd = [self.adb_path, '-s', self.serial, 'pull', remote_tmp, local_img]
                     self._run_cmd(pull_cmd, timeout=3600)
                     success_parts.append(part)
+                    self.step_finish.emit(sid_part, True, "")
                 except Exception as e:
-                    self.log.emit(f"  - 分区 {part} 拉取失败: {e}")
+                    # self.log.emit(f"  - 分区 {part} 拉取失败: {e}")
+                    self.step_finish.emit(sid_part, False, f"Pull失败: {e}")
                 
                 # Cleanup
                 try:
@@ -264,7 +287,8 @@ class _BackupExecutorWorker(QObject):
 
             # Generate Script
             if self.gen_script and success_parts:
-                self.log.emit("正在生成刷机脚本...")
+                sid_script = str(uuid.uuid4())
+                self.step_start.emit(sid_script, "生成刷机脚本")
                 try:
                     bat_path = os.path.join(local_backup_dir, "flash_all.bat")
                     with open(bat_path, 'w', encoding='utf-8') as f: # Bat needs ANSI usually but utf-8 mostly works if no special chars
@@ -288,14 +312,17 @@ class _BackupExecutorWorker(QObject):
                             f.write(f"fastboot flash {p} {p}.img\n")
                         f.write("echo 'Done!'\n")
                     # make executable? chmod not needed on windows host usually
+                    self.step_finish.emit(sid_script, True, "")
                 except Exception as e:
+                    self.step_finish.emit(sid_script, False, str(e))
                     self.log.emit(f"生成脚本失败: {e}")
 
             final_path = local_backup_dir
 
             # Zip
             if self.use_zip and success_parts:
-                self.log.emit("正在压缩备份文件...")
+                sid_zip = str(uuid.uuid4())
+                self.step_start.emit(sid_zip, "压缩备份文件")
                 zip_path = os.path.join(self.out_dir, f"{backup_name}.zip")
                 
                 # Try 7z
@@ -312,13 +339,17 @@ class _BackupExecutorWorker(QObject):
                         self.log.emit(f"7z 压缩失败，尝试使用内置 zip: {e}")
                 
                 if not used_7z:
-                    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
-                        for root, _, files in os.walk(local_backup_dir):
-                            for file in files:
-                                if self._stop: break
-                                fp = os.path.join(root, file)
-                                arcname = os.path.relpath(fp, self.out_dir)
-                                zf.write(fp, arcname)
+                    try:
+                        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+                            for root, _, files in os.walk(local_backup_dir):
+                                for file in files:
+                                    if self._stop: break
+                                    fp = os.path.join(root, file)
+                                    arcname = os.path.relpath(fp, self.out_dir)
+                                    zf.write(fp, arcname)
+                    except Exception as e:
+                        self.step_finish.emit(sid_zip, False, str(e))
+                        raise e
                 
                 if not self._stop:
                     # Cleanup folder if zipped
@@ -327,6 +358,9 @@ class _BackupExecutorWorker(QObject):
                     except Exception:
                         pass
                     final_path = zip_path
+                    self.step_finish.emit(sid_zip, True, "")
+                else:
+                    self.step_finish.emit(sid_zip, False, "取消")
 
             if self._stop:
                 self.finished.emit(False, "备份已取消")
@@ -497,33 +531,60 @@ class BackupTab(QWidget):
         # 1. Path Selection
         card_path = CardWidget(self)
         l_path = QVBoxLayout(card_path)
-        l_path.setContentsMargins(16, 16, 16, 16)
+        l_path.setContentsMargins(20, 20, 20, 20)
+        l_path.setSpacing(16)
+        
         title_path = QHBoxLayout()
-        title_path.setSpacing(8)
-        title_path.addWidget(QLabel("保存目录"), 0, Qt.AlignLeft)
+        icon_path = QLabel("📁")
+        icon_path.setStyleSheet("font-size:18px;")
+        t_path = QLabel("保存目录")
+        t_path.setStyleSheet("font-size:16px; font-weight:bold;")
+        title_path.addWidget(icon_path)
+        title_path.addWidget(t_path)
         title_path.addStretch(1)
         l_path.addLayout(title_path)
 
         r_path = QHBoxLayout()
-        r_path.setSpacing(8)
-        r_path.addWidget(QLabel("路径:"))
+        r_path.setSpacing(12)
+        r_path.addWidget(CaptionLabel("路径:"))
         self.path_edit = QLineEdit()
         desktop = os.path.join(os.path.expanduser("~"), "Desktop")
         self.path_edit.setText(desktop)
+        self.path_edit.setStyleSheet(
+            "QLineEdit {"
+            "background: rgba(255,255,255,0.96);"
+            "border: 1px solid rgba(0,0,0,0.10);"
+            "border-radius: 8px;"
+            "padding: 8px 12px;"
+            "selection-background-color: rgba(42,116,218,0.22);"
+            "selection-color: #1f2329;"
+            "}"
+            "QLineEdit:focus {"
+            "border: 1px solid rgba(42,116,218,0.75);"
+            "background: #ffffff;"
+            "}"
+        )
         btn_browse = PushButton("浏览")
         btn_browse.clicked.connect(self._browse)
         r_path.addWidget(self.path_edit, 1)
         r_path.addWidget(btn_browse)
         l_path.addLayout(r_path)
+        l_path.addStretch(1)
         grid.addWidget(card_path, 0, 0)
         
         # 2. Options & Actions
         card_opt = CardWidget(self)
         l_opt = QVBoxLayout(card_opt)
-        l_opt.setContentsMargins(16, 16, 16, 16)
+        l_opt.setContentsMargins(20, 20, 20, 20)
+        l_opt.setSpacing(16)
+        
         header_opt = QHBoxLayout()
-        header_opt.setSpacing(8)
-        header_opt.addWidget(QLabel("备份设置"))
+        icon_opt = QLabel("⚙️")
+        icon_opt.setStyleSheet("font-size:18px;")
+        t_opt = QLabel("备份设置")
+        t_opt.setStyleSheet("font-size:16px; font-weight:bold;")
+        header_opt.addWidget(icon_opt)
+        header_opt.addWidget(t_opt)
         header_opt.addStretch(1)
         l_opt.addLayout(header_opt)
         
@@ -535,15 +596,15 @@ class BackupTab(QWidget):
         l_opt.addWidget(self.chk_zip)
         l_opt.addWidget(self.chk_script)
         
-        l_opt.addSpacing(10)
+        l_opt.addSpacing(4)
         
         # Buttons
         h_btn = QHBoxLayout()
         h_btn.setSpacing(12)
-        self.btn_refresh = PushButton("扫描并选择分区")
+        self.btn_refresh = PushButton(FluentIcon.SYNC, "扫描并选择分区")
         self.btn_refresh.clicked.connect(self._scan_partitions)
         
-        self.btn_start = PrimaryPushButton("开始备份")
+        self.btn_start = PrimaryPushButton(FluentIcon.PLAY, "开始备份")
         self.btn_start.clicked.connect(self._start_backup)
         
         h_btn.addWidget(self.btn_refresh)
@@ -553,7 +614,12 @@ class BackupTab(QWidget):
         
         self.progress_bar = QProgressBar()
         self.progress_bar.setVisible(False)
+        self.progress_bar.setStyleSheet(
+            "QProgressBar{border:1px solid rgba(0,0,0,0.08);border-radius:8px;background:rgba(0,0,0,0.03);padding:2px;}"
+            "QProgressBar::chunk{border-radius:8px;background:rgba(42,116,218,0.55);}"
+        )
         l_opt.addWidget(self.progress_bar)
+        l_opt.addStretch(1)
         
         grid.addWidget(card_opt, 0, 1)
 
@@ -562,20 +628,22 @@ class BackupTab(QWidget):
         # 3. Log
         card_log = CardWidget(self)
         v_log = QVBoxLayout(card_log)
-        v_log.setContentsMargins(16, 16, 16, 16)
+        v_log.setContentsMargins(20, 20, 20, 20)
+        v_log.setSpacing(16)
+        
         h_log = QHBoxLayout()
-        h_log.setSpacing(8)
-        h_log.addWidget(QLabel("执行日志"))
+        icon_log = QLabel("📝")
+        icon_log.setStyleSheet("font-size:18px;")
+        t_log = QLabel("执行日志")
+        t_log.setStyleSheet("font-size:16px; font-weight:bold;")
+        h_log.addWidget(icon_log)
+        h_log.addWidget(t_log)
         h_log.addStretch(1)
         v_log.addLayout(h_log)
-        self.log_view = QTextEdit()
-        self.log_view.setReadOnly(True)
-        self.log_view.setPlaceholderText("日志输出...")
-        self.log_view.setStyleSheet("background: transparent;")
-        v_log.addWidget(self.log_view)
-        self.layout.addWidget(card_log)
         
-        self.layout.addStretch(1)
+        self.log_view = LogWidget()
+        v_log.addWidget(self.log_view)
+        self.layout.addWidget(card_log, 1)
 
     def _add_banner(self):
         from PySide6.QtWidgets import QWidget as _W
@@ -618,9 +686,72 @@ class BackupTab(QWidget):
         self.layout.addWidget(banner_w)
 
     def _browse(self):
-        d = QFileDialog.getExistingDirectory(self, "选择保存目录", self.path_edit.text())
-        if d:
-            self.path_edit.setText(d)
+        dlg = QFileDialog(self, "选择保存目录", self.path_edit.text())
+        dlg.setFileMode(QFileDialog.Directory)
+        dlg.setOption(QFileDialog.ShowDirsOnly, True)
+        dlg.setOption(QFileDialog.DontUseNativeDialog, True)
+        dlg.setStyleSheet(
+            "QFileDialog { background: #f7f8fa; }"
+            "QLabel { color: #1f2329; }"
+            "QLineEdit, QComboBox {"
+            "background: #ffffff;"
+            "border: 1px solid rgba(0,0,0,0.10);"
+            "border-radius: 8px;"
+            "padding: 6px 10px;"
+            "selection-background-color: rgba(42,116,218,0.22);"
+            "selection-color: #1f2329;"
+            "}"
+            "QLineEdit:focus, QComboBox:focus {"
+            "border: 1px solid rgba(42,116,218,0.75);"
+            "background: #ffffff;"
+            "}"
+            "QTreeView, QListView {"
+            "background: #ffffff;"
+            "border: 1px solid rgba(0,0,0,0.08);"
+            "border-radius: 8px;"
+            "outline: none;"
+            "}"
+            "QTreeView::item:selected, QListView::item:selected {"
+            "background: rgba(42,116,218,0.14);"
+            "color: #1f2329;"
+            "}"
+            "QToolButton, QPushButton {"
+            "background: #ffffff;"
+            "border: 1px solid rgba(0,0,0,0.10);"
+            "border-radius: 8px;"
+            "padding: 6px 10px;"
+            "}"
+            "QToolButton:hover, QPushButton:hover {"
+            "background: rgba(42,116,218,0.08);"
+            "border: 1px solid rgba(42,116,218,0.35);"
+            "}"
+            "QScrollBar:vertical {"
+            "background: transparent;"
+            "width: 12px;"
+            "margin: 6px 2px 6px 0;"
+            "border: none;"
+            "}"
+            "QScrollBar::handle:vertical {"
+            "background: rgba(0, 0, 0, 0.22);"
+            "min-height: 36px;"
+            "border-radius: 6px;"
+            "}"
+            "QScrollBar::handle:vertical:hover {"
+            "background: rgba(0, 0, 0, 0.34);"
+            "}"
+            "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {"
+            "height: 0px;"
+            "border: none;"
+            "background: transparent;"
+            "}"
+            "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {"
+            "background: transparent;"
+            "}"
+        )
+        if dlg.exec():
+            selected = dlg.selectedFiles()
+            if selected:
+                self.path_edit.setText(selected[0])
 
     def _scan_partitions(self):
         try:
@@ -635,12 +766,14 @@ class BackupTab(QWidget):
             return
 
         self.btn_refresh.setEnabled(False)
-        self.log_view.append("正在扫描分区...")
+        self.log_view.append_log("正在扫描分区...")
         
         self._scan_thread = QThread(self)
         self._scan_worker = _ScanWorker(str(svc.ADB_BIN), serial)
         self._scan_worker.moveToThread(self._scan_thread)
-        self._scan_worker.log.connect(self.log_view.append, Qt.QueuedConnection)
+        self._scan_worker.log.connect(self.log_view.append_log, Qt.QueuedConnection)
+        self._scan_worker.step_start.connect(self.log_view.start_step, Qt.QueuedConnection)
+        self._scan_worker.step_finish.connect(self.log_view.finish_step, Qt.QueuedConnection)
         self._scan_thread.started.connect(self._scan_worker.run)
         self._scan_worker.finished.connect(self._on_scan_finished)
         self._scan_worker.finished.connect(self._scan_thread.quit)
@@ -657,21 +790,21 @@ class BackupTab(QWidget):
         self.btn_refresh.setEnabled(True)
         if err:
             InfoBar.error("扫描失败", err, parent=self, position=InfoBarPosition.TOP)
-            self.log_view.append(f"扫描失败: {err}")
+            self.log_view.append_log(f"扫描失败: {err}", "#f53f3f")
             return
         
         self.partitions = partitions
-        self.log_view.append(f"扫描完成，共找到 {len(partitions)} 个分区。")
+        self.log_view.append_log(f"扫描完成，共找到 {len(partitions)} 个分区。", "#00b42a")
         
         # Open Dialog
         dlg = PartitionSelectionDialog(partitions, self.window())
         if dlg.exec():
             self.selected_partitions = dlg.get_selected()
-            self.log_view.append(f"已选择 {len(self.selected_partitions)} 个分区。")
+            self.log_view.append_log(f"已选择 {len(self.selected_partitions)} 个分区。", "#d4d4d4")
             if self.selected_partitions:
                 InfoBar.success("就绪", f"已选择 {len(self.selected_partitions)} 个分区，请点击“开始备份”", parent=self, position=InfoBarPosition.TOP)
         else:
-            self.log_view.append("用户取消了分区选择。")
+            self.log_view.append_log("用户取消了分区选择。", "#86909c")
 
 
     def _start_backup(self):
@@ -706,7 +839,7 @@ class BackupTab(QWidget):
         self.btn_start.setEnabled(False)
         self.progress_bar.setValue(0)
         self.progress_bar.setVisible(True)
-        self.log_view.clear()
+        self.log_view.clear_log()
         
         self._backup_thread = QThread(self)
         self._backup_worker = _BackupExecutorWorker(
@@ -715,7 +848,9 @@ class BackupTab(QWidget):
         )
         self._backup_worker.moveToThread(self._backup_thread)
         self._backup_thread.started.connect(self._backup_worker.run)
-        self._backup_worker.log.connect(self.log_view.append, Qt.QueuedConnection)
+        self._backup_worker.log.connect(self.log_view.append_log, Qt.QueuedConnection)
+        self._backup_worker.step_start.connect(self.log_view.start_step, Qt.QueuedConnection)
+        self._backup_worker.step_finish.connect(self.log_view.finish_step, Qt.QueuedConnection)
         self._backup_worker.progress.connect(self._update_progress, Qt.QueuedConnection)
         self._backup_worker.finished.connect(self._on_backup_finished, Qt.QueuedConnection)
         self._backup_worker.finished.connect(self._backup_thread.quit)
@@ -732,7 +867,7 @@ class BackupTab(QWidget):
         self.btn_start.setEnabled(True)
         if ok:
             InfoBar.success("完成", "备份任务结束", parent=self, position=InfoBarPosition.TOP)
-            self.log_view.append("[SUCCESS] " + msg)
+            self.log_view.append_log("[SUCCESS] " + msg, "#00b42a", bold=True)
             try:
                 folder = os.path.dirname(msg) if os.path.isfile(msg) else msg
                 if os.name == 'nt':
@@ -741,7 +876,7 @@ class BackupTab(QWidget):
                 pass
         else:
             InfoBar.error("失败", msg, parent=self, position=InfoBarPosition.TOP)
-            self.log_view.append("[FAILED] " + msg)
+            self.log_view.append_log("[FAILED] " + msg, "#f53f3f", bold=True)
 
     def _cleanup_backup_thread(self):
         self._backup_thread = None

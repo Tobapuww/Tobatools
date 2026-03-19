@@ -260,11 +260,23 @@ class FirmwareTab(QWidget):
     def init_ui(self):
         main_layout = QVBoxLayout(self)
         try:
-            main_layout.setContentsMargins(24, 24, 24, 24)
+            main_layout.setContentsMargins(0, 0, 0, 0)
         except Exception:
             pass
 
-        # 顶部渐变 Banner（~110px）
+        self.scroll = QScrollArea(self)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setStyleSheet("QScrollArea {border: none; background: transparent;}")
+        
+        self.container = QWidget()
+        self.container.setStyleSheet("QWidget {background: transparent;}")
+        self.scroll.setWidget(self.container)
+        
+        lay = QVBoxLayout(self.container)
+        lay.setContentsMargins(24, 24, 24, 24)
+        lay.setSpacing(24)
+
+        # 顶部渐变 Banner
         from PySide6.QtWidgets import QWidget as _W
         banner_w = _W(self)
         try:
@@ -279,7 +291,6 @@ class FirmwareTab(QWidget):
             banner_w.setAttribute(Qt.WA_TranslucentBackground, True)
         except Exception:
             pass
-        # Banner 背景交由 Fluent 主题控制
         banner = QHBoxLayout(banner_w)
         banner.setContentsMargins(24, 18, 24, 18)
         banner.setSpacing(16)
@@ -308,7 +319,28 @@ class FirmwareTab(QWidget):
             pass
         title_col.addWidget(t); title_col.addWidget(s)
         banner.addWidget(icon_lbl); banner.addLayout(title_col); banner.addStretch(1)
-        main_layout.addWidget(banner_w)
+        lay.addWidget(banner_w)
+
+        # Content Card
+        card = CardWidget(self)
+        card_lay = QVBoxLayout(card)
+        card_lay.setContentsMargins(20, 20, 20, 20)
+        card_lay.setSpacing(16)
+
+        head = QHBoxLayout()
+        icon = QLabel("📦")
+        icon.setStyleSheet("font-size:18px;")
+        title = QLabel("在线固件列表")
+        title.setStyleSheet("font-size:16px; font-weight:bold;")
+        head.addWidget(icon)
+        head.addWidget(title)
+        head.addStretch(1)
+        
+        self.btn_refresh = PushButton(FluentIcon.SYNC, "刷新列表")
+        self.btn_refresh.clicked.connect(self._start_load)
+        head.addWidget(self.btn_refresh)
+        
+        card_lay.addLayout(head)
 
         # 表格列表（名称 / 适用机型 / 操作）
         self.table = TableWidget(self)
@@ -321,11 +353,10 @@ class FirmwareTab(QWidget):
             self.table.setAlternatingRowColors(True)
         except Exception:
             pass
-        main_layout.addWidget(self.table)
-        try:
-            QTimer.singleShot(0, self._apply_table_layout)
-        except Exception:
-            pass
+        card_lay.addWidget(self.table, 1)
+        
+        lay.addWidget(card, 1)
+        main_layout.addWidget(self.scroll)
 
     def _ensure_default_source(self):
         settings = QSettings()

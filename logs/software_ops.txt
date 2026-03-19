@@ -35,3 +35,13 @@
 2026-02-04 03:10:59	MJ6XEITWEUBMPN69	-	install 光遇0.15.3.APK
 2026-02-05 01:58:15	MJ6XEITWEUBMPN69	-	install 秋落插件-最新.apk
 2026-02-11 23:09:18	MJ6XEITWEUBMPN69	-	install 水一插件-已混淆.apk
+2026-02-26 00:03:40	192.168.2.83:44257	-	install SKY·鲸鸣_0.6.5.apk
+2026-03-01 02:56:36	192.168.2.83:39509	-	install 幻(X)·实验室_4.4.apk
+2026-03-07 01:43:23	192.168.2.93:37587	com.oppo.store	freeze
+2026-03-07 01:43:35	192.168.2.93:37587	com.coloros.translate	freeze
+2026-03-07 01:44:03	192.168.2.93:37587	com.coloros.translate	unfreeze
+2026-03-08 01:04:34	192.168.2.93:40989	com.oplus.battery	unfreeze
+2026-03-08 01:06:33	192.168.2.93:40989	com.oplus.battery	unfreeze
+2026-03-08 01:06:44	192.168.2.93:40989	com.android.settings	force-stop
+2026-03-08 01:09:29	192.168.2.93:43123	com.oplus.battery	pull-apk f:/Downloads/com.oplus.battery.apk
+2026-03-08 01:09:40	192.168.2.93:43123	-	install -r com.oplus.battery.apk
