@@ -1,0 +1,293 @@
+<Page
+    x:Class="Tobatools.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Tobatools.Controls"
+    xmlns:loc="using:Tobatools.Services"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource AppCanvasBrush}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ZoomMode="Disabled">
+            <StackPanel Style="{StaticResource PageContentStyle}">
+                <controls:PageHeader
+                    x:Name="PageTitleHeader"
+                    Title="{loc:Loc Key=SettingsTitle}"
+                    Subtitle="{loc:Loc Key=SettingsSubtitle}"
+                    IconData="{StaticResource SettingsGlyph}" />
+
+                <!-- 外观 -->
+                <Border Style="{StaticResource CardBorderStyle}">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBadgeStyle}">
+                                <FontIcon Glyph="&#xE790;" Style="{StaticResource SectionIconStyle}" />
+                            </Border>
+                            <TextBlock
+                                x:Name="TextAppearanceTitle"
+                                Text="{loc:Loc Key=SettingsAppearance}"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource CardTitleStyle}" />
+                        </StackPanel>
+                        <TextBlock
+                            x:Name="TextAppearanceDesc"
+                            Text="{loc:Loc Key=SettingsAppearanceDesc}"
+                            TextWrapping="Wrap"
+                            Style="{StaticResource BodyTextStyle}" />
+                        <ComboBox
+                            x:Name="ComboTheme"
+                            Header="{loc:Loc Key=SettingsTheme}"
+                            MinWidth="200"
+                            MaxWidth="320"
+                            HorizontalAlignment="Stretch"
+                            Style="{StaticResource RoundedComboBoxStyle}"
+                            SelectionChanged="OnThemeChanged" />
+                        <TextBlock
+                            x:Name="TextMaterialNote"
+                            Text="{loc:Loc Key=SettingsMaterialNote}"
+                            TextWrapping="Wrap"
+                            Style="{StaticResource BodyTextStyle}" />
+                        <ToggleSwitch
+                            x:Name="ToggleLiquidGlass"
+                            AutomationProperties.AutomationId="ToggleLiquidGlass"
+                            Header="{loc:Loc Key=SettingsLiquidGlass}"
+                            AutomationProperties.Name="{loc:Loc Key=SettingsLiquidGlass}"
+                            OnContent="{loc:Loc Key=CommonOn}"
+                            OffContent="{loc:Loc Key=CommonOff}"
+                            IsOn="False"
+                            Toggled="OnLiquidGlassToggled" />
+                        <StackPanel Spacing="8">
+                            <Slider
+                                x:Name="SliderGlassBlur"
+                                AutomationProperties.AutomationId="SliderGlassBlur"
+                                Header="{loc:Loc Key=SettingsGlassBlur}"
+                                AutomationProperties.Name="{loc:Loc Key=SettingsGlassBlur}"
+                                Minimum="0"
+                                Maximum="64"
+                                StepFrequency="1"
+                                SmallChange="1"
+                                Value="24"
+                                IsEnabled="False"
+                                ValueChanged="OnGlassBlurChanged" />
+                            <TextBlock
+                                x:Name="TxtGlassBlur"
+                                AutomationProperties.AutomationId="TxtGlassBlur"
+                                Text="24 DIP"
+                                TextWrapping="Wrap"
+                                Style="{StaticResource CaptionTextStyle}" />
+                        </StackPanel>
+                        <TextBlock
+                            x:Name="TxtMaterialStatus"
+                            AutomationProperties.AutomationId="TxtMaterialStatus"
+                            AutomationProperties.LiveSetting="Polite"
+                            Text="{loc:Loc Key=SettingsMaterialLoading}"
+                            TextWrapping="Wrap"
+                            Style="{StaticResource CardSubtitleStyle}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 语言 -->
+                <Border Style="{StaticResource CardBorderStyle}">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBadgeStyle}">
+                                <FontIcon Glyph="&#xE774;" Style="{StaticResource SectionIconStyle}" />
+                            </Border>
+                            <TextBlock
+                                x:Name="TextLanguageTitle"
+                                Text="{loc:Loc Key=SettingsLanguage}"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource CardTitleStyle}" />
+                        </StackPanel>
+                        <TextBlock
+                            x:Name="TextLanguageDesc"
+                            Text="{loc:Loc Key=SettingsLanguageDesc}"
+                            TextWrapping="Wrap"
+                            Style="{StaticResource BodyTextStyle}" />
+                        <ComboBox
+                            x:Name="ComboLanguage"
+                            Header="{loc:Loc Key=SettingsLanguage}"
+                            MinWidth="200"
+                            MaxWidth="320"
+                            HorizontalAlignment="Stretch"
+                            Style="{StaticResource RoundedComboBoxStyle}"
+                            SelectionChanged="OnLanguageChanged" />
+                        <InfoBar
+                            x:Name="InfoBarRestart"
+                            IsOpen="False"
+                            Severity="Informational"
+                            IsClosable="False"
+                            >
+                            <StackPanel Spacing="8">
+                                <TextBlock x:Name="TextRestartHint" Text="{loc:Loc Key=SettingsLanguageRestart}" TextWrapping="Wrap" Style="{StaticResource BodyTextStyle}"/>
+
+                            </StackPanel>
+                        </InfoBar>
+                    </StackPanel>
+                </Border>
+
+                <!-- 下载 -->
+                <Border Style="{StaticResource CardBorderStyle}">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBadgeStyle}">
+                                <FontIcon Glyph="&#xE896;" Style="{StaticResource SectionIconStyle}" />
+                            </Border>
+                            <TextBlock
+                                x:Name="TextDownloadTitle"
+                                Text="{loc:Loc Key=SettingsDownload}"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource CardTitleStyle}" />
+                        </StackPanel>
+                        <TextBlock
+                            x:Name="TextDownloadDesc"
+                            Text="{loc:Loc Key=SettingsDownloadDesc}"
+                            TextWrapping="Wrap"
+                            Style="{StaticResource BodyTextStyle}" />
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                x:Name="TxtDownloadDir"
+                                Header="{loc:Loc Key=SettingsDownloadDir}"
+                                Text="-"
+                                IsReadOnly="True"
+                                Style="{StaticResource RoundedTextBoxStyle}" />
+                            <Button
+                                Grid.Column="1"
+                                x:Name="BtnPickDownloadDir"
+                                Content="{loc:Loc Key=CommonBrowse}"
+                                VerticalAlignment="Bottom"
+                                Style="{StaticResource DefaultButtonStyle}"
+                                Click="OnPickDownloadDir" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- 关于 -->
+                <Border Style="{StaticResource CardBorderStyle}">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Style="{StaticResource IconBadgeStyle}">
+                                <FontIcon Glyph="&#xE946;" Style="{StaticResource SectionIconStyle}" />
+                            </Border>
+                            <TextBlock
+                                x:Name="TextAboutTitle"
+                                Text="{loc:Loc Key=SettingsAbout}"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource CardTitleStyle}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="8">
+                            <Button Style="{StaticResource ListCardButtonStyle}" Click="OnAbout">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock x:Name="TextAboutApp" Text="{loc:Loc Key=SettingsAboutApp}" Style="{StaticResource BodyTextStyle}" />
+                                        <TextBlock
+                                            x:Name="TxtVersion"
+                                            Text="{loc:Loc Key=CommonDash}"
+                                            Style="{StaticResource CaptionTextStyle}" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        x:Name="TextAboutView"
+                                        Text="{loc:Loc Key=CommonView}"
+                                        Style="{StaticResource CaptionTextStyle}"
+                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+                            </Button>
+
+                            <Button Style="{StaticResource ListCardButtonStyle}" Click="OnCheckUpdate">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock x:Name="TextCheckUpdate" Text="{loc:Loc Key=SettingsCheckUpdate}" Style="{StaticResource BodyTextStyle}" />
+                                        <TextBlock x:Name="TextCheckUpdateDesc" Text="{loc:Loc Key=SettingsCheckUpdateDesc}" Style="{StaticResource CaptionTextStyle}" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        x:Name="TextCheckUpdateBtn"
+                                        Text="{loc:Loc Key=CommonCheck}"
+                                        Style="{StaticResource CaptionTextStyle}"
+                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+                            </Button>
+
+                            <Button Style="{StaticResource ListCardButtonStyle}" Click="OnWebsite">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock x:Name="TextWebsite" Text="{loc:Loc Key=SettingsWebsite}" Style="{StaticResource BodyTextStyle}" />
+                                        <TextBlock Text="https://tobatools.top" Style="{StaticResource CaptionTextStyle}" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        x:Name="TextWebsiteBtn"
+                                        Text="{loc:Loc Key=CommonVisit}"
+                                        Style="{StaticResource CaptionTextStyle}"
+                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+                            </Button>
+
+                            <Button Style="{StaticResource ListCardButtonStyle}" Click="OnQQGroup">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock x:Name="TextQQGroup" Text="{loc:Loc Key=SettingsQQGroup}" Style="{StaticResource BodyTextStyle}" />
+                                        <TextBlock Text="294122499" Style="{StaticResource CaptionTextStyle}" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        x:Name="TextQQGroupBtn"
+                                        Text="{loc:Loc Key=CommonJoin}"
+                                        Style="{StaticResource CaptionTextStyle}"
+                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+                            </Button>
+
+                            <Button Style="{StaticResource ListCardButtonStyle}" Click="OnTelegram">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock x:Name="TextTelegram" Text="{loc:Loc Key=SettingsTelegram}" Style="{StaticResource BodyTextStyle}" />
+                                        <TextBlock x:Name="TextTelegramDesc" Text="{loc:Loc Key=SettingsTelegramDesc}" Style="{StaticResource CaptionTextStyle}" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        x:Name="TextTelegramBtn"
+                                        Text="{loc:Loc Key=CommonJoin}"
+                                        Style="{StaticResource CaptionTextStyle}"
+                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

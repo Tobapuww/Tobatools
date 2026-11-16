@@ -1,0 +1,121 @@
+<Window
+    x:Class="Tobatools.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Tobatools.Controls"
+    mc:Ignorable="d"
+    Title="Tobatools">
+
+    <Grid x:Name="RootGrid">
+        <NavigationView x:Name="NavView"
+                        IsBackButtonVisible="Collapsed"
+                        IsSettingsVisible="False"
+                        PaneDisplayMode="Auto"
+                        CompactModeThresholdWidth="640"
+                        ExpandedModeThresholdWidth="1180"
+                        OpenPaneLength="224"
+                        SelectionChanged="OnSelectionChanged"
+                        Background="{ThemeResource AppCanvasBrush}">
+
+            <!-- 侧栏头部：应用标识 -->
+            <NavigationView.PaneHeader>
+                <Grid Padding="8,8,8,12">
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Border Width="34" Height="34" CornerRadius="8"
+                                Background="{ThemeResource AccentFillColorDefaultBrush}">
+                            <Image Source="/Assets/icon.png" Width="34" Height="34"
+                                   Stretch="UniformToFill"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock x:Name="AppTitleTextBlock" FontSize="15" FontWeight="SemiBold"
+                                       FontFamily="{StaticResource AppFont}"/>
+                            <TextBlock x:Name="AppSubtitleTextBlock" FontSize="11"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       FontFamily="{StaticResource AppFont}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </NavigationView.PaneHeader>
+
+            <!-- 主导航：图标与各页 PageHeader 共用 Styles.xaml 语义资源。
+                 文本由代码后台按当前语言加载，切换语言重启后生效。 -->
+            <NavigationView.MenuItems>
+                <NavigationViewItem x:Name="NavDashboard" Tag="dashboard">
+                    <NavigationViewItem.Icon><controls:IconPath IconData="{StaticResource DashboardGlyph}" Style="{StaticResource NavigationIconStyle}"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavImageFactory" Tag="imagefactory">
+                    <NavigationViewItem.Icon><controls:IconPath IconData="{StaticResource ImageFactoryGlyph}" Style="{StaticResource NavigationIconStyle}"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavFlash" Tag="flash">
+                    <NavigationViewItem.Icon><controls:IconPath IconData="{StaticResource FlashGlyph}" Style="{StaticResource NavigationIconStyle}"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavScrcpy" Tag="scrcpy">
+                    <NavigationViewItem.Icon><controls:IconPath IconData="{StaticResource ScrcpyGlyph}" Style="{StaticResource NavigationIconStyle}"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavSoftware" Tag="software">
+                    <NavigationViewItem.Icon><controls:IconPath IconData="{StaticResource SoftwareGlyph}" Style="{StaticResource NavigationIconStyle}"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavFiles" Tag="files">
+                    <NavigationViewItem.Icon><controls:IconPath IconData="{StaticResource FilesGlyph}" Style="{StaticResource NavigationIconStyle}"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavBackup" Tag="backup">
+                    <NavigationViewItem.Icon><controls:IconPath IconData="{StaticResource BackupGlyph}" Style="{StaticResource NavigationIconStyle}"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavMisc" Tag="misc">
+                    <NavigationViewItem.Icon><controls:IconPath IconData="{StaticResource MiscGlyph}" Style="{StaticResource NavigationIconStyle}"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <!-- 底部设置 -->
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem x:Name="NavSettingsItem" Tag="settings">
+                    <NavigationViewItem.Icon><controls:IconPath IconData="{StaticResource SettingsGlyph}" Style="{StaticResource NavigationIconStyle}"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.FooterMenuItems>
+
+            <!-- 内容区：设备栏 + 页面 -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border x:Name="DeviceBanner" Grid.Row="0" Background="{ThemeResource AppSurfaceBrush}"
+                        BorderBrush="{ThemeResource AppBorderBrush}" Visibility="Collapsed"
+                        BorderThickness="0,0,0,1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid x:Name="DeviceBarViewport" SizeChanged="OnDeviceBarViewportSizeChanged">
+                            <Grid.Clip><RectangleGeometry x:Name="DeviceBarClip"/></Grid.Clip>
+                            <controls:DeviceBar x:Name="DeviceBar" VerticalAlignment="Top"/>
+                        </Grid>
+                        <Grid Grid.Row="1" ColumnSpacing="12" Padding="24,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="CompactDeviceSummary" Visibility="Collapsed"
+                                       Style="{StaticResource CardSubtitleStyle}" VerticalAlignment="Center"
+                                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                                       AutomationProperties.LiveSetting="Polite"/>
+                        <Button x:Name="BannerToggle" Grid.Column="1" Click="OnBannerToggle"
+                                HorizontalAlignment="Right" Margin="0,0,24,4" Padding="10,4"
+                                Style="{StaticResource ToolCardButtonStyle}"
+                                AutomationProperties.Name="收起设备栏">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock x:Name="BannerToggleText" Text="收起设备栏" Style="{StaticResource CaptionTextStyle}"/>
+                                <FontIcon x:Name="BannerToggleIcon" Glyph="&#xE70E;" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+                        </Grid>
+                    </Grid>
+                </Border>
+                <Frame x:Name="ContentFrame" Grid.Row="1"/>
+            </Grid>
+        </NavigationView>
+    </Grid>
+</Window>

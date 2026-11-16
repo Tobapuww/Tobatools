@@ -1,0 +1,26 @@
+<UserControl
+    x:Class="Tobatools.Controls.RingGauge"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignWidth="120" d:DesignHeight="120">
+
+    <Grid x:Name="Root">
+        <Path x:Name="TrackPath" Stroke="{ThemeResource AppBorderBrush}" StrokeThickness="9" Fill="Transparent"
+              Stretch="None"
+              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Path x:Name="ValuePath" StrokeThickness="9" Fill="Transparent"
+              Stretch="None"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="0">
+            <TextBlock x:Name="TxtValue" Text="--" FontSize="22" FontWeight="SemiBold"
+                       FontFamily="{StaticResource AppFont}" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="TxtCaption" Text="-" FontSize="11" Visibility="Collapsed"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       FontFamily="{StaticResource AppFont}" HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

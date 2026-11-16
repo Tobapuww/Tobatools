@@ -1,0 +1,405 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence><xs:element name="value" type="xsd:string" minOccurs="0" /></xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence><xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" /></xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  
+  <data name="AppTitle" xml:space="preserve"><value>Tobatools</value></data>
+  <data name="AppSubtitle" xml:space="preserve"><value>Flash · Debug · Manage</value></data>
+
+  
+  <data name="CommonOK" xml:space="preserve"><value>OK</value></data>
+  <data name="CommonCancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="CommonClose" xml:space="preserve"><value>Close</value></data>
+  <data name="CommonConfirm" xml:space="preserve"><value>Confirm</value></data>
+  <data name="CommonSave" xml:space="preserve"><value>Save</value></data>
+  <data name="CommonReset" xml:space="preserve"><value>Reset</value></data>
+  <data name="CommonRefresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="CommonDelete" xml:space="preserve"><value>Delete</value></data>
+  <data name="CommonCopy" xml:space="preserve"><value>Copy</value></data>
+  <data name="CommonInstall" xml:space="preserve"><value>Install</value></data>
+  <data name="CommonUninstall" xml:space="preserve"><value>Uninstall</value></data>
+  <data name="CommonExport" xml:space="preserve"><value>Export</value></data>
+  <data name="CommonStart" xml:space="preserve"><value>Start</value></data>
+  <data name="CommonStop" xml:space="preserve"><value>Stop</value></data>
+  <data name="CommonConnect" xml:space="preserve"><value>Connect</value></data>
+  <data name="CommonDisconnect" xml:space="preserve"><value>Disconnect</value></data>
+  <data name="CommonBack" xml:space="preserve"><value>Back</value></data>
+  <data name="CommonBrowse" xml:space="preserve"><value>Browse</value></data>
+  <data name="CommonMore" xml:space="preserve"><value>More</value></data>
+  <data name="CommonSearch" xml:space="preserve"><value>Search</value></data>
+  <data name="CommonLoading" xml:space="preserve"><value>Loading…</value></data>
+  <data name="CommonPleaseWait" xml:space="preserve"><value>Please wait…</value></data>
+  <data name="CommonSuccess" xml:space="preserve"><value>Success</value></data>
+  <data name="CommonFailed" xml:space="preserve"><value>Failed</value></data>
+  <data name="CommonWarning" xml:space="preserve"><value>Warning</value></data>
+  <data name="CommonError" xml:space="preserve"><value>Error</value></data>
+  <data name="CommonInfo" xml:space="preserve"><value>Info</value></data>
+  <data name="CommonUnknown" xml:space="preserve"><value>Unknown</value></data>
+  <data name="CommonNone" xml:space="preserve"><value>None</value></data>
+  <data name="CommonDash" xml:space="preserve"><value>—</value></data>
+  <data name="CommonCopySuccess" xml:space="preserve"><value>Copied</value></data>
+  <data name="CommonView" xml:space="preserve"><value>View</value></data>
+  <data name="CommonCheck" xml:space="preserve"><value>Check</value></data>
+  <data name="CommonVisit" xml:space="preserve"><value>Visit</value></data>
+  <data name="CommonJoin" xml:space="preserve"><value>Join</value></data>
+
+  
+  <data name="NavDashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="NavDashboardTooltip" xml:space="preserve"><value>Device info &amp; status</value></data>
+  <data name="NavImageFactory" xml:space="preserve"><value>Image Factory</value></data>
+  <data name="NavImageFactoryTooltip" xml:space="preserve"><value>Unpack / repack / build images</value></data>
+  <data name="NavScrcpy" xml:space="preserve"><value>Scrcpy</value></data>
+  <data name="NavScrcpyTooltip" xml:space="preserve"><value>Wireless screen mirroring</value></data>
+  <data name="NavSoftware" xml:space="preserve"><value>Apps</value></data>
+  <data name="NavSoftwareTooltip" xml:space="preserve"><value>App list / uninstall / extract</value></data>
+  <data name="NavFiles" xml:space="preserve"><value>Files</value></data>
+  <data name="NavFilesTooltip" xml:space="preserve"><value>Browse &amp; transfer device files</value></data>
+  <data name="NavBackup" xml:space="preserve"><value>Baseband Backup</value></data>
+  <data name="NavBackupTooltip" xml:space="preserve"><value>Baseband / EFS partition backup</value></data>
+  <data name="NavMisc" xml:space="preserve"><value>Toolbox</value></data>
+  <data name="NavMiscTooltip" xml:space="preserve"><value>Common / advanced / simulation tools</value></data>
+  <data name="NavSettings" xml:space="preserve"><value>Settings</value></data>
+  <data name="NavSettingsTooltip" xml:space="preserve"><value>Appearance / downloads / about</value></data>
+
+  
+  <data name="DeviceBarCollapse" xml:space="preserve"><value>Collapse device bar</value></data>
+  <data name="DeviceBarExpand" xml:space="preserve"><value>Expand device bar</value></data>
+  <data name="DeviceStateConnected" xml:space="preserve"><value>Connected</value></data>
+  <data name="DeviceStateUnauthorized" xml:space="preserve"><value>Awaiting authorization</value></data>
+  <data name="DeviceStateOffline" xml:space="preserve"><value>Offline</value></data>
+  <data name="DeviceStateNoDevice" xml:space="preserve"><value>Not connected</value></data>
+  <data name="DeviceStateError" xml:space="preserve"><value>Detection failed</value></data>
+  <data name="DeviceStateDetecting" xml:space="preserve"><value>Detecting…</value></data>
+  <data name="DeviceModeSystem" xml:space="preserve"><value>System</value></data>
+  <data name="DeviceModeRecovery" xml:space="preserve"><value>recovery</value></data>
+  <data name="DeviceModeSideload" xml:space="preserve"><value>sideload</value></data>
+  <data name="DeviceModeBootloader" xml:space="preserve"><value>bootloader</value></data>
+  <data name="DeviceModeFastbootd" xml:space="preserve"><value>fastbootd</value></data>
+  <data name="DeviceModeEDL" xml:space="preserve"><value>EDL</value></data>
+  <data name="DeviceModeBROM" xml:space="preserve"><value>BROM</value></data>
+
+  
+  <data name="DashboardTitle" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="DashboardSubtitle" xml:space="preserve"><value>Device connection status, resource usage, and quick actions.</value></data>
+  <data name="DashboardNoDevice" xml:space="preserve"><value>No device detected</value></data>
+  <data name="DashboardNoDeviceDesc" xml:space="preserve"><value>Connect your device via USB, or use wireless debugging.</value></data>
+  <data name="DashboardWireless" xml:space="preserve"><value>Wireless</value></data>
+  <data name="DashboardDeviceInfo" xml:space="preserve"><value>Device Info</value></data>
+  <data name="DashboardSystemInfo" xml:space="preserve"><value>System Info</value></data>
+  <data name="DashboardStorage" xml:space="preserve"><value>Storage</value></data>
+  <data name="DashboardBattery" xml:space="preserve"><value>Battery</value></data>
+  <data name="DashboardQuickActions" xml:space="preserve"><value>Quick Actions</value></data>
+  <data name="DashboardReboot" xml:space="preserve"><value>Reboot</value></data>
+  <data name="DashboardRebootRecovery" xml:space="preserve"><value>Reboot to Recovery</value></data>
+  <data name="DashboardRebootBootloader" xml:space="preserve"><value>Reboot to Bootloader</value></data>
+  <data name="DashboardScreenshot" xml:space="preserve"><value>Screenshot</value></data>
+  <data name="DashboardModel" xml:space="preserve"><value>Model</value></data>
+  <data name="DashboardSerial" xml:space="preserve"><value>Serial</value></data>
+  <data name="DashboardAndroidVersion" xml:space="preserve"><value>Android Version</value></data>
+  <data name="DashboardManufacturer" xml:space="preserve"><value>Manufacturer</value></data>
+  <data name="DashboardBuildNumber" xml:space="preserve"><value>Build Number</value></data>
+  <data name="DashboardCpu" xml:space="preserve"><value>Processor</value></data>
+  <data name="DashboardRam" xml:space="preserve"><value>RAM</value></data>
+  <data name="DashboardStorageTotal" xml:space="preserve"><value>Total</value></data>
+  <data name="DashboardStorageUsed" xml:space="preserve"><value>Used</value></data>
+  <data name="DashboardBatteryLevel" xml:space="preserve"><value>Level</value></data>
+  <data name="DashboardBatteryTemp" xml:space="preserve"><value>Temperature</value></data>
+  <data name="DashboardCharging" xml:space="preserve"><value>Charging</value></data>
+  <data name="DashboardDischarging" xml:space="preserve"><value>Not charging</value></data>
+
+  
+  <data name="RootTitle" xml:space="preserve"><value>Root</value></data>
+  <data name="RootSubtitle" xml:space="preserve"><value>Select a boot image and manager, then follow the steps to patch and flash.</value></data>
+  <data name="RootStep1" xml:space="preserve"><value>1. Select boot image</value></data>
+  <data name="RootStep2" xml:space="preserve"><value>2. Select Magisk version</value></data>
+  <data name="RootStep3" xml:space="preserve"><value>3. Start patching</value></data>
+  <data name="RootStep4" xml:space="preserve"><value>4. Flash patched image</value></data>
+  <data name="RootSelectBootImage" xml:space="preserve"><value>Select boot.img</value></data>
+  <data name="RootBootImageHint" xml:space="preserve"><value>Boot partition image extracted from firmware</value></data>
+  <data name="RootSelectMagisk" xml:space="preserve"><value>Select Magisk APK</value></data>
+  <data name="RootMagiskHint" xml:space="preserve"><value>Magisk app APK used to extract the patch script</value></data>
+  <data name="RootPatch" xml:space="preserve"><value>Start Patch</value></data>
+  <data name="RootPatchDesc" xml:space="preserve"><value>Patch boot.img with the selected Magisk</value></data>
+  <data name="RootFlash" xml:space="preserve"><value>Flash Patched Image</value></data>
+  <data name="RootFlashDesc" xml:space="preserve"><value>Flash the patched image to the device boot partition</value></data>
+  <data name="RootFlashWarning" xml:space="preserve"><value>Flashing is risky and may cause boot failure. Make sure your data is backed up.</value></data>
+  <data name="RootFlashConfirm" xml:space="preserve"><value>Confirm flash? This cannot be undone.</value></data>
+
+  
+  <data name="ImageFactoryTitle" xml:space="preserve"><value>Image Factory</value></data>
+  <data name="ImageFactorySubtitle" xml:space="preserve"><value>Unpack, modify, and repack Android images and firmware.</value></data>
+  <data name="ImageFactoryPayload" xml:space="preserve"><value>Payload.bin Unpack</value></data>
+  <data name="ImageFactoryPayloadDesc" xml:space="preserve"><value>Extract partition images from OTA Payload.bin</value></data>
+  <data name="ImageFactoryOFP" xml:space="preserve"><value>OFP Unpack</value></data>
+  <data name="ImageFactoryOFPDesc" xml:space="preserve"><value>Unpack OPPO/realme OFP firmware packages</value></data>
+  <data name="ImageFactorySuper" xml:space="preserve"><value>Super Image</value></data>
+  <data name="ImageFactorySuperDesc" xml:space="preserve"><value>Unpack / repack Super dynamic partitions</value></data>
+  <data name="ImageFactoryDTBO" xml:space="preserve"><value>DTBO Image</value></data>
+  <data name="ImageFactoryDTBODesc" xml:space="preserve"><value>Unpack / repack DTBO device tree images</value></data>
+  <data name="ImageFactoryPartition" xml:space="preserve"><value>Partition Image</value></data>
+  <data name="ImageFactoryPartitionDesc" xml:space="preserve"><value>ext4 / erofs partition unpack &amp; pack</value></data>
+  <data name="ImageFactoryBoot" xml:space="preserve"><value>Boot Image</value></data>
+  <data name="ImageFactoryBootDesc" xml:space="preserve"><value>Unpack / repack Android boot images</value></data>
+  <data name="ImageFactoryDAT" xml:space="preserve"><value>DAT / BR Convert</value></data>
+  <data name="ImageFactoryDATDesc" xml:space="preserve"><value>Convert between sparse and raw images</value></data>
+
+  
+  <data name="ScrcpyTitle" xml:space="preserve"><value>Scrcpy</value></data>
+  <data name="ScrcpySubtitle" xml:space="preserve"><value>Mirror and control your device screen with Scrcpy.</value></data>
+  <data name="ScrcpyStart" xml:space="preserve"><value>Start Mirroring</value></data>
+  <data name="ScrcpyStop" xml:space="preserve"><value>Stop Mirroring</value></data>
+  <data name="ScrcpySettings" xml:space="preserve"><value>Mirroring Settings</value></data>
+  <data name="ScrcpyResolution" xml:space="preserve"><value>Max Resolution</value></data>
+  <data name="ScrcpyBitrate" xml:space="preserve"><value>Bitrate</value></data>
+  <data name="ScrcpyFps" xml:space="preserve"><value>FPS</value></data>
+  <data name="ScrcpyAudio" xml:space="preserve"><value>Audio Forwarding</value></data>
+  <data name="ScrcpyRecord" xml:space="preserve"><value>Record Screen</value></data>
+  <data name="ScrcpyFullscreen" xml:space="preserve"><value>Fullscreen</value></data>
+  <data name="ScrcpyAlwaysOnTop" xml:space="preserve"><value>Always on Top</value></data>
+  <data name="ScrcpyTurnScreenOff" xml:space="preserve"><value>Turn Device Screen Off</value></data>
+  <data name="ScrcpyNoControl" xml:space="preserve"><value>View Only</value></data>
+  <data name="ScrcpyStatus" xml:space="preserve"><value>Status</value></data>
+  <data name="ScrcpyStatusIdle" xml:space="preserve"><value>Idle</value></data>
+  <data name="ScrcpyStatusRunning" xml:space="preserve"><value>Mirroring</value></data>
+  <data name="ScrcpyStatusError" xml:space="preserve"><value>Failed to start</value></data>
+  <data name="ScrcpyShortcuts" xml:space="preserve"><value>Quick Actions</value></data>
+  <data name="ScrcpyHome" xml:space="preserve"><value>Home</value></data>
+  <data name="ScrcpyBack" xml:space="preserve"><value>Back</value></data>
+  <data name="ScrcpyRecent" xml:space="preserve"><value>Recent</value></data>
+  <data name="ScrcpyPower" xml:space="preserve"><value>Power</value></data>
+  <data name="ScrcpyVolumeUp" xml:space="preserve"><value>Volume Up</value></data>
+  <data name="ScrcpyVolumeDown" xml:space="preserve"><value>Volume Down</value></data>
+
+  
+  <data name="SoftwareTitle" xml:space="preserve"><value>Apps</value></data>
+  <data name="SoftwareSubtitle" xml:space="preserve"><value>Browse installed apps, install or export APKs, manage apps and components.</value></data>
+  <data name="SoftwareSearch" xml:space="preserve"><value>Search apps</value></data>
+  <data name="SoftwareLoading" xml:space="preserve"><value>Loading app list…</value></data>
+  <data name="SoftwareCount" xml:space="preserve"><value>{0} apps</value></data>
+  <data name="SoftwareInstall" xml:space="preserve"><value>Install APK</value></data>
+  <data name="SoftwareInstallDesc" xml:space="preserve"><value>Install an APK from your computer to the device</value></data>
+  <data name="SoftwareExport" xml:space="preserve"><value>Export APK</value></data>
+  <data name="SoftwareExportDesc" xml:space="preserve"><value>Export the selected app to your computer</value></data>
+  <data name="SoftwareUninstall" xml:space="preserve"><value>Uninstall</value></data>
+  <data name="SoftwareUninstallDesc" xml:space="preserve"><value>Uninstall selected app (keep data)</value></data>
+  <data name="SoftwareUninstallData" xml:space="preserve"><value>Clear data &amp; uninstall</value></data>
+  <data name="SoftwareUninstallWarning" xml:space="preserve"><value>Uninstall {0}? App data will be deleted.</value></data>
+  <data name="SoftwareSystemApps" xml:space="preserve"><value>Show system apps</value></data>
+  <data name="SoftwareUserApps" xml:space="preserve"><value>User apps</value></data>
+  <data name="SoftwareAllApps" xml:space="preserve"><value>All apps</value></data>
+  <data name="SoftwarePackageName" xml:space="preserve"><value>Package</value></data>
+  <data name="SoftwareVersion" xml:space="preserve"><value>Version</value></data>
+  <data name="SoftwareSize" xml:space="preserve"><value>Size</value></data>
+  <data name="SoftwareInstallTime" xml:space="preserve"><value>Installed</value></data>
+  <data name="SoftwareNoDevice" xml:space="preserve"><value>No device connected</value></data>
+  <data name="SoftwareSelectApp" xml:space="preserve"><value>Select an app</value></data>
+  <data name="SoftwareExportSuccess" xml:space="preserve"><value>Exported: {0}</value></data>
+  <data name="SoftwareExportFailed" xml:space="preserve"><value>Export failed</value></data>
+  <data name="SoftwareInstallSuccess" xml:space="preserve"><value>Installed</value></data>
+  <data name="SoftwareInstallFailed" xml:space="preserve"><value>Install failed</value></data>
+  <data name="SoftwareUninstallSuccess" xml:space="preserve"><value>Uninstalled</value></data>
+  <data name="SoftwareUninstallFailed" xml:space="preserve"><value>Uninstall failed</value></data>
+
+  
+  <data name="FilesTitle" xml:space="preserve"><value>Files</value></data>
+  <data name="FilesSubtitle" xml:space="preserve"><value>Browse device storage and transfer files between your computer and device.</value></data>
+  <data name="FilesPath" xml:space="preserve"><value>Path</value></data>
+  <data name="FilesUp" xml:space="preserve"><value>Up</value></data>
+  <data name="FilesHome" xml:space="preserve"><value>Internal Storage</value></data>
+  <data name="FilesRefresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="FilesPull" xml:space="preserve"><value>Pull to PC</value></data>
+  <data name="FilesPush" xml:space="preserve"><value>Push to Device</value></data>
+  <data name="FilesDelete" xml:space="preserve"><value>Delete</value></data>
+  <data name="FilesNewFolder" xml:space="preserve"><value>New Folder</value></data>
+  <data name="FilesRename" xml:space="preserve"><value>Rename</value></data>
+  <data name="FilesName" xml:space="preserve"><value>Name</value></data>
+  <data name="FilesSize" xml:space="preserve"><value>Size</value></data>
+  <data name="FilesDate" xml:space="preserve"><value>Modified</value></data>
+  <data name="FilesType" xml:space="preserve"><value>Type</value></data>
+  <data name="FilesFolder" xml:space="preserve"><value>Folder</value></data>
+  <data name="FilesFile" xml:space="preserve"><value>File</value></data>
+  <data name="FilesEmpty" xml:space="preserve"><value>This folder is empty</value></data>
+  <data name="FilesLoading" xml:space="preserve"><value>Loading…</value></data>
+  <data name="FilesDeleteConfirm" xml:space="preserve"><value>Delete {0}? This cannot be undone.</value></data>
+  <data name="FilesNoDevice" xml:space="preserve"><value>No device connected</value></data>
+  <data name="FilesTransferSuccess" xml:space="preserve"><value>Transfer complete</value></data>
+  <data name="FilesTransferFailed" xml:space="preserve"><value>Transfer failed</value></data>
+
+  
+  <data name="BackupTitle" xml:space="preserve"><value>Baseband Backup</value></data>
+  <data name="BackupSubtitle" xml:space="preserve"><value>Back up and restore baseband, EFS, and other critical partitions.</value></data>
+  <data name="BackupSectionInfo" xml:space="preserve"><value>Partition Info</value></data>
+  <data name="BackupSectionBackup" xml:space="preserve"><value>Backup</value></data>
+  <data name="BackupSectionRestore" xml:space="preserve"><value>Restore</value></data>
+  <data name="BackupSelectDir" xml:space="preserve"><value>Backup Directory</value></data>
+  <data name="BackupDirHint" xml:space="preserve"><value>Backup files will be saved to this directory</value></data>
+  <data name="BackupStart" xml:space="preserve"><value>Start Backup</value></data>
+  <data name="BackupStartDesc" xml:space="preserve"><value>Back up baseband and EFS partitions to your computer</value></data>
+  <data name="BackupSelectFile" xml:space="preserve"><value>Select Backup File</value></data>
+  <data name="BackupFileHint" xml:space="preserve"><value>.img or .tar backup file</value></data>
+  <data name="BackupRestore" xml:space="preserve"><value>Start Restore</value></data>
+  <data name="BackupRestoreDesc" xml:space="preserve"><value>Restore the backup to the corresponding device partition</value></data>
+  <data name="BackupRestoreWarning" xml:space="preserve"><value>Restoring partitions is risky and may cause baseband loss or boot failure.</value></data>
+  <data name="BackupRestoreConfirm" xml:space="preserve"><value>Confirm restore? This will overwrite the corresponding partition.</value></data>
+  <data name="BackupEfs" xml:space="preserve"><value>EFS Partition</value></data>
+  <data name="BackupModem" xml:space="preserve"><value>Modem Partition</value></data>
+  <data name="BackupPersist" xml:space="preserve"><value>Persist Partition</value></data>
+  <data name="BackupStatus" xml:space="preserve"><value>Status</value></data>
+  <data name="BackupSuccess" xml:space="preserve"><value>Backup succeeded</value></data>
+  <data name="BackupFailed" xml:space="preserve"><value>Backup failed</value></data>
+  <data name="BackupRestoreSuccess" xml:space="preserve"><value>Restore succeeded</value></data>
+  <data name="BackupRestoreFailed" xml:space="preserve"><value>Restore failed</value></data>
+  <data name="BackupNoDevice" xml:space="preserve"><value>No device connected</value></data>
+  <data name="BackupNoRoot" xml:space="preserve"><value>Root access required</value></data>
+
+  
+  <data name="MiscTitle" xml:space="preserve"><value>Toolbox</value></data>
+  <data name="MiscSubtitle" xml:space="preserve"><value>Common, advanced, and simulation utility tools.</value></data>
+  <data name="MiscCategoryCommon" xml:space="preserve"><value>Common</value></data>
+  <data name="MiscCategoryAdvanced" xml:space="preserve"><value>Advanced</value></data>
+  <data name="MiscCategorySimulation" xml:space="preserve"><value>Simulation</value></data>
+  <data name="MiscCategoryDevice" xml:space="preserve"><value>Device Info</value></data>
+
+  
+  <data name="SettingsTitle" xml:space="preserve"><value>Settings</value></data>
+  <data name="SettingsSubtitle" xml:space="preserve"><value>Appearance, downloads, language, and about.</value></data>
+  <data name="SettingsAppearance" xml:space="preserve"><value>Appearance</value></data>
+  <data name="SettingsAppearanceDesc" xml:space="preserve"><value>Choose light, dark, or system to match your environment.</value></data>
+  <data name="SettingsTheme" xml:space="preserve"><value>Theme</value></data>
+  <data name="SettingsMaterialNote" xml:space="preserve"><value>Mica background is enabled by default. When effects are unsupported or turned off in the system, it falls back to theme colors. Liquid glass is off by default and can be enabled here.</value></data>
+  <data name="SettingsMaterialLoading" xml:space="preserve"><value>Reading appearance status…</value></data>
+  <data name="SettingsMaterialUnavailable" xml:space="preserve"><value>Appearance service is unavailable.</value></data>
+  <data name="SettingsThemeLight" xml:space="preserve"><value>Light</value></data>
+  <data name="SettingsThemeDark" xml:space="preserve"><value>Dark</value></data>
+  <data name="SettingsThemeSystem" xml:space="preserve"><value>System default</value></data>
+  <data name="SettingsLiquidGlass" xml:space="preserve"><value>Liquid Glass</value></data>
+  <data name="SettingsLiquidGlassDesc" xml:space="preserve"><value>Add semi-transparent frosted glass effect to surfaces</value></data>
+  <data name="SettingsGlassBlur" xml:space="preserve"><value>Blur Amount</value></data>
+  <data name="SettingsMaterialStatus" xml:space="preserve"><value>Material Status</value></data>
+  <data name="SettingsLanguage" xml:space="preserve"><value>Language</value></data>
+  <data name="SettingsLanguageDesc" xml:space="preserve"><value>Choose the display language</value></data>
+  <data name="SettingsLanguageSystem" xml:space="preserve"><value>System default</value></data>
+  <data name="SettingsLanguageZhCN" xml:space="preserve"><value>简体中文</value></data>
+  <data name="SettingsLanguageEnUS" xml:space="preserve"><value>English</value></data>
+  <data name="SettingsLanguageRuRU" xml:space="preserve"><value>Русский</value></data>
+  <data name="SettingsLanguageRestart" xml:space="preserve"><value>Language preference saved. Close and reopen Tobatools after your current tasks finish to apply it.</value></data>
+  <data name="SettingsLanguageRestartNow" xml:space="preserve"><value>Restart Now</value></data>
+  <data name="SettingsDownload" xml:space="preserve"><value>Downloads</value></data>
+  <data name="SettingsDownloadDir" xml:space="preserve"><value>Download Directory</value></data>
+  <data name="SettingsDownloadDirDesc" xml:space="preserve"><value>Where downloaded files are saved</value></data>
+  <data name="SettingsAbout" xml:space="preserve"><value>About &amp; Support</value></data>
+  <data name="SettingsAboutApp" xml:space="preserve"><value>App info</value></data>
+  <data name="SettingsVersionFormat" xml:space="preserve"><value>Version: {0}</value></data>
+  <data name="SettingsCheckUpdate" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="SettingsCheckUpdateDesc" xml:space="preserve"><value>Get the latest version from the cloud</value></data>
+  <data name="SettingsUpdateChecking" xml:space="preserve"><value>Querying from the cloud…</value></data>
+  <data name="SettingsUpdateLatest" xml:space="preserve"><value>Up to date</value></data>
+  <data name="SettingsUpdateCurrent" xml:space="preserve"><value>Current version: {0}</value></data>
+  <data name="SettingsUpdateAvailable" xml:space="preserve"><value>Update available</value></data>
+  <data name="SettingsUpdateNewVersion" xml:space="preserve"><value>New version: {0}
+Current version: {1}</value></data>
+  <data name="SettingsUpdateNotes" xml:space="preserve"><value>Release notes:</value></data>
+  <data name="SettingsUpdateFailed" xml:space="preserve"><value>Check failed</value></data>
+  <data name="SettingsUpdateMissing" xml:space="preserve"><value>Response is missing version info</value></data>
+  <data name="SettingsStoreVersion" xml:space="preserve"><value>Microsoft Store version</value></data>
+  <data name="SettingsStoreUpdateHint" xml:space="preserve"><value>Store updates are delivered through Microsoft Store.</value></data>
+  <data name="SettingsWebsite" xml:space="preserve"><value>Tobatools official website</value></data>
+  <data name="SettingsQQGroup" xml:space="preserve"><value>Official QQ group</value></data>
+  <data name="SettingsTelegram" xml:space="preserve"><value>Tobatools Telegram channel</value></data>
+  <data name="SettingsTelegramDesc" xml:space="preserve"><value>Official news and tool updates</value></data>
+
+  
+  <data name="WirelessTitle" xml:space="preserve"><value>Wireless Connection</value></data>
+  <data name="WirelessConnect" xml:space="preserve"><value>Connect</value></data>
+  <data name="WirelessPair" xml:space="preserve"><value>Pair</value></data>
+  <data name="WirelessEndpoint" xml:space="preserve"><value>Device Address</value></data>
+  <data name="WirelessEndpointDesc" xml:space="preserve"><value>Format: IP:port (e.g. 192.168.1.100:5555)</value></data>
+  <data name="WirelessPairCode" xml:space="preserve"><value>Pairing Code</value></data>
+  <data name="WirelessPairCodeDesc" xml:space="preserve"><value>6-digit wireless debugging pairing code</value></data>
+  <data name="WirelessPairPort" xml:space="preserve"><value>Pairing Port</value></data>
+  <data name="WirelessPairPortDesc" xml:space="preserve"><value>Pairing port shown on the wireless debugging page</value></data>
+  <data name="WirelessConnecting" xml:space="preserve"><value>Connecting…</value></data>
+  <data name="WirelessPairing" xml:space="preserve"><value>Pairing…</value></data>
+  <data name="WirelessSuccess" xml:space="preserve"><value>Connected</value></data>
+  <data name="WirelessPairSuccess" xml:space="preserve"><value>Paired</value></data>
+  <data name="WirelessFailed" xml:space="preserve"><value>Connection failed</value></data>
+  <data name="WirelessPairFailed" xml:space="preserve"><value>Pairing failed</value></data>
+  <data name="WirelessNatTip" xml:space="preserve"><value>Tip: If the device connects through an emulator or NAT network, make sure you use the local forwarded address.</value></data>
+  <data name="WirelessTimeoutHint" xml:space="preserve"><value>Connection timed out. Please check the device address and network.</value></data>
+  <data name="WirelessRefusedHint" xml:space="preserve"><value>Connection refused. Please make sure wireless debugging is enabled.</value></data>
+
+  
+  <data name="DeviceNoConnected" xml:space="preserve"><value>No device connected</value></data>
+  <data name="DeviceUnauthorized" xml:space="preserve"><value>Device unauthorized. Please allow USB debugging on the device.</value></data>
+  <data name="DeviceOffline" xml:space="preserve"><value>Device offline</value></data>
+  <data name="DeviceMultiDevice" xml:space="preserve"><value>Multiple devices detected. Please keep only one connected.</value></data>
+  <data name="DeviceDetecting" xml:space="preserve"><value>Detecting devices…</value></data>
+
+<data name="SettingsDownloadDesc" xml:space="preserve"><value>Choose the default folder for downloads and extracted files.</value></data><data name="SettingsUpdateUnconfigured" xml:space="preserve"><value>No update address is configured.</value></data><data name="CommonOn" xml:space="preserve"><value>On</value></data><data name="CommonOff" xml:space="preserve"><value>Off</value></data><data name="SettingsAboutText" xml:space="preserve"><value>Tobatools
+
+Thanks to our contributors and supporters:
+
+• Ported firmware and flashing logic: @秋詞, @Lucky
+• Flashing tool development: @Tobapuw, @人美心善且温柔
+• Modified firmware download storage: @可泺'KoCleo
+• Official firmware links: @by 北辞（北梦之境）
+• Dependency support: @酸奶 -O神开发者
+• UI framework support: @zhiyiYo PyQt-Fluent-Widgets
+
+2025–2026 © Tobapuw. All rights reserved.
+
+Built with C# / WinUI 3</value></data>
+  <data name="WirelessPairTimeout" xml:space="preserve">
+    <value>Pairing timed out after {0}s. Check the pairing port and that the pairing dialog is still open. Output: {1}</value>
+  </data>
+  <data name="WirelessConnectTimeout" xml:space="preserve">
+    <value>Connection timed out after {0}s. Check the connection port (not the pairing port). Output: {1}</value>
+  </data>
+  <data name="NavFlash" xml:space="preserve"><value>Flash</value></data>
+  <data name="NavFlashTooltip" xml:space="preserve"><value>Firmware flashing / one-click flash</value></data>
+</root>

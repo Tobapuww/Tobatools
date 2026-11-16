@@ -1,0 +1,375 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata"><xs:complexType><xs:sequence><xs:element name="value" type="xsd:string" minOccurs="0" /></xs:sequence><xs:attribute name="name" use="required" type="xsd:string" /><xs:attribute name="type" type="xsd:string" /><xs:attribute name="mimetype" type="xsd:string" /><xs:attribute ref="xml:space" /></xs:complexType></xs:element>
+          <xs:element name="assembly"><xs:complexType><xs:attribute name="alias" type="xsd:string" /><xs:attribute name="name" type="xsd:string" /></xs:complexType></xs:element>
+          <xs:element name="data"><xs:complexType><xs:sequence><xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" /><xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" /></xs:sequence><xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" /><xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" /><xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" /><xs:attribute ref="xml:space" /></xs:complexType></xs:element>
+          <xs:element name="resheader"><xs:complexType><xs:sequence><xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" /></xs:sequence><xs:attribute name="name" type="xsd:string" use="required" /></xs:complexType></xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  
+  <data name="AppTitle" xml:space="preserve"><value>Tobatools</value></data>
+  <data name="AppSubtitle" xml:space="preserve"><value>Прошивка · Отладка · Управление</value></data>
+
+  <data name="CommonOK" xml:space="preserve"><value>ОК</value></data>
+  <data name="CommonCancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="CommonClose" xml:space="preserve"><value>Закрыть</value></data>
+  <data name="CommonConfirm" xml:space="preserve"><value>Подтвердить</value></data>
+  <data name="CommonSave" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="CommonReset" xml:space="preserve"><value>Сброс</value></data>
+  <data name="CommonRefresh" xml:space="preserve"><value>Обновить</value></data>
+  <data name="CommonDelete" xml:space="preserve"><value>Удалить</value></data>
+  <data name="CommonCopy" xml:space="preserve"><value>Копировать</value></data>
+  <data name="CommonInstall" xml:space="preserve"><value>Установить</value></data>
+  <data name="CommonUninstall" xml:space="preserve"><value>Удалить</value></data>
+  <data name="CommonExport" xml:space="preserve"><value>Экспорт</value></data>
+  <data name="CommonStart" xml:space="preserve"><value>Старт</value></data>
+  <data name="CommonStop" xml:space="preserve"><value>Стоп</value></data>
+  <data name="CommonConnect" xml:space="preserve"><value>Подключить</value></data>
+  <data name="CommonDisconnect" xml:space="preserve"><value>Отключить</value></data>
+  <data name="CommonBack" xml:space="preserve"><value>Назад</value></data>
+  <data name="CommonBrowse" xml:space="preserve"><value>Обзор</value></data>
+  <data name="CommonMore" xml:space="preserve"><value>Ещё</value></data>
+  <data name="CommonSearch" xml:space="preserve"><value>Поиск</value></data>
+  <data name="CommonLoading" xml:space="preserve"><value>Загрузка…</value></data>
+  <data name="CommonPleaseWait" xml:space="preserve"><value>Пожалуйста, подождите…</value></data>
+  <data name="CommonSuccess" xml:space="preserve"><value>Успешно</value></data>
+  <data name="CommonFailed" xml:space="preserve"><value>Не удалось</value></data>
+  <data name="CommonWarning" xml:space="preserve"><value>Предупреждение</value></data>
+  <data name="CommonError" xml:space="preserve"><value>Ошибка</value></data>
+  <data name="CommonInfo" xml:space="preserve"><value>Информация</value></data>
+  <data name="CommonUnknown" xml:space="preserve"><value>Неизвестно</value></data>
+  <data name="CommonNone" xml:space="preserve"><value>Нет</value></data>
+  <data name="CommonDash" xml:space="preserve"><value>—</value></data>
+  <data name="CommonCopySuccess" xml:space="preserve"><value>Скопировано</value></data>
+  <data name="CommonView" xml:space="preserve"><value>Просмотр</value></data>
+  <data name="CommonCheck" xml:space="preserve"><value>Проверить</value></data>
+  <data name="CommonVisit" xml:space="preserve"><value>Открыть</value></data>
+  <data name="CommonJoin" xml:space="preserve"><value>Присоединиться</value></data>
+
+  
+  <data name="NavDashboard" xml:space="preserve"><value>Панель</value></data>
+  <data name="NavDashboardTooltip" xml:space="preserve"><value>Информация и статус устройства</value></data>
+  <data name="NavImageFactory" xml:space="preserve"><value>Фабрика образов</value></data>
+  <data name="NavImageFactoryTooltip" xml:space="preserve"><value>Распаковка / сборка / создание образов</value></data>
+  <data name="NavScrcpy" xml:space="preserve"><value>Трансляция</value></data>
+  <data name="NavScrcpyTooltip" xml:space="preserve"><value>Беспроводная трансляция экрана Scrcpy</value></data>
+  <data name="NavSoftware" xml:space="preserve"><value>Приложения</value></data>
+  <data name="NavSoftwareTooltip" xml:space="preserve"><value>Список приложений / удаление / извлечение</value></data>
+  <data name="NavFiles" xml:space="preserve"><value>Файлы</value></data>
+  <data name="NavFilesTooltip" xml:space="preserve"><value>Просмотр и передача файлов устройства</value></data>
+  <data name="NavBackup" xml:space="preserve"><value>Резерв. копия</value></data>
+  <data name="NavBackupTooltip" xml:space="preserve"><value>Резервное копирование EFS / модема</value></data>
+  <data name="NavMisc" xml:space="preserve"><value>Инструменты</value></data>
+  <data name="NavMiscTooltip" xml:space="preserve"><value>Общие / расширенные / симуляция</value></data>
+  <data name="NavSettings" xml:space="preserve"><value>Настройки</value></data>
+  <data name="NavSettingsTooltip" xml:space="preserve"><value>Внешний вид / загрузки / о программе</value></data>
+
+  
+  <data name="DeviceBarCollapse" xml:space="preserve"><value>Свернуть панель устройства</value></data>
+  <data name="DeviceBarExpand" xml:space="preserve"><value>Развернуть панель устройства</value></data>
+  <data name="DeviceStateConnected" xml:space="preserve"><value>Подключено</value></data>
+  <data name="DeviceStateUnauthorized" xml:space="preserve"><value>Ожидание авторизации</value></data>
+  <data name="DeviceStateOffline" xml:space="preserve"><value>Не в сети</value></data>
+  <data name="DeviceStateNoDevice" xml:space="preserve"><value>Не подключено</value></data>
+  <data name="DeviceStateError" xml:space="preserve"><value>Ошибка обнаружения</value></data>
+  <data name="DeviceStateDetecting" xml:space="preserve"><value>Обнаружение…</value></data>
+  <data name="DeviceModeSystem" xml:space="preserve"><value>Система</value></data>
+  <data name="DeviceModeRecovery" xml:space="preserve"><value>recovery</value></data>
+  <data name="DeviceModeSideload" xml:space="preserve"><value>sideload</value></data>
+  <data name="DeviceModeBootloader" xml:space="preserve"><value>bootloader</value></data>
+  <data name="DeviceModeFastbootd" xml:space="preserve"><value>fastbootd</value></data>
+  <data name="DeviceModeEDL" xml:space="preserve"><value>EDL</value></data>
+  <data name="DeviceModeBROM" xml:space="preserve"><value>BROM</value></data>
+
+  
+  <data name="DashboardTitle" xml:space="preserve"><value>Панель</value></data>
+  <data name="DashboardSubtitle" xml:space="preserve"><value>Статус подключения, использование ресурсов и быстрые действия.</value></data>
+  <data name="DashboardNoDevice" xml:space="preserve"><value>Устройство не обнаружено</value></data>
+  <data name="DashboardNoDeviceDesc" xml:space="preserve"><value>Подключите устройство по USB или используйте беспроводную отладку.</value></data>
+  <data name="DashboardWireless" xml:space="preserve"><value>Беспроводное</value></data>
+  <data name="DashboardDeviceInfo" xml:space="preserve"><value>Информация об устройстве</value></data>
+  <data name="DashboardSystemInfo" xml:space="preserve"><value>Системная информация</value></data>
+  <data name="DashboardStorage" xml:space="preserve"><value>Хранилище</value></data>
+  <data name="DashboardBattery" xml:space="preserve"><value>Аккумулятор</value></data>
+  <data name="DashboardQuickActions" xml:space="preserve"><value>Быстрые действия</value></data>
+  <data name="DashboardReboot" xml:space="preserve"><value>Перезагрузка</value></data>
+  <data name="DashboardRebootRecovery" xml:space="preserve"><value>Перезагрузка в Recovery</value></data>
+  <data name="DashboardRebootBootloader" xml:space="preserve"><value>Перезагрузка в Bootloader</value></data>
+  <data name="DashboardScreenshot" xml:space="preserve"><value>Скриншот</value></data>
+  <data name="DashboardModel" xml:space="preserve"><value>Модель</value></data>
+  <data name="DashboardSerial" xml:space="preserve"><value>Серийный номер</value></data>
+  <data name="DashboardAndroidVersion" xml:space="preserve"><value>Версия Android</value></data>
+  <data name="DashboardManufacturer" xml:space="preserve"><value>Производитель</value></data>
+  <data name="DashboardBuildNumber" xml:space="preserve"><value>Номер сборки</value></data>
+  <data name="DashboardCpu" xml:space="preserve"><value>Процессор</value></data>
+  <data name="DashboardRam" xml:space="preserve"><value>ОЗУ</value></data>
+  <data name="DashboardStorageTotal" xml:space="preserve"><value>Всего</value></data>
+  <data name="DashboardStorageUsed" xml:space="preserve"><value>Использовано</value></data>
+  <data name="DashboardBatteryLevel" xml:space="preserve"><value>Уровень</value></data>
+  <data name="DashboardBatteryTemp" xml:space="preserve"><value>Температура</value></data>
+  <data name="DashboardCharging" xml:space="preserve"><value>Зарядка</value></data>
+  <data name="DashboardDischarging" xml:space="preserve"><value>Не заряжается</value></data>
+
+  
+  <data name="RootTitle" xml:space="preserve"><value>Root</value></data>
+  <data name="RootSubtitle" xml:space="preserve"><value>Выберите загрузочный образ и менеджер, затем следуйте шагам для патча и прошивки.</value></data>
+  <data name="RootStep1" xml:space="preserve"><value>1. Выбрать boot-образ</value></data>
+  <data name="RootStep2" xml:space="preserve"><value>2. Выбрать версию Magisk</value></data>
+  <data name="RootStep3" xml:space="preserve"><value>3. Начать патч</value></data>
+  <data name="RootStep4" xml:space="preserve"><value>4. Прошить пропатченный образ</value></data>
+  <data name="RootSelectBootImage" xml:space="preserve"><value>Выбрать boot.img</value></data>
+  <data name="RootBootImageHint" xml:space="preserve"><value>Образ boot-раздела, извлечённый из прошивки</value></data>
+  <data name="RootSelectMagisk" xml:space="preserve"><value>Выбрать Magisk APK</value></data>
+  <data name="RootMagiskHint" xml:space="preserve"><value>APK приложения Magisk для извлечения скрипта патча</value></data>
+  <data name="RootPatch" xml:space="preserve"><value>Начать патч</value></data>
+  <data name="RootPatchDesc" xml:space="preserve"><value>Пропатчить boot.img с помощью выбранного Magisk</value></data>
+  <data name="RootFlash" xml:space="preserve"><value>Прошить образ</value></data>
+  <data name="RootFlashDesc" xml:space="preserve"><value>Прошить пропатченный образ в boot-раздел устройства</value></data>
+  <data name="RootFlashWarning" xml:space="preserve"><value>Прошивка опасна и может привести к незагрузке. Убедитесь, что данные сохранены.</value></data>
+  <data name="RootFlashConfirm" xml:space="preserve"><value>Подтвердить прошивку? Это действие необратимо.</value></data>
+
+  
+  <data name="ImageFactoryTitle" xml:space="preserve"><value>Фабрика образов</value></data>
+  <data name="ImageFactorySubtitle" xml:space="preserve"><value>Распаковка, изменение и сборка Android-образов и прошивок.</value></data>
+  <data name="ImageFactoryPayload" xml:space="preserve"><value>Распаковка Payload.bin</value></data>
+  <data name="ImageFactoryPayloadDesc" xml:space="preserve"><value>Извлечь образы разделов из OTA Payload.bin</value></data>
+  <data name="ImageFactoryOFP" xml:space="preserve"><value>Распаковка OFP</value></data>
+  <data name="ImageFactoryOFPDesc" xml:space="preserve"><value>Распаковать прошивки OPPO/realme OFP</value></data>
+  <data name="ImageFactorySuper" xml:space="preserve"><value>Образ Super</value></data>
+  <data name="ImageFactorySuperDesc" xml:space="preserve"><value>Распаковка / сборка динамических разделов Super</value></data>
+  <data name="ImageFactoryDTBO" xml:space="preserve"><value>Образ DTBO</value></data>
+  <data name="ImageFactoryDTBODesc" xml:space="preserve"><value>Распаковка / сборка DTBO-деревьев устройств</value></data>
+  <data name="ImageFactoryPartition" xml:space="preserve"><value>Образ раздела</value></data>
+  <data name="ImageFactoryPartitionDesc" xml:space="preserve"><value>Распаковка / сборка разделов ext4 / erofs</value></data>
+  <data name="ImageFactoryBoot" xml:space="preserve"><value>Загрузочный образ</value></data>
+  <data name="ImageFactoryBootDesc" xml:space="preserve"><value>Распаковка / сборка загрузочных образов Android</value></data>
+  <data name="ImageFactoryDAT" xml:space="preserve"><value>Конвертация DAT / BR</value></data>
+  <data name="ImageFactoryDATDesc" xml:space="preserve"><value>Преобразование разреженных и исходных образов</value></data>
+
+  
+  <data name="ScrcpyTitle" xml:space="preserve"><value>Трансляция</value></data>
+  <data name="ScrcpySubtitle" xml:space="preserve"><value>Транслируйте и управляйте экраном устройства через Scrcpy.</value></data>
+  <data name="ScrcpyStart" xml:space="preserve"><value>Начать трансляцию</value></data>
+  <data name="ScrcpyStop" xml:space="preserve"><value>Остановить трансляцию</value></data>
+  <data name="ScrcpySettings" xml:space="preserve"><value>Настройки трансляции</value></data>
+  <data name="ScrcpyResolution" xml:space="preserve"><value>Макс. разрешение</value></data>
+  <data name="ScrcpyBitrate" xml:space="preserve"><value>Битрейт</value></data>
+  <data name="ScrcpyFps" xml:space="preserve"><value>FPS</value></data>
+  <data name="ScrcpyAudio" xml:space="preserve"><value>Передача аудио</value></data>
+  <data name="ScrcpyRecord" xml:space="preserve"><value>Запись экрана</value></data>
+  <data name="ScrcpyFullscreen" xml:space="preserve"><value>Полноэкранный режим</value></data>
+  <data name="ScrcpyAlwaysOnTop" xml:space="preserve"><value>Поверх всех окон</value></data>
+  <data name="ScrcpyTurnScreenOff" xml:space="preserve"><value>Выключить экран устройства</value></data>
+  <data name="ScrcpyNoControl" xml:space="preserve"><value>Только просмотр</value></data>
+  <data name="ScrcpyStatus" xml:space="preserve"><value>Статус</value></data>
+  <data name="ScrcpyStatusIdle" xml:space="preserve"><value>Ожидание</value></data>
+  <data name="ScrcpyStatusRunning" xml:space="preserve"><value>Транслируется</value></data>
+  <data name="ScrcpyStatusError" xml:space="preserve"><value>Ошибка запуска</value></data>
+  <data name="ScrcpyShortcuts" xml:space="preserve"><value>Быстрые действия</value></data>
+  <data name="ScrcpyHome" xml:space="preserve"><value>Домой</value></data>
+  <data name="ScrcpyBack" xml:space="preserve"><value>Назад</value></data>
+  <data name="ScrcpyRecent" xml:space="preserve"><value>Недавние</value></data>
+  <data name="ScrcpyPower" xml:space="preserve"><value>Питание</value></data>
+  <data name="ScrcpyVolumeUp" xml:space="preserve"><value>Громкость +</value></data>
+  <data name="ScrcpyVolumeDown" xml:space="preserve"><value>Громкость −</value></data>
+
+  
+  <data name="SoftwareTitle" xml:space="preserve"><value>Приложения</value></data>
+  <data name="SoftwareSubtitle" xml:space="preserve"><value>Просмотр установленных приложений, установка или экспорт APK, управление приложениями и компонентами.</value></data>
+  <data name="SoftwareSearch" xml:space="preserve"><value>Поиск приложений</value></data>
+  <data name="SoftwareLoading" xml:space="preserve"><value>Загрузка списка приложений…</value></data>
+  <data name="SoftwareCount" xml:space="preserve"><value>{0} приложений</value></data>
+  <data name="SoftwareInstall" xml:space="preserve"><value>Установить APK</value></data>
+  <data name="SoftwareInstallDesc" xml:space="preserve"><value>Установить APK с компьютера на устройство</value></data>
+  <data name="SoftwareExport" xml:space="preserve"><value>Экспорт APK</value></data>
+  <data name="SoftwareExportDesc" xml:space="preserve"><value>Экспортировать выбранное приложение на компьютер</value></data>
+  <data name="SoftwareUninstall" xml:space="preserve"><value>Удалить</value></data>
+  <data name="SoftwareUninstallDesc" xml:space="preserve"><value>Удалить выбранное приложение (сохранить данные)</value></data>
+  <data name="SoftwareUninstallData" xml:space="preserve"><value>Очистить данные и удалить</value></data>
+  <data name="SoftwareUninstallWarning" xml:space="preserve"><value>Удалить {0}? Данные приложения будут удалены.</value></data>
+  <data name="SoftwareSystemApps" xml:space="preserve"><value>Показывать системные</value></data>
+  <data name="SoftwareUserApps" xml:space="preserve"><value>Пользовательские</value></data>
+  <data name="SoftwareAllApps" xml:space="preserve"><value>Все приложения</value></data>
+  <data name="SoftwarePackageName" xml:space="preserve"><value>Пакет</value></data>
+  <data name="SoftwareVersion" xml:space="preserve"><value>Версия</value></data>
+  <data name="SoftwareSize" xml:space="preserve"><value>Размер</value></data>
+  <data name="SoftwareInstallTime" xml:space="preserve"><value>Установлено</value></data>
+  <data name="SoftwareNoDevice" xml:space="preserve"><value>Устройство не подключено</value></data>
+  <data name="SoftwareSelectApp" xml:space="preserve"><value>Выберите приложение</value></data>
+  <data name="SoftwareExportSuccess" xml:space="preserve"><value>Экспортировано: {0}</value></data>
+  <data name="SoftwareExportFailed" xml:space="preserve"><value>Ошибка экспорта</value></data>
+  <data name="SoftwareInstallSuccess" xml:space="preserve"><value>Установлено</value></data>
+  <data name="SoftwareInstallFailed" xml:space="preserve"><value>Ошибка установки</value></data>
+  <data name="SoftwareUninstallSuccess" xml:space="preserve"><value>Удалено</value></data>
+  <data name="SoftwareUninstallFailed" xml:space="preserve"><value>Ошибка удаления</value></data>
+
+  
+  <data name="FilesTitle" xml:space="preserve"><value>Файлы</value></data>
+  <data name="FilesSubtitle" xml:space="preserve"><value>Просмотр хранилища устройства и передача файлов между компьютером и устройством.</value></data>
+  <data name="FilesPath" xml:space="preserve"><value>Путь</value></data>
+  <data name="FilesUp" xml:space="preserve"><value>Вверх</value></data>
+  <data name="FilesHome" xml:space="preserve"><value>Внутренняя память</value></data>
+  <data name="FilesRefresh" xml:space="preserve"><value>Обновить</value></data>
+  <data name="FilesPull" xml:space="preserve"><value>Копировать на ПК</value></data>
+  <data name="FilesPush" xml:space="preserve"><value>Копировать на устройство</value></data>
+  <data name="FilesDelete" xml:space="preserve"><value>Удалить</value></data>
+  <data name="FilesNewFolder" xml:space="preserve"><value>Новая папка</value></data>
+  <data name="FilesRename" xml:space="preserve"><value>Переименовать</value></data>
+  <data name="FilesName" xml:space="preserve"><value>Имя</value></data>
+  <data name="FilesSize" xml:space="preserve"><value>Размер</value></data>
+  <data name="FilesDate" xml:space="preserve"><value>Изменён</value></data>
+  <data name="FilesType" xml:space="preserve"><value>Тип</value></data>
+  <data name="FilesFolder" xml:space="preserve"><value>Папка</value></data>
+  <data name="FilesFile" xml:space="preserve"><value>Файл</value></data>
+  <data name="FilesEmpty" xml:space="preserve"><value>Эта папка пуста</value></data>
+  <data name="FilesLoading" xml:space="preserve"><value>Загрузка…</value></data>
+  <data name="FilesDeleteConfirm" xml:space="preserve"><value>Удалить {0}? Это действие необратимо.</value></data>
+  <data name="FilesNoDevice" xml:space="preserve"><value>Устройство не подключено</value></data>
+  <data name="FilesTransferSuccess" xml:space="preserve"><value>Передача завершена</value></data>
+  <data name="FilesTransferFailed" xml:space="preserve"><value>Ошибка передачи</value></data>
+
+  
+  <data name="BackupTitle" xml:space="preserve"><value>Резерв. копия</value></data>
+  <data name="BackupSubtitle" xml:space="preserve"><value>Резервное копирование и восстановление модема, EFS и других важных разделов.</value></data>
+  <data name="BackupSectionInfo" xml:space="preserve"><value>Информация о разделах</value></data>
+  <data name="BackupSectionBackup" xml:space="preserve"><value>Резерв. копия</value></data>
+  <data name="BackupSectionRestore" xml:space="preserve"><value>Восстановление</value></data>
+  <data name="BackupSelectDir" xml:space="preserve"><value>Папка для резервных копий</value></data>
+  <data name="BackupDirHint" xml:space="preserve"><value>Файлы резервных копий будут сохранены в этой папке</value></data>
+  <data name="BackupStart" xml:space="preserve"><value>Начать резерв. копию</value></data>
+  <data name="BackupStartDesc" xml:space="preserve"><value>Создать резервную копию EFS и модема на компьютере</value></data>
+  <data name="BackupSelectFile" xml:space="preserve"><value>Выбрать файл резерв. копии</value></data>
+  <data name="BackupFileHint" xml:space="preserve"><value>Файл резервной копии .img или .tar</value></data>
+  <data name="BackupRestore" xml:space="preserve"><value>Начать восстановление</value></data>
+  <data name="BackupRestoreDesc" xml:space="preserve"><value>Восстановить резервную копию в соответствующий раздел устройства</value></data>
+  <data name="BackupRestoreWarning" xml:space="preserve"><value>Восстановление разделов опасно и может привести к потере модема или незагрузке.</value></data>
+  <data name="BackupRestoreConfirm" xml:space="preserve"><value>Подтвердить восстановление? Это перезапишет соответствующий раздел.</value></data>
+  <data name="BackupEfs" xml:space="preserve"><value>Раздел EFS</value></data>
+  <data name="BackupModem" xml:space="preserve"><value>Раздел Modem</value></data>
+  <data name="BackupPersist" xml:space="preserve"><value>Раздел Persist</value></data>
+  <data name="BackupStatus" xml:space="preserve"><value>Статус</value></data>
+  <data name="BackupSuccess" xml:space="preserve"><value>Резерв. копия создана</value></data>
+  <data name="BackupFailed" xml:space="preserve"><value>Ошибка резерв. копии</value></data>
+  <data name="BackupRestoreSuccess" xml:space="preserve"><value>Восстановлено</value></data>
+  <data name="BackupRestoreFailed" xml:space="preserve"><value>Ошибка восстановления</value></data>
+  <data name="BackupNoDevice" xml:space="preserve"><value>Устройство не подключено</value></data>
+  <data name="BackupNoRoot" xml:space="preserve"><value>Требуются права Root</value></data>
+
+  
+  <data name="MiscTitle" xml:space="preserve"><value>Инструменты</value></data>
+  <data name="MiscSubtitle" xml:space="preserve"><value>Общие, расширенные и симуляционные утилиты.</value></data>
+  <data name="MiscCategoryCommon" xml:space="preserve"><value>Общие</value></data>
+  <data name="MiscCategoryAdvanced" xml:space="preserve"><value>Расширенные</value></data>
+  <data name="MiscCategorySimulation" xml:space="preserve"><value>Симуляция</value></data>
+  <data name="MiscCategoryDevice" xml:space="preserve"><value>Информация об устройстве</value></data>
+
+  
+  <data name="SettingsTitle" xml:space="preserve"><value>Настройки</value></data>
+  <data name="SettingsSubtitle" xml:space="preserve"><value>Внешний вид, загрузки, язык и о программе.</value></data>
+  <data name="SettingsAppearance" xml:space="preserve"><value>Внешний вид</value></data>
+  <data name="SettingsAppearanceDesc" xml:space="preserve"><value>Выберите светлую, тёмную или системную тему.</value></data>
+  <data name="SettingsTheme" xml:space="preserve"><value>Тема</value></data>
+  <data name="SettingsMaterialNote" xml:space="preserve"><value>Фон Mica включён по умолчанию. Если эффекты отключены в системе, используется темовой фон. Жидкое стекло отключено по умолчанию и включается здесь.</value></data>
+  <data name="SettingsMaterialLoading" xml:space="preserve"><value>Чтение состояния внешнего вида…</value></data>
+  <data name="SettingsMaterialUnavailable" xml:space="preserve"><value>Служба внешнего вида недоступна.</value></data>
+  <data name="SettingsThemeLight" xml:space="preserve"><value>Светлая</value></data>
+  <data name="SettingsThemeDark" xml:space="preserve"><value>Тёмная</value></data>
+  <data name="SettingsThemeSystem" xml:space="preserve"><value>Как в системе</value></data>
+  <data name="SettingsLiquidGlass" xml:space="preserve"><value>Жидкое стекло</value></data>
+  <data name="SettingsLiquidGlassDesc" xml:space="preserve"><value>Добавить эффект матового стекла на поверхности</value></data>
+  <data name="SettingsGlassBlur" xml:space="preserve"><value>Степень размытия</value></data>
+  <data name="SettingsMaterialStatus" xml:space="preserve"><value>Состояние материала</value></data>
+  <data name="SettingsLanguage" xml:space="preserve"><value>Язык</value></data>
+  <data name="SettingsLanguageDesc" xml:space="preserve"><value>Выберите язык отображения</value></data>
+  <data name="SettingsLanguageSystem" xml:space="preserve"><value>Как в системе</value></data>
+  <data name="SettingsLanguageZhCN" xml:space="preserve"><value>简体中文</value></data>
+  <data name="SettingsLanguageEnUS" xml:space="preserve"><value>English</value></data>
+  <data name="SettingsLanguageRuRU" xml:space="preserve"><value>Русский</value></data>
+  <data name="SettingsLanguageRestart" xml:space="preserve"><value>Язык сохранён. Завершите текущие задачи, затем закройте и снова откройте Tobatools, чтобы применить его.</value></data>
+  <data name="SettingsLanguageRestartNow" xml:space="preserve"><value>Перезапустить сейчас</value></data>
+  <data name="SettingsDownload" xml:space="preserve"><value>Загрузки</value></data>
+  <data name="SettingsDownloadDir" xml:space="preserve"><value>Папка загрузок</value></data>
+  <data name="SettingsDownloadDirDesc" xml:space="preserve"><value>Куда сохраняются загруженные файлы</value></data>
+  <data name="SettingsAbout" xml:space="preserve"><value>О программе и поддержка</value></data>
+  <data name="SettingsAboutApp" xml:space="preserve"><value>Информация о приложении</value></data>
+  <data name="SettingsVersionFormat" xml:space="preserve"><value>Версия: {0}</value></data>
+  <data name="SettingsCheckUpdate" xml:space="preserve"><value>Проверить обновления</value></data>
+  <data name="SettingsCheckUpdateDesc" xml:space="preserve"><value>Получить последнюю версию из облака</value></data>
+  <data name="SettingsUpdateChecking" xml:space="preserve"><value>Запрос в облаке…</value></data>
+  <data name="SettingsUpdateLatest" xml:space="preserve"><value>Установлена последняя версия</value></data>
+  <data name="SettingsUpdateCurrent" xml:space="preserve"><value>Текущая версия: {0}</value></data>
+  <data name="SettingsUpdateAvailable" xml:space="preserve"><value>Доступно обновление</value></data>
+  <data name="SettingsUpdateNewVersion" xml:space="preserve"><value>Новая версия: {0}
+Текущая версия: {1}</value></data>
+  <data name="SettingsUpdateNotes" xml:space="preserve"><value>Изменения:</value></data>
+  <data name="SettingsUpdateFailed" xml:space="preserve"><value>Ошибка проверки</value></data>
+  <data name="SettingsUpdateMissing" xml:space="preserve"><value>В ответе отсутствует информация о версии</value></data>
+  <data name="SettingsStoreVersion" xml:space="preserve"><value>Версия из Microsoft Store</value></data>
+  <data name="SettingsStoreUpdateHint" xml:space="preserve"><value>Обновления для версии из магазина доступны через Microsoft Store.</value></data>
+  <data name="SettingsWebsite" xml:space="preserve"><value>Официальный сайт Tobatools</value></data>
+  <data name="SettingsQQGroup" xml:space="preserve"><value>Официальная группа QQ</value></data>
+  <data name="SettingsTelegram" xml:space="preserve"><value>Канал Tobatools в Telegram</value></data>
+  <data name="SettingsTelegramDesc" xml:space="preserve"><value>Официальные новости и обновления инструментов</value></data>
+
+  
+  <data name="WirelessTitle" xml:space="preserve"><value>Беспроводное подключение</value></data>
+  <data name="WirelessConnect" xml:space="preserve"><value>Подключить</value></data>
+  <data name="WirelessPair" xml:space="preserve"><value>Сопряжение</value></data>
+  <data name="WirelessEndpoint" xml:space="preserve"><value>Адрес устройства</value></data>
+  <data name="WirelessEndpointDesc" xml:space="preserve"><value>Формат: IP:порт (например 192.168.1.100:5555)</value></data>
+  <data name="WirelessPairCode" xml:space="preserve"><value>Код сопряжения</value></data>
+  <data name="WirelessPairCodeDesc" xml:space="preserve"><value>6-значный код беспроводной отладки</value></data>
+  <data name="WirelessPairPort" xml:space="preserve"><value>Порт сопряжения</value></data>
+  <data name="WirelessPairPortDesc" xml:space="preserve"><value>Порт сопряжения на странице беспроводной отладки</value></data>
+  <data name="WirelessConnecting" xml:space="preserve"><value>Подключение…</value></data>
+  <data name="WirelessPairing" xml:space="preserve"><value>Сопряжение…</value></data>
+  <data name="WirelessSuccess" xml:space="preserve"><value>Подключено</value></data>
+  <data name="WirelessPairSuccess" xml:space="preserve"><value>Сопряжено</value></data>
+  <data name="WirelessFailed" xml:space="preserve"><value>Ошибка подключения</value></data>
+  <data name="WirelessPairFailed" xml:space="preserve"><value>Ошибка сопряжения</value></data>
+  <data name="WirelessNatTip" xml:space="preserve"><value>Совет: если устройство подключено через эмулятор или NAT-сеть, убедитесь, что используется локальный переадресованный адрес.</value></data>
+  <data name="WirelessTimeoutHint" xml:space="preserve"><value>Превышено время ожидания. Проверьте адрес устройства и сеть.</value></data>
+  <data name="WirelessRefusedHint" xml:space="preserve"><value>Подключение отклонено. Убедитесь, что беспроводная отладка включена.</value></data>
+
+  
+  <data name="DeviceNoConnected" xml:space="preserve"><value>Устройство не подключено</value></data>
+  <data name="DeviceUnauthorized" xml:space="preserve"><value>Устройство не авторизовано. Разрешите отладку по USB на устройстве.</value></data>
+  <data name="DeviceOffline" xml:space="preserve"><value>Устройство не в сети</value></data>
+  <data name="DeviceMultiDevice" xml:space="preserve"><value>Обнаружено несколько устройств. Оставьте только одно подключённым.</value></data>
+  <data name="DeviceDetecting" xml:space="preserve"><value>Обнаружение устройств…</value></data>
+
+<data name="SettingsDownloadDesc" xml:space="preserve"><value>Выберите папку по умолчанию для загрузок и распакованных файлов.</value></data><data name="SettingsUpdateUnconfigured" xml:space="preserve"><value>Адрес обновлений не настроен.</value></data><data name="CommonOn" xml:space="preserve"><value>Вкл.</value></data><data name="CommonOff" xml:space="preserve"><value>Выкл.</value></data><data name="SettingsAboutText" xml:space="preserve"><value>Tobatools
+
+Благодарим участников и всех, кто поддерживает проект:
+
+• Портированные прошивки и логика прошивки: @秋詞, @Lucky
+• Разработка инструментов прошивки: @Tobapuw, @人美心善且温柔
+• Хранилище модифицированных прошивок: @可泺'KoCleo
+• Ссылки на официальные прошивки: @by 北辞（北梦之境）
+• Поддержка зависимостей: @酸奶 -O神开发者
+• Поддержка UI-фреймворка: @zhiyiYo PyQt-Fluent-Widgets
+
+2025–2026 © Tobapuw. Все права защищены.
+
+Разработано на C# / WinUI 3</value></data>
+  <data name="WirelessPairTimeout" xml:space="preserve">
+    <value>Истекло время сопряжения ({0} с). Проверьте порт сопряжения и что окно сопряжения открыто. Вывод: {1}</value>
+  </data>
+  <data name="WirelessConnectTimeout" xml:space="preserve">
+    <value>Истекло время подключения ({0} с). Проверьте порт подключения (не порт сопряжения). Вывод: {1}</value>
+  </data>
+  <data name="NavFlash" xml:space="preserve"><value>Прошивка</value></data>
+  <data name="NavFlashTooltip" xml:space="preserve"><value>Прошивка firmware / в один клик</value></data>
+</root>

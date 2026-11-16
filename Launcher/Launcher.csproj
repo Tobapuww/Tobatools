@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- 启动器：目标 .NET Framework 4.8（Windows 10 1809+ 系统内置）。
+       它必须在「没有 .NET 10 运行时」的机器上也能运行，
+       因此不能用 net10.0 编译，否则无法完成依赖安装的自举。 -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>TobatoolsLauncher</RootNamespace>
+    <AssemblyName>TobatoolsLauncher</AssemblyName>
+    <ApplicationIcon>..\Tobatools\Assets\app.ico</ApplicationIcon>
+    <Deterministic>true</Deterministic>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Product>拖把工具箱Pro</Product>
+    <AssemblyTitle>拖把工具箱Pro 启动器</AssemblyTitle>
+    <Version>2.0.1</Version>
+    <!-- 单文件不需要；保持单一 exe 输出 -->
+    <DebugType>none</DebugType>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+</Project>

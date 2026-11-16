@@ -1,0 +1,141 @@
+<Page
+    x:Class="Tobatools.Pages.ImageFactoryPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:loc="using:Tobatools.Services"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Tobatools.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource AppCanvasBrush}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" ZoomMode="Disabled">
+            <StackPanel Style="{StaticResource PageContentStyle}">
+                <controls:PageHeader
+                    Title="{loc:Loc Key=Pages/ImageFactory_001}"
+                    Subtitle="{loc:Loc Key=Pages/ImageFactory_002}"
+                    IconData="{StaticResource ImageFactoryGlyph}" />
+
+                <controls:ResponsiveColumns Spacing="24">
+                    <StackPanel Spacing="16">
+                        <Border Style="{StaticResource CardBorderStyle}">
+                            <StackPanel Spacing="16">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource IconBadgeStyle}">
+                                        <FontIcon Glyph="&#xE8B7;" Style="{StaticResource SectionIconStyle}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_003}" Style="{StaticResource CardTitleStyle}"  TextWrapping="Wrap"/>
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_004}" Style="{StaticResource CaptionTextStyle}"  TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                                <StackPanel x:Name="FirmwarePanel" Spacing="8" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardBorderStyle}">
+                            <StackPanel Spacing="16">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource IconBadgeStyle}">
+                                        <FontIcon Glyph="&#xE8A5;" Style="{StaticResource SectionIconStyle}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_005}" Style="{StaticResource CardTitleStyle}"  TextWrapping="Wrap"/>
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_006}" Style="{StaticResource CaptionTextStyle}"  TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                                <StackPanel x:Name="SuperPanel" Spacing="8" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardBorderStyle}">
+                            <StackPanel Spacing="16">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource IconBadgeStyle}">
+                                        <FontIcon Glyph="&#xE713;" Style="{StaticResource SectionIconStyle}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_007}" Style="{StaticResource CardTitleStyle}"  TextWrapping="Wrap"/>
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_008}" Style="{StaticResource CaptionTextStyle}"  TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                                <StackPanel x:Name="DtboPanel" Spacing="8" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Spacing="16">
+                        <Border Style="{StaticResource CardBorderStyle}">
+                            <StackPanel Spacing="16">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource IconBadgeStyle}">
+                                        <FontIcon Glyph="&#xEDA2;" Style="{StaticResource SectionIconStyle}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_009}" Style="{StaticResource CardTitleStyle}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_010}" Style="{StaticResource CaptionTextStyle}"  TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                                <StackPanel x:Name="FsPanel" Spacing="8" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardBorderStyle}">
+                            <StackPanel Spacing="16">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource IconBadgeStyle}">
+                                        <FontIcon Glyph="&#xE7E8;" Style="{StaticResource SectionIconStyle}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_011}" Style="{StaticResource CardTitleStyle}"  TextWrapping="Wrap"/>
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_012}" Style="{StaticResource CaptionTextStyle}"  TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                                <StackPanel x:Name="BootPanel" Spacing="8" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardBorderStyle}">
+                            <StackPanel Spacing="16">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource IconBadgeStyle}">
+                                        <FontIcon Glyph="&#xE8AB;" Style="{StaticResource SectionIconStyle}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_013}" Style="{StaticResource CardTitleStyle}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{loc:Loc Key=Pages/ImageFactory_014}" Style="{StaticResource CaptionTextStyle}"  TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                                <StackPanel x:Name="DatBrPanel" Spacing="8" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </controls:ResponsiveColumns>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

@@ -1,0 +1,73 @@
+# ============================================================
+# 拖把工具箱（C# / WinUI 3）—— 项目主目录
+# 仓库根即本目录，本文件是唯一的忽略规则来源。
+# ============================================================
+
+# ---------- 构建产物 ----------
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.binlog
+
+# ---------- 刷机模块（闭源，绝不入公开仓库） ----------
+# 这些路径含刷机分区表、刷写步骤顺序与固件解包密钥，
+# 属于本项目不公开的核心实现。
+# 克隆公开库后缺少 Private/ 属正常现象：Tobatools.csproj 检测到
+# 目录不存在会自动跳过，构建成功、可运行，但不含刷机功能。
+Private/
+
+# ---------- 远程控制检测规则（闭源，随刷机模块一起分发） ----------
+remote_rules.dat
+**/remote_rules.dat
+tools/remote_rules.dat
+
+# ---------- 刷机补全镜像（机型专用固件片段，不入库） ----------
+tools/add_images/
+
+# ---------- 本地开发脚本（非产品代码） ----------
+localize_logic.py
+tools_localize.py
+logic_inventory.json
+logic_translations.json
+tools_inventory.json
+tools_translations*.txt
+Pages/localize_pages.py
+Pages/localize_inventory.json
+Pages/localize_translations.txt
+Tests/UpdateSettingsLocalization.py
+
+# ---------- 敏感安全研究记录（本地实例 / 提权 / CVE 分析，不入库） ----------
+Docs/HardcorePrivilegePort.md
+android-root-authorization-report-*.md
+Tests/GenerateHardcoreReport.py
+
+# ---------- 第三方二进制、脚本与素材（只发源码，发行版另行打包；许可证见 NOTICE.txt） ----------
+tools/*.exe
+tools/*.dll
+tools/*.so
+tools/*.bat
+tools/*.vbs
+tools/*.jpeg
+tools/*.png
+tools/*.conf
+tools/aapt-arm-pie
+tools/scrcpy-server
+# 例外：第三方许可证汇总（分发合规义务，随源码保留）
+!tools/NOTICE.txt
+
+# ---------- 临时/日志 ----------
+*.log
+*.tmp
+*.bak
+temp/
+Tests/Artifacts/
+
+# ---------- 系统与 IDE ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+.cursor/
+.idea/
+*.swp

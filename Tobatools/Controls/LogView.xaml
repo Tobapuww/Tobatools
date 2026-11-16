@@ -1,0 +1,32 @@
+<UserControl
+    x:Class="Tobatools.Controls.LogView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:loc="using:Tobatools.Services"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignWidth="800" d:DesignHeight="300">
+
+    <Border
+        Background="{ThemeResource AppSubtleBrush}"
+        BorderBrush="{ThemeResource AppBorderBrush}"
+        BorderThickness="1"
+        CornerRadius="8"
+        Padding="10,8">
+        <Grid>
+            <ScrollViewer x:Name="ScrollView"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto"
+                          ZoomMode="Disabled">
+                <StackPanel x:Name="LinesPanel" Spacing="1" Padding="0,0,8,8" />
+            </ScrollViewer>
+            <TextBlock x:Name="EmptyHint"
+                       Text="{loc:Loc Key=Pages/LogView_001}"
+                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                       FontFamily="{StaticResource AppFont}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       IsHitTestVisible="False" TextWrapping="Wrap"/>
+        </Grid>
+    </Border>
+</UserControl>

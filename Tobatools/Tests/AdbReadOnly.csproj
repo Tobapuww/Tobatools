@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AdbReadOnly.cs"/>
+    <Compile Include="..\Services\AdbService.cs" Link="AdbService.cs"/>
+    <Compile Include="..\Services\WirelessAdb.cs" Link="WirelessAdb.cs"/>
+    <Compile Include="..\Services\AdbDeviceParser.cs" Link="AdbDeviceParser.cs"/>
+    <Compile Include="..\Services\AppPaths.cs" Link="AppPaths.cs"/>
+    <Compile Include="..\Services\ExternalTools.cs" Link="ExternalTools.cs"/>
+    <Compile Include="..\Services\ProcessRunner.cs" Link="ProcessRunner.cs"/>
+    <Compile Include="..\Models\DeviceInfo.cs" Link="DeviceInfo.cs"/>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,116 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>Tobatools</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- 可执行文件图标（资源管理器、任务栏、窗口左上角）。
+         未设置时发行版会显示为空白默认图标。 -->
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <WindowsPackageType>None</WindowsPackageType>
+    <!-- 发行体积控制：不打包 Windows App SDK 运行时，改为依赖系统已安装的
+         Windows App Runtime（Win10 1809+ 用户机器普遍已具备）。
+         自包含会把 WinAppSDK 全部 DLL 塞进包内，体积从 ~40MB 膨胀到 ~180MB。 -->
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <!-- 仅保留三种界面语言，其余 70+ 语言资源在发布时剔除。 -->
+    <SatelliteResourceLanguages>zh-CN;en-US;ru-RU</SatelliteResourceLanguages>
+    <ApplicationTitle>拖把工具箱Pro</ApplicationTitle>
+    <AssemblyName>Tobatools</AssemblyName>
+    <Version>2.0.1</Version>
+    <EnableDefaultItems>true</EnableDefaultItems>
+    <!-- Program.cs 提供自定义 Main（支持命令行调试模式），必须关闭 XAML 自动生成的入口点。 -->
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+  </PropertyGroup>
+
+  <!-- 刷机模块（Private/Flash）不在公开仓库中。
+       若该目录存在（维护者本地构建），则编译并定义 ENABLE_FLASH；
+       克隆公开仓库的开发者没有这个目录，构建会跳过刷机功能且不会报错。 -->
+  <PropertyGroup>
+    <FlashPrivateDir>$(MSBuildProjectDirectory)\Private\Flash</FlashPrivateDir>
+    <HasFlashModule Condition="Exists('$(FlashPrivateDir)\Pages\FlashPage.xaml')">true</HasFlashModule>
+    <HasFlashModule Condition="'$(HasFlashModule)' == ''">false</HasFlashModule>
+    <DefineConstants Condition="'$(HasFlashModule)' == 'true'">$(DefineConstants);ENABLE_FLASH</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(HasFlashModule)' != 'true'">
+    <Compile Remove="Private\**\*.cs" />
+    <Page Remove="Private\**\*.xaml" />
+    <None Remove="Private\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260209005" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2270" />
+  </ItemGroup>
+
+  <!-- WindowsAppSDK 元包会把 AI / ML 组件作为传递依赖带入，
+       PackageReference Remove 对传递依赖无效，故在发布阶段直接排除这些文件。
+       它们合计约 38MB，本项目不做任何 AI 推理，完全用不到。 -->
+  <Target Name="ExcludeAiRuntimeFromPublish" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+          Condition="'%(Filename)' == 'onnxruntime'
+                  Or '%(Filename)' == 'DirectML'
+                  Or '%(Filename)' == 'Microsoft.ML.OnnxRuntime'
+                  Or '%(Filename)' == 'onnxruntime_providers_shared'
+                  Or '%(Filename)' == 'onnxruntime_providers_dml'
+                  Or '%(Filename)' == 'System.Numerics.Tensors'" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Translation catalogs are embedded so unpackaged desktop apps and background
+       services do not depend on UWP CoreWindow resource APIs. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Strings\**\*.resw">
+      <LogicalName>Strings/%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\device_models.json">
+      <LogicalName>Data/device_models.json</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Tests\**\*.cs" />
+    <None Remove="Tests\**" />
+    <Page Remove="Tests\**\*.xaml" />
+  </ItemGroup>
+
+  <!-- 界面资源：MainWindow.xaml 通过 /Assets/icon.png 引用，
+       app.ico 供 AppWindow.SetIcon 设置任务栏图标。
+       两者都必须随发布一起下发，否则窗口图标显示为空白。 -->
+  <ItemGroup>
+    <Content Include="Assets\icon.png"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Assets\app.ico"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- 外部工具目录（adb / fastboot / 7z / scrcpy 等）。
+       开发时程序按 AppPaths 在项目根定位 tools\，不复制；
+       发布（dotnet publish）时整体复制到输出目录，使发行版自带工具、开箱可用。 -->
+  <ItemGroup>
+    <None Remove="tools\**" />
+    <Content Remove="tools\**" />
+    <Compile Remove="tools\**" />
+    <EmbeddedResource Remove="tools\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ToolsFiles Include="tools\**\*" />
+    <None Include="@(ToolsFiles)"
+          Link="tools\%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToPublishDirectory="PreserveNewest"
+          Visible="false" />
+  </ItemGroup>
+</Project>

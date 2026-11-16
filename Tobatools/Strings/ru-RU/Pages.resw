@@ -1,0 +1,1335 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <data name="Dashboard_001" xml:space="preserve">
+    <value>Панель управления</value>
+  </data>
+  <data name="Dashboard_002" xml:space="preserve">
+    <value>Подключение устройства, использование ресурсов и основные действия.</value>
+  </data>
+  <data name="Dashboard_003" xml:space="preserve">
+    <value>Текущее устройство</value>
+  </data>
+  <data name="Dashboard_004" xml:space="preserve">
+    <value>Поиск устройств…</value>
+  </data>
+  <data name="Dashboard_005" xml:space="preserve">
+    <value>Получение состояния подключения</value>
+  </data>
+  <data name="Dashboard_006" xml:space="preserve">
+    <value>Серийный номер: —</value>
+  </data>
+  <data name="Dashboard_007" xml:space="preserve">
+    <value>Беспроводное подключение</value>
+  </data>
+  <data name="Dashboard_008" xml:space="preserve">
+    <value>Обновить состояние</value>
+  </data>
+  <data name="Dashboard_009" xml:space="preserve">
+    <value>Заряд батареи</value>
+  </data>
+  <data name="Dashboard_010" xml:space="preserve">
+    <value>Ожидание данных устройства</value>
+  </data>
+  <data name="Dashboard_011" xml:space="preserve">
+    <value>Хранилище</value>
+  </data>
+  <data name="Dashboard_012" xml:space="preserve">
+    <value>Оперативная память</value>
+  </data>
+  <data name="Dashboard_013" xml:space="preserve">
+    <value>Характеристики оборудования</value>
+  </data>
+  <data name="Dashboard_014" xml:space="preserve">
+    <value>Сведения о системе</value>
+  </data>
+  <data name="Dashboard_015" xml:space="preserve">
+    <value>Быстрые действия</value>
+  </data>
+  <data name="Dashboard_016" xml:space="preserve">
+    <value>Сведения об устройстве</value>
+  </data>
+  <data name="Dashboard_017" xml:space="preserve">
+    <value>Обнаруженные устройства</value>
+  </data>
+  <data name="Dashboard_018" xml:space="preserve">
+    <value>Повторить поиск</value>
+  </data>
+  <data name="Dashboard_019" xml:space="preserve">
+    <value>Меню питания</value>
+  </data>
+  <data name="Dashboard_020" xml:space="preserve">
+    <value>Режим перезагрузки</value>
+  </data>
+  <data name="Dashboard_021" xml:space="preserve">
+    <value>Перезагрузить</value>
+  </data>
+  <data name="Dashboard_022" xml:space="preserve">
+    <value>Основные инструменты</value>
+  </data>
+  <data name="Dashboard_023" xml:space="preserve">
+    <value>Выберите инструмент</value>
+  </data>
+  <data name="Dashboard_024" xml:space="preserve">
+    <value>Запустить инструмент</value>
+  </data>
+  <data name="Dashboard_025" xml:space="preserve">
+    <value>Перезагрузить систему</value>
+  </data>
+  <data name="Dashboard_026" xml:space="preserve">
+    <value>Беспроводная отладка</value>
+  </data>
+  <data name="Dashboard_027" xml:space="preserve">
+    <value>Перезапустить службу ADB</value>
+  </data>
+  <data name="Dashboard_028" xml:space="preserve">
+    <value>Диспетчер устройств</value>
+  </data>
+  <data name="Dashboard_029" xml:space="preserve">
+    <value>Бренд</value>
+  </data>
+  <data name="Dashboard_030" xml:space="preserve">
+    <value>Модель</value>
+  </data>
+  <data name="Dashboard_031" xml:space="preserve">
+    <value>Процессор</value>
+  </data>
+  <data name="Dashboard_032" xml:space="preserve">
+    <value>Разрешение экрана</value>
+  </data>
+  <data name="Dashboard_033" xml:space="preserve">
+    <value>Плотность экрана (DPI)</value>
+  </data>
+  <data name="Dashboard_034" xml:space="preserve">
+    <value>Тип накопителя</value>
+  </data>
+  <data name="Dashboard_035" xml:space="preserve">
+    <value>Состояние батареи</value>
+  </data>
+  <data name="Dashboard_036" xml:space="preserve">
+    <value>Ёмкость батареи</value>
+  </data>
+  <data name="Dashboard_037" xml:space="preserve">
+    <value>Версия Android</value>
+  </data>
+  <data name="Dashboard_038" xml:space="preserve">
+    <value>Версия SDK</value>
+  </data>
+  <data name="Dashboard_039" xml:space="preserve">
+    <value>Версия ядра</value>
+  </data>
+  <data name="Dashboard_040" xml:space="preserve">
+    <value>Версия VNDK</value>
+  </data>
+  <data name="Dashboard_041" xml:space="preserve">
+    <value>Блокировка загрузчика</value>
+  </data>
+  <data name="Dashboard_042" xml:space="preserve">
+    <value>Root-доступ</value>
+  </data>
+  <data name="Dashboard_043" xml:space="preserve">
+    <value>Текущий слот A/B</value>
+  </data>
+  <data name="Dashboard_044" xml:space="preserve">
+    <value>Время работы</value>
+  </data>
+  <data name="Dashboard_045" xml:space="preserve">
+    <value>Подключённое устройство</value>
+  </data>
+  <data name="Dashboard_046" xml:space="preserve">
+    <value>Устройство Fastboot</value>
+  </data>
+  <data name="Dashboard_047" xml:space="preserve">
+    <value>Устройство в режиме порта</value>
+  </data>
+  <data name="Dashboard_048" xml:space="preserve">
+    <value>Устройство ожидает авторизации</value>
+  </data>
+  <data name="Dashboard_049" xml:space="preserve">
+    <value>Устройство не в сети</value>
+  </data>
+  <data name="Dashboard_050" xml:space="preserve">
+    <value>Ошибка обнаружения устройства</value>
+  </data>
+  <data name="Dashboard_051" xml:space="preserve">
+    <value>Нет подключённых устройств</value>
+  </data>
+  <data name="Dashboard_052" xml:space="preserve">
+    <value>Состояние: </value>
+  </data>
+  <data name="Dashboard_053" xml:space="preserve">
+    <value>Серийный номер: </value>
+  </data>
+  <data name="Dashboard_054" xml:space="preserve">
+    <value>Данные недоступны в этом режиме</value>
+  </data>
+  <data name="Dashboard_055" xml:space="preserve">
+    <value>Ожидание подключения устройства</value>
+  </data>
+  <data name="Dashboard_056" xml:space="preserve">
+    <value>Остаток заряда</value>
+  </data>
+  <data name="Dashboard_057" xml:space="preserve">
+    <value>Текущий заряд батареи</value>
+  </data>
+  <data name="Dashboard_058" xml:space="preserve">
+    <value>Состояние {0}%</value>
+  </data>
+  <data name="Dashboard_059" xml:space="preserve">
+    <value>Занято места</value>
+  </data>
+  <data name="Dashboard_060" xml:space="preserve">
+    <value>Занято {0} / Всего {1}</value>
+  </data>
+  <data name="Dashboard_061" xml:space="preserve">
+    <value>Занято памяти</value>
+  </data>
+  <data name="Dashboard_062" xml:space="preserve">
+    <value>Разблокирован</value>
+  </data>
+  <data name="Dashboard_063" xml:space="preserve">
+    <value>Заблокирован</value>
+  </data>
+  <data name="Dashboard_064" xml:space="preserve">
+    <value>Устройства не обнаружены</value>
+  </data>
+  <data name="Dashboard_065" xml:space="preserve">
+    <value>Команда перезагрузки отправлена</value>
+  </data>
+  <data name="Dashboard_066" xml:space="preserve">
+    <value>Ошибка перезагрузки</value>
+  </data>
+  <data name="Dashboard_067" xml:space="preserve">
+    <value>ADB перезапущен</value>
+  </data>
+  <data name="Dashboard_068" xml:space="preserve">
+    <value>Сервер ADB перезапущен.</value>
+  </data>
+  <data name="Dashboard_069" xml:space="preserve">
+    <value>Не удалось открыть диспетчер устройств</value>
+  </data>
+  <data name="Dashboard_070" xml:space="preserve">
+    <value>ОК</value>
+  </data>
+  <data name="Dashboard_082" xml:space="preserve">
+    <value>Не удалось перезапустить ADB</value>
+  </data>
+  <data name="Dashboard_083" xml:space="preserve">
+    <value>Уведомление</value>
+  </data>
+  <data name="Dashboard_084" xml:space="preserve">
+    <value>Перезагрузка уже выполняется. Подождите.</value>
+  </data>
+  <data name="Dashboard_086" xml:space="preserve">
+    <value>Устройство подключено</value>
+  </data>
+  <data name="Dashboard_087" xml:space="preserve">
+    <value>Текущий режим: {0}</value>
+  </data>
+  <data name="Dashboard_088" xml:space="preserve">
+    <value>Режим устройства изменился</value>
+  </data>
+  <data name="Dashboard_089" xml:space="preserve">
+    <value>Устройство не авторизовано</value>
+  </data>
+  <data name="Dashboard_090" xml:space="preserve">
+    <value>Разрешите отладку по USB на телефоне</value>
+  </data>
+  <data name="Dashboard_091" xml:space="preserve">
+    <value>Устройство отключено</value>
+  </data>
+  <data name="Dashboard_092" xml:space="preserve">
+    <value>Подключённое устройство не найдено</value>
+  </data>
+  <data name="Dashboard_093" xml:space="preserve">
+    <value>Характеристики</value>
+  </data>
+  <data name="Dashboard_094" xml:space="preserve">
+    <value>Параметры состояния</value>
+  </data>
+  <data name="Dashboard_095" xml:space="preserve">
+    <value>Показать больше</value>
+  </data>
+  <data name="Dashboard_096" xml:space="preserve">
+    <value>Свернуть</value>
+  </data>
+  <data name="Dashboard_097" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Dashboard_098" xml:space="preserve">
+    <value>Кодовое имя</value>
+  </data>
+  <data name="Dashboard_099" xml:space="preserve">
+    <value>Продукт</value>
+  </data>
+  <data name="Dashboard_100" xml:space="preserve">
+    <value>Версия базового блока</value>
+  </data>
+  <data name="Dashboard_101" xml:space="preserve">
+    <value>Версия загрузчика</value>
+  </data>
+  <data name="Root_020" xml:space="preserve">
+    <value>Журнал выполнения</value>
+  </data>
+  <data name="Root_022" xml:space="preserve">
+    <value>Очистить</value>
+  </data>
+  <data name="Root_030" xml:space="preserve">
+    <value>Уведомление</value>
+  </data>
+  <data name="Root_033" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="Root_037" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="ImageFactory_001" xml:space="preserve">
+    <value>Обработка образов</value>
+  </data>
+  <data name="ImageFactory_002" xml:space="preserve">
+    <value>Обработка прошивок Android и образов разделов. Выберите распаковку, упаковку или преобразование по типу файла.</value>
+  </data>
+  <data name="ImageFactory_003" xml:space="preserve">
+    <value>Исходные прошивки</value>
+  </data>
+  <data name="ImageFactory_004" xml:space="preserve">
+    <value>Извлечение файлов разделов из прошивки</value>
+  </data>
+  <data name="ImageFactory_005" xml:space="preserve">
+    <value>Динамические разделы / Super</value>
+  </data>
+  <data name="ImageFactory_006" xml:space="preserve">
+    <value>Разделение и объединение образов динамических разделов</value>
+  </data>
+  <data name="ImageFactory_007" xml:space="preserve">
+    <value>Дерево устройств / DTBO</value>
+  </data>
+  <data name="ImageFactory_008" xml:space="preserve">
+    <value>Распаковка, компиляция и упаковка деревьев устройств</value>
+  </data>
+  <data name="ImageFactory_009" xml:space="preserve">
+    <value>Файловые системы / Образы разделов</value>
+  </data>
+  <data name="ImageFactory_010" xml:space="preserve">
+    <value>Обработка файловых систем ext4 и erofs</value>
+  </data>
+  <data name="ImageFactory_011" xml:space="preserve">
+    <value>Загрузочные образы</value>
+  </data>
+  <data name="ImageFactory_012" xml:space="preserve">
+    <value>Распаковка и повторная упаковка загрузочных образов</value>
+  </data>
+  <data name="ImageFactory_013" xml:space="preserve">
+    <value>Инкрементальные OTA-пакеты (DAT/BR)</value>
+  </data>
+  <data name="ImageFactory_014" xml:space="preserve">
+    <value>Преобразование между DAT/BR и IMG</value>
+  </data>
+  <data name="ImageFactory_015" xml:space="preserve">
+    <value>Распаковка Payload.bin</value>
+  </data>
+  <data name="ImageFactory_016" xml:space="preserve">
+    <value>Извлечение всех или выбранных разделов payload.bin из сети или локального файла</value>
+  </data>
+  <data name="ImageFactory_017" xml:space="preserve">
+    <value>Распаковка OFP</value>
+  </data>
+  <data name="ImageFactory_018" xml:space="preserve">
+    <value>Расшифровка и извлечение прошивки .ofp</value>
+  </data>
+  <data name="ImageFactory_019" xml:space="preserve">
+    <value>Распаковка / Упаковка Super</value>
+  </data>
+  <data name="ImageFactory_020" xml:space="preserve">
+    <value>Распаковка super.img или создание из образов разделов</value>
+  </data>
+  <data name="ImageFactory_021" xml:space="preserve">
+    <value>Распаковка / Упаковка DTBO</value>
+  </data>
+  <data name="ImageFactory_022" xml:space="preserve">
+    <value>Распаковка и декомпиляция либо компиляция DTS и упаковка</value>
+  </data>
+  <data name="ImageFactory_023" xml:space="preserve">
+    <value>Распаковка / Упаковка разделов (ext4/erofs)</value>
+  </data>
+  <data name="ImageFactory_024" xml:space="preserve">
+    <value>Распаковка или упаковка образов разделов ext4 / erofs</value>
+  </data>
+  <data name="ImageFactory_025" xml:space="preserve">
+    <value>Распаковка / Упаковка Boot</value>
+  </data>
+  <data name="ImageFactory_026" xml:space="preserve">
+    <value>Распаковка загрузочных образов или упаковка с помощью magiskboot</value>
+  </data>
+  <data name="ImageFactory_027" xml:space="preserve">
+    <value>Преобразование DAT/BR</value>
+  </data>
+  <data name="ImageFactory_028" xml:space="preserve">
+    <value>Преобразование между устаревшими форматами DAT/BR и IMG</value>
+  </data>
+  <data name="Scrcpy_001" xml:space="preserve">
+    <value>Трансляция экрана</value>
+  </data>
+  <data name="Scrcpy_002" xml:space="preserve">
+    <value>Настройте изображение и управление scrcpy для работы с устройством в отдельном окне.</value>
+  </data>
+  <data name="Scrcpy_003" xml:space="preserve">
+    <value>Параметры трансляции</value>
+  </data>
+  <data name="Scrcpy_004" xml:space="preserve">
+    <value>Настройте качество изображения и задержку с учётом подключения.</value>
+  </data>
+  <data name="Scrcpy_005" xml:space="preserve">
+    <value>Разрешение</value>
+  </data>
+  <data name="Scrcpy_006" xml:space="preserve">
+    <value>Частота кадров</value>
+  </data>
+  <data name="Scrcpy_007" xml:space="preserve">
+    <value>Битрейт</value>
+  </data>
+  <data name="Scrcpy_008" xml:space="preserve">
+    <value>Буфер видео</value>
+  </data>
+  <data name="Scrcpy_009" xml:space="preserve">
+    <value>Буфер аудио</value>
+  </data>
+  <data name="Scrcpy_010" xml:space="preserve">
+    <value>Включить звук</value>
+  </data>
+  <data name="Scrcpy_011" xml:space="preserve">
+    <value>Окно и управление</value>
+  </data>
+  <data name="Scrcpy_012" xml:space="preserve">
+    <value>Запуск на весь экран</value>
+  </data>
+  <data name="Scrcpy_013" xml:space="preserve">
+    <value>Без рамки</value>
+  </data>
+  <data name="Scrcpy_014" xml:space="preserve">
+    <value>Поверх остальных окон</value>
+  </data>
+  <data name="Scrcpy_015" xml:space="preserve">
+    <value>Отключить заставку</value>
+  </data>
+  <data name="Scrcpy_016" xml:space="preserve">
+    <value>Не переходить в сон</value>
+  </data>
+  <data name="Scrcpy_017" xml:space="preserve">
+    <value>Трансляция с выключенным экраном</value>
+  </data>
+  <data name="Scrcpy_018" xml:space="preserve">
+    <value>Показывать касания</value>
+  </data>
+  <data name="Scrcpy_019" xml:space="preserve">
+    <value>Синхронизация буфера обмена</value>
+  </data>
+  <data name="Scrcpy_020" xml:space="preserve">
+    <value>Совместимый режим вставки</value>
+  </data>
+  <data name="Scrcpy_021" xml:space="preserve">
+    <value>Передавать все нажатия</value>
+  </data>
+  <data name="Scrcpy_022" xml:space="preserve">
+    <value>Выводить FPS</value>
+  </data>
+  <data name="Scrcpy_023" xml:space="preserve">
+    <value>Управление</value>
+  </data>
+  <data name="Scrcpy_024" xml:space="preserve">
+    <value>Начать трансляцию</value>
+  </data>
+  <data name="Scrcpy_025" xml:space="preserve">
+    <value>Остановить трансляцию</value>
+  </data>
+  <data name="Scrcpy_026" xml:space="preserve">
+    <value>Инструкция</value>
+  </data>
+  <data name="Scrcpy_027" xml:space="preserve">
+    <value>Подключение устройства</value>
+  </data>
+  <data name="Scrcpy_028" xml:space="preserve">
+    <value>Рекомендуется проводное подключение. Для беспроводной трансляции сначала используйте «Беспроводное подключение» на верхней панели устройства. При подключении нескольких устройств перед запуском появится окно выбора.</value>
+  </data>
+  <data name="Scrcpy_029" xml:space="preserve">
+    <value>Изображение и звук</value>
+  </data>
+  <data name="Scrcpy_030" xml:space="preserve">
+    <value>Трансляция через scrcpy открывается в отдельном окне и не блокирует этот интерфейс. Передача звука доступна только в Android 11 и новее.</value>
+  </data>
+  <data name="Scrcpy_031" xml:space="preserve">
+    <value>При чёрном экране попробуйте уменьшить разрешение или отключить буферизацию звука и видео.</value>
+  </data>
+  <data name="Scrcpy_032" xml:space="preserve">
+    <value>По умолчанию</value>
+  </data>
+  <data name="Scrcpy_033" xml:space="preserve">
+    <value>Трансляция экрана уже запущена.</value>
+  </data>
+  <data name="Scrcpy_034" xml:space="preserve">
+    <value>Успешно</value>
+  </data>
+  <data name="Scrcpy_035" xml:space="preserve">
+    <value>scrcpy запущен</value>
+  </data>
+  <data name="Scrcpy_036" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="Scrcpy_037" xml:space="preserve">
+    <value>Исполняемый файл scrcpy не найден</value>
+  </data>
+  <data name="Scrcpy_038" xml:space="preserve">
+    <value>Не удалось запустить scrcpy: {0}</value>
+  </data>
+  <data name="Scrcpy_039" xml:space="preserve">
+    <value>Сигнал остановки отправлен</value>
+  </data>
+  <data name="Scrcpy_040" xml:space="preserve">
+    <value>Не удалось остановить: {0}</value>
+  </data>
+  <data name="Scrcpy_041" xml:space="preserve">
+    <value>Доступные устройства ADB не обнаружены.</value>
+  </data>
+  <data name="Scrcpy_042" xml:space="preserve">
+    <value>Обнаружено несколько устройств. Выберите устройство для трансляции:</value>
+  </data>
+  <data name="Scrcpy_043" xml:space="preserve">
+    <value>Выбор устройства для трансляции</value>
+  </data>
+  <data name="Scrcpy_044" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="SoftwareManager_001" xml:space="preserve">
+    <value>Управление приложениями</value>
+  </data>
+  <data name="SoftwareManager_002" xml:space="preserve">
+    <value>Просматривайте установленные приложения, устанавливайте и экспортируйте APK, управляйте приложениями и компонентами.</value>
+  </data>
+  <data name="SoftwareManager_003" xml:space="preserve">
+    <value>Установленные приложения</value>
+  </data>
+  <data name="SoftwareManager_004" xml:space="preserve">
+    <value>Поиск по названию приложения или пакета</value>
+  </data>
+  <data name="SoftwareManager_005" xml:space="preserve">
+    <value>Поиск приложений</value>
+  </data>
+  <data name="SoftwareManager_006" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="SoftwareManager_007" xml:space="preserve">
+    <value>Показывать системные приложения</value>
+  </data>
+  <data name="SoftwareManager_008" xml:space="preserve">
+    <value>Снять выделение</value>
+  </data>
+  <data name="SoftwareManager_009" xml:space="preserve">
+    <value>Список установленных приложений</value>
+  </data>
+  <data name="SoftwareManager_010" xml:space="preserve">
+    <value>Ожидание загрузки списка приложений</value>
+  </data>
+  <data name="SoftwareManager_011" xml:space="preserve">
+    <value>Устройство и активное приложение</value>
+  </data>
+  <data name="SoftwareManager_012" xml:space="preserve">
+    <value>Автообновление активного приложения</value>
+  </data>
+  <data name="SoftwareManager_013" xml:space="preserve">
+    <value>Обновить сейчас</value>
+  </data>
+  <data name="SoftwareManager_014" xml:space="preserve">
+    <value>Поиск…</value>
+  </data>
+  <data name="SoftwareManager_015" xml:space="preserve">
+    <value>Выбранный пакет</value>
+  </data>
+  <data name="SoftwareManager_016" xml:space="preserve">
+    <value>Не выбрано</value>
+  </data>
+  <data name="SoftwareManager_017" xml:space="preserve">
+    <value>Активный пакет</value>
+  </data>
+  <data name="SoftwareManager_018" xml:space="preserve">
+    <value>Активная Activity</value>
+  </data>
+  <data name="SoftwareManager_019" xml:space="preserve">
+    <value>Действия с приложением</value>
+  </data>
+  <data name="SoftwareManager_020" xml:space="preserve">
+    <value>Категория действий с приложением</value>
+  </data>
+  <data name="SoftwareManager_021" xml:space="preserve">
+    <value>Выберите APK-файлы на компьютере для установки на текущее устройство.</value>
+  </data>
+  <data name="SoftwareManager_022" xml:space="preserve">
+    <value>Установить поверх</value>
+  </data>
+  <data name="SoftwareManager_023" xml:space="preserve">
+    <value>Разрешить понижение версии</value>
+  </data>
+  <data name="SoftwareManager_024" xml:space="preserve">
+    <value>Установить APK с компьютера</value>
+  </data>
+  <data name="SoftwareManager_025" xml:space="preserve">
+    <value>Действия применяются к выбранному приложению, а без выбора — к активному. Перед удалением приложения или очисткой данных создайте резервную копию.</value>
+  </data>
+  <data name="SoftwareManager_026" xml:space="preserve">
+    <value>Заморозить приложение</value>
+  </data>
+  <data name="SoftwareManager_027" xml:space="preserve">
+    <value>Разморозить приложение</value>
+  </data>
+  <data name="SoftwareManager_028" xml:space="preserve">
+    <value>Остановить принудительно</value>
+  </data>
+  <data name="SoftwareManager_029" xml:space="preserve">
+    <value>Настройки разрешений</value>
+  </data>
+  <data name="SoftwareManager_030" xml:space="preserve">
+    <value>Экспорт APK</value>
+  </data>
+  <data name="SoftwareManager_031" xml:space="preserve">
+    <value>Данные и удаление</value>
+  </data>
+  <data name="SoftwareManager_032" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="SoftwareManager_033" xml:space="preserve">
+    <value>Удалить, сохранив данные</value>
+  </data>
+  <data name="SoftwareManager_034" xml:space="preserve">
+    <value>Очистить данные</value>
+  </data>
+  <data name="SoftwareManager_035" xml:space="preserve">
+    <value>Отключить активную Activity</value>
+  </data>
+  <data name="SoftwareManager_036" xml:space="preserve">
+    <value>Использовать Root</value>
+  </data>
+  <data name="SoftwareManager_037" xml:space="preserve">
+    <value>История операций</value>
+  </data>
+  <data name="SoftwareManager_038" xml:space="preserve">
+    <value>Просмотр и восстановление отключённых компонентов приложения.</value>
+  </data>
+  <data name="SoftwareManager_039" xml:space="preserve">
+    <value>Обновить список компонентов</value>
+  </data>
+  <data name="SoftwareManager_040" xml:space="preserve">
+    <value>Отключённые компоненты</value>
+  </data>
+  <data name="SoftwareManager_041" xml:space="preserve">
+    <value>Имя компонента</value>
+  </data>
+  <data name="SoftwareManager_042" xml:space="preserve">
+    <value>Имя пакета/класса или выбор из списка выше</value>
+  </data>
+  <data name="SoftwareManager_043" xml:space="preserve">
+    <value>Восстановить компонент</value>
+  </data>
+  <data name="SoftwareManager_044" xml:space="preserve">
+    <value>Журнал операций</value>
+  </data>
+  <data name="SoftwareManager_045" xml:space="preserve">
+    <value>Установка APK</value>
+  </data>
+  <data name="SoftwareManager_046" xml:space="preserve">
+    <value>Управление компонентами</value>
+  </data>
+  <data name="SoftwareManager_047" xml:space="preserve">
+    <value>Поиск устройств</value>
+  </data>
+  <data name="SoftwareManager_048" xml:space="preserve">
+    <value>Приложения загрузятся после получения списка устройств.</value>
+  </data>
+  <data name="SoftwareManager_049" xml:space="preserve">
+    <value>Состояние устройства изменилось</value>
+  </data>
+  <data name="SoftwareManager_050" xml:space="preserve">
+    <value>Повторный поиск устройств. Подождите.</value>
+  </data>
+  <data name="SoftwareManager_051" xml:space="preserve">
+    <value>Устройство недоступно</value>
+  </data>
+  <data name="SoftwareManager_052" xml:space="preserve">
+    <value>Дождитесь завершения поиска. Оставьте подключённым только одно авторизованное устройство, загруженное в Android.</value>
+  </data>
+  <data name="SoftwareManager_053" xml:space="preserve">
+    <value>Ошибка поиска</value>
+  </data>
+  <data name="SoftwareManager_054" xml:space="preserve">
+    <value>Ошибка поиска устройства; список приложений не загружен</value>
+  </data>
+  <data name="SoftwareManager_055" xml:space="preserve">
+    <value>Ошибка обновления: {0}</value>
+  </data>
+  <data name="SoftwareManager_056" xml:space="preserve">
+    <value>Устройства ADB не обнаружены. Проверьте подключение и включите отладку по USB.</value>
+  </data>
+  <data name="SoftwareManager_057" xml:space="preserve">
+    <value>Обнаружено несколько устройств ({0})</value>
+  </data>
+  <data name="SoftwareManager_058" xml:space="preserve">
+    <value>Во избежание ошибочных действий оставьте подключённым одно устройство и обновите список.</value>
+  </data>
+  <data name="SoftwareManager_059" xml:space="preserve">
+    <value>Устройство не авторизовано</value>
+  </data>
+  <data name="SoftwareManager_060" xml:space="preserve">
+    <value>Устройство не в сети</value>
+  </data>
+  <data name="SoftwareManager_061" xml:space="preserve">
+    <value>Устройство в режиме Recovery</value>
+  </data>
+  <data name="SoftwareManager_062" xml:space="preserve">
+    <value>Устройство в режиме Sideload</value>
+  </data>
+  <data name="SoftwareManager_063" xml:space="preserve">
+    <value>Управление приложениями недоступно в текущем режиме устройства</value>
+  </data>
+  <data name="SoftwareManager_064" xml:space="preserve">
+    <value>Разрешите отладку по USB на устройстве и повторите попытку.</value>
+  </data>
+  <data name="SoftwareManager_065" xml:space="preserve">
+    <value>Дождитесь загрузки Android и установления авторизованного подключения ADB.</value>
+  </data>
+  <data name="SoftwareManager_066" xml:space="preserve">
+    <value>Устройство в режиме Fastboot</value>
+  </data>
+  <data name="SoftwareManager_067" xml:space="preserve">
+    <value>Для управления приложениями устройство должно быть загружено в Android с включённой отладкой по USB.</value>
+  </data>
+  <data name="SoftwareManager_068" xml:space="preserve">
+    <value>Список приложений не загружен</value>
+  </data>
+  <data name="SoftwareManager_069" xml:space="preserve">
+    <value>Всего приложений: {0}; показано: {1}</value>
+  </data>
+  <data name="SoftwareManager_070" xml:space="preserve">
+    <value>Загрузка списка приложений…</value>
+  </data>
+  <data name="SoftwareManager_071" xml:space="preserve">
+    <value>Не удалось загрузить список приложений. Обновите для повторной попытки.</value>
+  </data>
+  <data name="SoftwareManager_072" xml:space="preserve">
+    <value>Ошибка загрузки списка приложений</value>
+  </data>
+  <data name="SoftwareManager_073" xml:space="preserve">
+    <value>Не удалось обновить список приложений: {0}</value>
+  </data>
+  <data name="SoftwareManager_074" xml:space="preserve">
+    <value>Не удалось получить название/значок приложения: {0}</value>
+  </data>
+  <data name="SoftwareManager_075" xml:space="preserve">
+    <value>Операция выполняется</value>
+  </data>
+  <data name="SoftwareManager_076" xml:space="preserve">
+    <value>Дождитесь завершения текущей операции и повторите попытку.</value>
+  </data>
+  <data name="SoftwareManager_077" xml:space="preserve">
+    <value>Ошибка операции (код завершения {0})</value>
+  </data>
+  <data name="SoftwareManager_078" xml:space="preserve">
+    <value>Больше не напоминать</value>
+  </data>
+  <data name="SoftwareManager_079" xml:space="preserve">
+    <value>Продолжить</value>
+  </data>
+  <data name="SoftwareManager_080" xml:space="preserve">
+    <value>Выберите приложение или дождитесь загрузки имени активного пакета.</value>
+  </data>
+  <data name="SoftwareManager_081" xml:space="preserve">
+    <value>Целевое приложение: {0}
+Целевое устройство: {1}
+
+{2}
+
+Продолжить?</value>
+  </data>
+  <data name="SoftwareManager_082" xml:space="preserve">
+    <value>Подтверждение заморозки приложения</value>
+  </data>
+  <data name="SoftwareManager_083" xml:space="preserve">
+    <value>Заморозка отключает приложение. Его значок может исчезнуть с главного экрана, а запуск стать недоступным. На некоторых устройствах нужны повышенные права.</value>
+  </data>
+  <data name="SoftwareManager_084" xml:space="preserve">
+    <value>Подтверждение принудительной остановки</value>
+  </data>
+  <data name="SoftwareManager_085" xml:space="preserve">
+    <value>Принудительная остановка немедленно завершит процесс приложения. Текущая работа или несохранённые данные могут быть потеряны.</value>
+  </data>
+  <data name="SoftwareManager_086" xml:space="preserve">
+    <value>Подтверждение удаления приложения</value>
+  </data>
+  <data name="SoftwareManager_087" xml:space="preserve">
+    <value>Приложение будет удалено. Сначала сохраните его важные данные.</value>
+  </data>
+  <data name="SoftwareManager_088" xml:space="preserve">
+    <value>Подтверждение удаления с сохранением данных</value>
+  </data>
+  <data name="SoftwareManager_089" xml:space="preserve">
+    <value>Приложение будет удалено с попыткой сохранить данные. Это гарантируется не всеми системами. Возможны проблемы с последующей установкой или остаточные данные.</value>
+  </data>
+  <data name="SoftwareManager_090" xml:space="preserve">
+    <value>Подтверждение очистки данных</value>
+  </data>
+  <data name="SoftwareManager_091" xml:space="preserve">
+    <value>Очистка удалит все локальные данные приложения и сведения о входе в аккаунт.</value>
+  </data>
+  <data name="SoftwareManager_092" xml:space="preserve">
+    <value>Имя пакета для разморозки</value>
+  </data>
+  <data name="SoftwareManager_093" xml:space="preserve">
+    <value>Разморозить</value>
+  </data>
+  <data name="SoftwareManager_094" xml:space="preserve">
+    <value>Открыть настройки разрешений</value>
+  </data>
+  <data name="SoftwareManager_095" xml:space="preserve">
+    <value>Не удалось определить текущую Activity.</value>
+  </data>
+  <data name="SoftwareManager_096" xml:space="preserve">
+    <value>Будет отключён текущий компонент Activity:
+{0}
+
+Этот экран может стать недоступным, а работа приложения нарушиться. Для восстановления потребуется повторно включить компонент.</value>
+  </data>
+  <data name="SoftwareManager_097" xml:space="preserve">
+    <value>
+На устройстве нужны Root-доступ и работающая команда su. Следите за запросами разрешений на устройстве.</value>
+  </data>
+  <data name="SoftwareManager_098" xml:space="preserve">
+    <value>После отключения компонента приложение будет принудительно остановлено.</value>
+  </data>
+  <data name="SoftwareManager_099" xml:space="preserve">
+    <value>
+
+Продолжить?</value>
+  </data>
+  <data name="SoftwareManager_100" xml:space="preserve">
+    <value>Подтверждение отключения текущей Activity</value>
+  </data>
+  <data name="SoftwareManager_101" xml:space="preserve">
+    <value>Отключить Activity (Root)</value>
+  </data>
+  <data name="SoftwareManager_102" xml:space="preserve">
+    <value>Отключить Activity</value>
+  </data>
+  <data name="SoftwareManager_103" xml:space="preserve">
+    <value>Установка APK ({0}/{1})</value>
+  </data>
+  <data name="SoftwareManager_104" xml:space="preserve">
+    <value>Ошибка установки</value>
+  </data>
+  <data name="SoftwareManager_105" xml:space="preserve">
+    <value>Ошибка установки: {0}</value>
+  </data>
+  <data name="SoftwareManager_106" xml:space="preserve">
+    <value>Извлечь APK</value>
+  </data>
+  <data name="SoftwareManager_107" xml:space="preserve">
+    <value>Состояние устройства изменилось; извлечение отменено</value>
+  </data>
+  <data name="SoftwareManager_108" xml:space="preserve">
+    <value>Путь установки {0} не найден</value>
+  </data>
+  <data name="SoftwareManager_109" xml:space="preserve">
+    <value>Ошибка извлечения</value>
+  </data>
+  <data name="SoftwareManager_110" xml:space="preserve">
+    <value>Ошибка извлечения: {0}</value>
+  </data>
+  <data name="SoftwareManager_111" xml:space="preserve">
+    <value>Не удалось получить компоненты: {0}</value>
+  </data>
+  <data name="SoftwareManager_112" xml:space="preserve">
+    <value>Введите компонент или выберите его из списка.</value>
+  </data>
+  <data name="FileManager_001" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="FileManager_002" xml:space="preserve">
+    <value>Экспортировать</value>
+  </data>
+  <data name="FileManager_003" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="FileManager_004" xml:space="preserve">
+    <value>Вырезать</value>
+  </data>
+  <data name="FileManager_005" xml:space="preserve">
+    <value>Вставить</value>
+  </data>
+  <data name="FileManager_006" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="FileManager_007" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="FileManager_008" xml:space="preserve">
+    <value>Свойства</value>
+  </data>
+  <data name="FileManager_009" xml:space="preserve">
+    <value>Импорт файлов</value>
+  </data>
+  <data name="FileManager_010" xml:space="preserve">
+    <value>Импорт папки</value>
+  </data>
+  <data name="FileManager_011" xml:space="preserve">
+    <value>Файловый менеджер</value>
+  </data>
+  <data name="FileManager_012" xml:space="preserve">
+    <value>Просмотр хранилища устройства и передача файлов между компьютером и устройством.</value>
+  </data>
+  <data name="FileManager_013" xml:space="preserve">
+    <value>Обзор файлов</value>
+  </data>
+  <data name="FileManager_014" xml:space="preserve">
+    <value>Выше</value>
+  </data>
+  <data name="FileManager_015" xml:space="preserve">
+    <value>Скачать выбранный файл</value>
+  </data>
+  <data name="FileManager_016" xml:space="preserve">
+    <value>Ход передачи</value>
+  </data>
+  <data name="FileManager_017" xml:space="preserve">
+    <value>Готово к работе</value>
+  </data>
+  <data name="FileManager_018" xml:space="preserve">
+    <value>Советы</value>
+  </data>
+  <data name="FileManager_019" xml:space="preserve">
+    <value>1. Щёлкните правой кнопкой по файлу или папке для копирования, перемещения, удаления и других действий.
+
+2. Дважды щёлкните папку, чтобы открыть её.
+
+3. Не отключайте устройство во время передачи и дождитесь её завершения.
+
+4. В Android 11 и новее доступ к некоторым папкам (например, Android/data) ограничен.</value>
+  </data>
+  <data name="FileManager_020" xml:space="preserve">
+    <value>Не удалось получить содержимое каталога: {0}</value>
+  </data>
+  <data name="FileManager_021" xml:space="preserve">
+    <value>Элементов: {0}</value>
+  </data>
+  <data name="FileManager_022" xml:space="preserve">
+    <value>Выберите файл.</value>
+  </data>
+  <data name="FileManager_023" xml:space="preserve">
+    <value>Скачивание папок здесь пока не поддерживается.</value>
+  </data>
+  <data name="FileManager_024" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="FileManager_025" xml:space="preserve">
+    <value>Выполняется…</value>
+  </data>
+  <data name="FileManager_026" xml:space="preserve">
+    <value>Неизвестный режим передачи</value>
+  </data>
+  <data name="FileManager_027" xml:space="preserve">
+    <value>Операция завершена</value>
+  </data>
+  <data name="FileManager_028" xml:space="preserve">
+    <value>Ошибка операции</value>
+  </data>
+  <data name="FileManager_029" xml:space="preserve">
+    <value>Скопировано</value>
+  </data>
+  <data name="FileManager_030" xml:space="preserve">
+    <value>Вырезано</value>
+  </data>
+  <data name="FileManager_031" xml:space="preserve">
+    <value>Буфер обмена пуст</value>
+  </data>
+  <data name="FileManager_032" xml:space="preserve">
+    <value>Новое имя:</value>
+  </data>
+  <data name="FileManager_035" xml:space="preserve">
+    <value>Удалено</value>
+  </data>
+  <data name="FileManager_036" xml:space="preserve">
+    <value>Ошибка удаления</value>
+  </data>
+  <data name="FileManager_037" xml:space="preserve">
+    <value>Имя: {0}</value>
+  </data>
+  <data name="FileManager_038" xml:space="preserve">
+    <value>Путь: {0}</value>
+  </data>
+  <data name="FileManager_039" xml:space="preserve">
+    <value>Тип: {0}</value>
+  </data>
+  <data name="FileManager_040" xml:space="preserve">
+    <value>Каталог</value>
+  </data>
+  <data name="FileManager_041" xml:space="preserve">
+    <value>Размер: {0}</value>
+  </data>
+  <data name="FileManager_042" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="FileManager_063" xml:space="preserve">
+    <value>Права: </value>
+  </data>
+  <data name="FileManager_064" xml:space="preserve">
+    <value>Владелец: </value>
+  </data>
+  <data name="FileManager_065" xml:space="preserve">
+    <value>Изменён: </value>
+  </data>
+  <data name="Backup_001" xml:space="preserve">
+    <value>Резервная копия модема</value>
+  </data>
+  <data name="Backup_002" xml:space="preserve">
+    <value>Резервное копирование разделов для разработки и обслуживания: сжатие и создание локальных скриптов восстановления.</value>
+  </data>
+  <data name="Backup_003" xml:space="preserve">
+    <value>Проверьте устройство и разделы, убедитесь, что в месте сохранения достаточно свободного места. После копирования проверьте журнал и выходные файлы. Перед запуском самостоятельно проверьте скрипты восстановления. Не восстанавливайте разделы модема на другом устройстве.</value>
+  </data>
+  <data name="Backup_004" xml:space="preserve">
+    <value>Каталог сохранения</value>
+  </data>
+  <data name="Backup_005" xml:space="preserve">
+    <value>Путь для резервной копии</value>
+  </data>
+  <data name="Backup_006" xml:space="preserve">
+    <value>Выберите локальный каталог сохранения</value>
+  </data>
+  <data name="Backup_007" xml:space="preserve">
+    <value>Обзор</value>
+  </data>
+  <data name="Backup_008" xml:space="preserve">
+    <value>Храните дополнительную копию важных резервных данных отдельно от обрабатываемых файлов прошивки.</value>
+  </data>
+  <data name="Backup_009" xml:space="preserve">
+    <value>Параметры резервного копирования</value>
+  </data>
+  <data name="Backup_010" xml:space="preserve">
+    <value>Упаковать копии разделов в один ZIP-архив</value>
+  </data>
+  <data name="Backup_011" xml:space="preserve">
+    <value>Создать локальные скрипты восстановления разделов (flash_all.bat/sh)</value>
+  </data>
+  <data name="Backup_012" xml:space="preserve">
+    <value>Найти и выбрать разделы</value>
+  </data>
+  <data name="Backup_013" xml:space="preserve">
+    <value>Начать копирование</value>
+  </data>
+  <data name="Backup_014" xml:space="preserve">
+    <value>Подключите устройство, загруженное в Android, и включите отладку.</value>
+  </data>
+  <data name="Backup_015" xml:space="preserve">
+    <value>Поиск разделов…</value>
+  </data>
+  <data name="Backup_016" xml:space="preserve">
+    <value>Ошибка поиска: {0}</value>
+  </data>
+  <data name="Backup_017" xml:space="preserve">
+    <value>Ошибка поиска</value>
+  </data>
+  <data name="Backup_018" xml:space="preserve">
+    <value>Поиск завершён. Найдено разделов: {0}.</value>
+  </data>
+  <data name="Backup_019" xml:space="preserve">
+    <value>Пользователь отменил выбор разделов.</value>
+  </data>
+  <data name="Backup_020" xml:space="preserve">
+    <value>Выбрано разделов: {0}.</value>
+  </data>
+  <data name="Backup_021" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="Backup_022" xml:space="preserve">
+    <value>Выбрано разделов: {0}. Нажмите «Начать копирование».</value>
+  </data>
+  <data name="Backup_023" xml:space="preserve">
+    <value>Ошибка во время поиска: {0}</value>
+  </data>
+  <data name="Backup_024" xml:space="preserve">
+    <value>Root-доступ не получен. Невозможно прочитать таблицу разделов.</value>
+  </data>
+  <data name="Backup_025" xml:space="preserve">
+    <value>Путь к разделам не найден (/dev/block/by-name и другие).</value>
+  </data>
+  <data name="Backup_026" xml:space="preserve">
+    <value>Выбрать все</value>
+  </data>
+  <data name="Backup_027" xml:space="preserve">
+    <value>Инвертировать выбор</value>
+  </data>
+  <data name="Backup_028" xml:space="preserve">
+    <value>Выбирайте эти разделы с осторожностью</value>
+  </data>
+  <data name="Backup_029" xml:space="preserve">
+    <value>Включает объёмные разделы или разделы с повышенным риском: userdata, metadata, cache и другие</value>
+  </data>
+  <data name="Backup_030" xml:space="preserve">
+    <value>Выберите разделы для резервного копирования</value>
+  </data>
+  <data name="Backup_031" xml:space="preserve">
+    <value>Выбор разделов</value>
+  </data>
+  <data name="Backup_032" xml:space="preserve">
+    <value>Сначала найдите и выберите хотя бы один раздел.</value>
+  </data>
+  <data name="Backup_033" xml:space="preserve">
+    <value>Недопустимый путь сохранения</value>
+  </data>
+  <data name="Backup_034" xml:space="preserve">
+    <value>Убедитесь, что устройство подключено и доступно.</value>
+  </data>
+  <data name="Backup_035" xml:space="preserve">
+    <value>Предупреждение</value>
+  </data>
+  <data name="Backup_036" xml:space="preserve">
+    <value>Вы выбрали раздел userdata, который обычно имеет большой размер и содержит личные данные.
+Копирование с большой вероятностью завершится ошибкой и может занять очень много времени.
+Вы уверены, что хотите продолжить?</value>
+  </data>
+  <data name="Backup_037" xml:space="preserve">
+    <value>Задача резервного копирования завершена</value>
+  </data>
+  <data name="Backup_038" xml:space="preserve">
+    <value>Разделы не выбраны</value>
+  </data>
+  <data name="Backup_039" xml:space="preserve">
+    <value>Подготовка резервной копии (разделов: {0})</value>
+  </data>
+  <data name="Backup_040" xml:space="preserve">
+    <value>Путь к разделам не найден</value>
+  </data>
+  <data name="Backup_041" xml:space="preserve">
+    <value>Не удалось найти путь к разделам</value>
+  </data>
+  <data name="Backup_042" xml:space="preserve">
+    <value>[{0}/{1}] Копирование {2}</value>
+  </data>
+  <data name="Backup_043" xml:space="preserve">
+    <value>Ошибка DD: {0}</value>
+  </data>
+  <data name="Backup_044" xml:space="preserve">
+    <value>Ошибка скачивания: {0}</value>
+  </data>
+  <data name="Backup_045" xml:space="preserve">
+    <value>Создание скриптов восстановления</value>
+  </data>
+  <data name="Backup_046" xml:space="preserve">
+    <value>Сжатие файлов резервной копии</value>
+  </data>
+  <data name="Backup_047" xml:space="preserve">
+    <value>Ошибка сжатия 7z; попытка использовать встроенный ZIP: {0}</value>
+  </data>
+  <data name="Backup_048" xml:space="preserve">
+    <value>Резервное копирование завершено!
+Сохранено в: {0}</value>
+  </data>
+  <data name="Misc_001" xml:space="preserve">
+    <value>Прочие инструменты</value>
+  </data>
+  <data name="Misc_002" xml:space="preserve">
+    <value>Инструменты прошивки, обслуживания и разработки. Выберите инструмент, чтобы открыть отдельную страницу.</value>
+  </data>
+  <data name="Misc_003" xml:space="preserve">
+    <value>Прошивка разделов и обработка прошивок</value>
+  </data>
+  <data name="Misc_004" xml:space="preserve">
+    <value>Дополнительные действия</value>
+  </data>
+  <data name="Misc_005" xml:space="preserve">
+    <value>Восстановление, модули и обслуживание для разработки</value>
+  </data>
+  <data name="Misc_006" xml:space="preserve">
+    <value>Управление симуляцией</value>
+  </data>
+  <data name="Misc_007" xml:space="preserve">
+    <value>Экран, настройки системы и имитация нажатий</value>
+  </data>
+  <data name="Misc_008" xml:space="preserve">
+    <value>Прошивка одного раздела</value>
+  </data>
+  <data name="Misc_009" xml:space="preserve">
+    <value>Выберите образ и прошейте нужный раздел (с выбором слота / режима)</value>
+  </data>
+  <data name="Misc_010" xml:space="preserve">
+    <value>Обработка Payload.bin</value>
+  </data>
+  <data name="Misc_011" xml:space="preserve">
+    <value>Обработка OFP</value>
+  </data>
+  <data name="Misc_012" xml:space="preserve">
+    <value>Исправление проблем загрузки</value>
+  </data>
+  <data name="Misc_013" xml:space="preserve">
+    <value>Удаление ошибочных настроек модулей для устранения сбоев загрузки из-за их конфликтов</value>
+  </data>
+  <data name="Misc_014" xml:space="preserve">
+    <value>Управление восстановлением модулей</value>
+  </data>
+  <data name="Misc_015" xml:space="preserve">
+    <value>Управление модулями: список, включение, отключение, копирование, удаление, установка и пакетная установка (нужен Root)</value>
+  </data>
+  <data name="Misc_016" xml:space="preserve">
+    <value>Терминал разработки ADB</value>
+  </data>
+  <data name="Misc_017" xml:space="preserve">
+    <value>Открытие системного терминала для работы с ADB при разработке и обслуживании</value>
+  </data>
+  <data name="Misc_018" xml:space="preserve">
+    <value>Запуск скриптов обслуживания</value>
+  </data>
+  <data name="Misc_019" xml:space="preserve">
+    <value>Выбор скрипта .sh на компьютере, передача на телефон и интерактивное выполнение в терминале</value>
+  </data>
+  <data name="Misc_020" xml:space="preserve">
+    <value>Проверка конфигурации прошивки</value>
+  </data>
+  <data name="Misc_021" xml:space="preserve">
+    <value>Проверка синтаксиса конфигурации с указанием строк, столбцов и описаний ошибок</value>
+  </data>
+  <data name="Misc_022" xml:space="preserve">
+    <value>Параметры экрана</value>
+  </data>
+  <data name="Misc_023" xml:space="preserve">
+    <value>Разрешение / Плотность (DPI) / Минимальная ширина (DP)</value>
+  </data>
+  <data name="Misc_024" xml:space="preserve">
+    <value>Симуляция состояния батареи</value>
+  </data>
+  <data name="Misc_025" xml:space="preserve">
+    <value>Заряд / Температура / Тип зарядки</value>
+  </data>
+  <data name="Misc_026" xml:space="preserve">
+    <value>Изменение тайм-аута экрана</value>
+  </data>
+  <data name="Misc_027" xml:space="preserve">
+    <value>Изменение screen_off_timeout</value>
+  </data>
+  <data name="Misc_028" xml:space="preserve">
+    <value>Скрытие значков строки состояния</value>
+  </data>
+  <data name="Misc_029" xml:space="preserve">
+    <value>Время, Bluetooth, местоположение, Wi-Fi, батарея и другое</value>
+  </data>
+  <data name="Misc_030" xml:space="preserve">
+    <value>Размер шрифта</value>
+  </data>
+  <data name="Misc_031" xml:space="preserve">
+    <value>Масштаб шрифта (до 5×)</value>
+  </data>
+  <data name="Misc_032" xml:space="preserve">
+    <value>Скорость анимации</value>
+  </data>
+  <data name="Misc_033" xml:space="preserve">
+    <value>Окна / Переходы / Длительность анимации</value>
+  </data>
+  <data name="Misc_034" xml:space="preserve">
+    <value>Отключение специальных возможностей</value>
+  </data>
+  <data name="Misc_035" xml:space="preserve">
+    <value>TalkBack / Озвучивание при нажатии / Увеличение / Инверсия цветов / Цветокоррекция / Высокая контрастность</value>
+  </data>
+  <data name="Misc_036" xml:space="preserve">
+    <value>Имитация нажатий клавиш</value>
+  </data>
+  <data name="Misc_037" xml:space="preserve">
+    <value>Громкость, блокировка экрана, «Назад», «Домой», мобильные данные и другое</value>
+  </data>
+  <data name="DeviceBar_001" xml:space="preserve">
+    <value>Подключите телефон через ADB / Fastboot</value>
+  </data>
+  <data name="DeviceBar_002" xml:space="preserve">
+    <value>Обновить состояние устройства</value>
+  </data>
+  <data name="DeviceBar_003" xml:space="preserve">
+    <value>Перезагрузить устройство</value>
+  </data>
+  <data name="DeviceBar_004" xml:space="preserve">
+    <value>Подключённые устройства не найдены</value>
+  </data>
+  <data name="DeviceBar_005" xml:space="preserve">
+    <value>Перезагрузить в систему</value>
+  </data>
+  <data name="DeviceBar_006" xml:space="preserve">
+    <value>Перезагрузить в Recovery</value>
+  </data>
+  <data name="DeviceBar_007" xml:space="preserve">
+    <value>Перезагрузить в Bootloader</value>
+  </data>
+  <data name="DeviceBar_008" xml:space="preserve">
+    <value>Перезагрузить в FastbootD</value>
+  </data>
+  <data name="DeviceBar_009" xml:space="preserve">
+    <value>Перезагрузить в 9008 (EDL)</value>
+  </data>
+  <data name="LogView_001" xml:space="preserve">
+    <value>В журнале пока нет записей</value>
+  </data>
+  <data name="Flash_001" xml:space="preserve"><value>Центр прошивки</value></data>
+  <data name="Flash_002" xml:space="preserve"><value>Умная прошивка в один клик</value></data>
+  <data name="Flash_003" xml:space="preserve"><value>Прошивка перезаписывает разделы и переключает слоты загрузки, отменить это нельзя. Убедитесь, что firmware соответствует модели, телефон в режиме Bootloader и соединение стабильно. Все исходные логи сохраняются для проверки.</value></data>
+  <data name="Flash_004" xml:space="preserve"><value>Источник</value></data>
+  <data name="Flash_005" xml:space="preserve"><value>Папка с образами</value></data>
+  <data name="Flash_006" xml:space="preserve"><value>Архив (.zip/.7z)</value></data>
+  <data name="Flash_007" xml:space="preserve"><value>Режим архива</value></data>
+  <data name="Flash_008" xml:space="preserve"><value>Официальный пакет (OTA Zip)</value></data>
+  <data name="Flash_009" xml:space="preserve"><value>Старый порт 7z/zip (C16, до 0107)</value></data>
+  <data name="Flash_010" xml:space="preserve"><value>Новый порт 7z (C16, после 0107)</value></data>
+  <data name="Flash_011" xml:space="preserve"><value>Порт ColorOS17 (.7z)</value></data>
+  <data name="Flash_012" xml:space="preserve"><value>Выберите папку с пакетом</value></data>
+  <data name="Flash_013" xml:space="preserve"><value>Обзор</value></data>
+  <data name="Flash_014" xml:space="preserve"><value>Состояние устройства</value></data>
+  <data name="Flash_015" xml:space="preserve"><value>Устройство: не подключено</value></data>
+  <data name="Flash_016" xml:space="preserve"><value>Режим: неизвестен</value></data>
+  <data name="Flash_017" xml:space="preserve"><value>Обновить</value></data>
+  <data name="Flash_018" xml:space="preserve"><value>Параметры</value></data>
+  <data name="Flash_019" xml:space="preserve"><value>Очистить данные (сброс)</value></data>
+  <data name="Flash_020" xml:space="preserve"><value>Сохранить ROOT</value></data>
+  <data name="Flash_021" xml:space="preserve"><value>Параметр "Сохранить ROOT" пропускает прошивку boot.img. Очистка удаляет userdata и metadata.</value></data>
+  <data name="Flash_022" xml:space="preserve"><value>Действия</value></data>
+  <data name="Flash_023" xml:space="preserve"><value>Загрузить пакет</value></data>
+  <data name="Flash_024" xml:space="preserve"><value>Начать прошивку</value></data>
+  <data name="Flash_025" xml:space="preserve"><value>Отмена</value></data>
+  <data name="Flash_026" xml:space="preserve"><value>Сохранить лог</value></data>
+  <data name="Flash_027" xml:space="preserve"><value>Открыть папку логов</value></data>
+  <data name="Flash_028" xml:space="preserve"><value>Вывод лога</value></data>
+  <data name="Flash_030" xml:space="preserve"><value>Выберите архив .zip или .7z</value></data>
+  <data name="Flash_031" xml:space="preserve"><value>Обзор</value></data>
+  <data name="Flash_032" xml:space="preserve"><value>Внимание</value></data>
+  <data name="Flash_033" xml:space="preserve"><value>Сначала выберите путь.</value></data>
+  <data name="Flash_034" xml:space="preserve"><value>Указанный путь не является папкой.</value></data>
+  <data name="Flash_035" xml:space="preserve"><value>Указанный путь не является файлом.</value></data>
+  <data name="Flash_036" xml:space="preserve"><value>Небезопасная среда</value></data>
+  <data name="Flash_037" xml:space="preserve"><value>Прошивка сейчас недоступна. Закройте программы удалённого доступа.</value></data>
+  <data name="Flash_038" xml:space="preserve"><value>Ошибка загрузки</value></data>
+  <data name="Flash_039" xml:space="preserve"><value>Образы не найдены или проверка не пройдена. Смотрите лог.</value></data>
+  <data name="Flash_040" xml:space="preserve"><value>Образы готовы. Можно начинать прошивку.</value></data>
+  <data name="Flash_041" xml:space="preserve"><value>Загружено</value></data>
+  <data name="Flash_042" xml:space="preserve"><value>Успешно загружено. Можно начинать прошивку.</value></data>
+  <data name="Flash_043" xml:space="preserve"><value>Проверка числа образов</value></data>
+  <data name="Flash_044" xml:space="preserve"><value>Найдено {0} файлов образов.
+Обычно ожидается 46 или 48.
+Продолжить загрузку?</value></data>
+  <data name="Flash_045" xml:space="preserve"><value>Сначала нажмите "Загрузить пакет" и дождитесь успеха.</value></data>
+  <data name="Flash_046" xml:space="preserve"><value>временной рабочей папке</value></data>
+  <data name="Flash_047" xml:space="preserve"><value>Подтверждение прошивки</value></data>
+  <data name="Flash_048" xml:space="preserve"><value>Прошивка будет выполнена в {0}.
+Запланировано шагов: {1}.
+
+Убедитесь, что телефон в режиме Bootloader и подключён.
+Начать?</value></data>
+  <data name="Flash_049" xml:space="preserve"><value>Отмена прошивки</value></data>
+  <data name="Flash_050" xml:space="preserve"><value>Отменить текущую прошивку? Процесс fastboot будет немедленно завершён.</value></data>
+  <data name="Flash_051" xml:space="preserve"><value>Нет лога для сохранения.</value></data>
+  <data name="Flash_052" xml:space="preserve"><value>Лог сохранён: </value></data>
+  <data name="Flash_053" xml:space="preserve"><value>Ошибка сохранения</value></data>
+  <data name="Flash_054" xml:space="preserve"><value>OK</value></data>
+  <data name="Flash_055" xml:space="preserve"><value>Начать</value></data>
+  <data name="Flash_056" xml:space="preserve"><value>Отмена</value></data>
+  <data name="Flash_057" xml:space="preserve"><value>Устройство не готово</value></data>
+  <data name="Flash_058" xml:space="preserve"><value>Устройство в режиме fastboot / fastbootd не обнаружено.
+Убедитесь, что телефон в режиме Bootloader и подключён, затем повторите.</value></data>
+</root>

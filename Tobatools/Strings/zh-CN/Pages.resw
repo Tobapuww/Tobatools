@@ -1,0 +1,1335 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <data name="Dashboard_001" xml:space="preserve">
+    <value>仪表盘</value>
+  </data>
+  <data name="Dashboard_002" xml:space="preserve">
+    <value>设备连接状态、资源使用情况与常用操作。</value>
+  </data>
+  <data name="Dashboard_003" xml:space="preserve">
+    <value>当前设备</value>
+  </data>
+  <data name="Dashboard_004" xml:space="preserve">
+    <value>正在检测设备…</value>
+  </data>
+  <data name="Dashboard_005" xml:space="preserve">
+    <value>正在读取连接状态</value>
+  </data>
+  <data name="Dashboard_006" xml:space="preserve">
+    <value>序列号：—</value>
+  </data>
+  <data name="Dashboard_007" xml:space="preserve">
+    <value>无线连接</value>
+  </data>
+  <data name="Dashboard_008" xml:space="preserve">
+    <value>刷新状态</value>
+  </data>
+  <data name="Dashboard_009" xml:space="preserve">
+    <value>电池电量</value>
+  </data>
+  <data name="Dashboard_010" xml:space="preserve">
+    <value>等待设备数据</value>
+  </data>
+  <data name="Dashboard_011" xml:space="preserve">
+    <value>存储空间</value>
+  </data>
+  <data name="Dashboard_012" xml:space="preserve">
+    <value>运行内存</value>
+  </data>
+  <data name="Dashboard_013" xml:space="preserve">
+    <value>硬件参数</value>
+  </data>
+  <data name="Dashboard_014" xml:space="preserve">
+    <value>系统信息</value>
+  </data>
+  <data name="Dashboard_015" xml:space="preserve">
+    <value>快捷操作</value>
+  </data>
+  <data name="Dashboard_016" xml:space="preserve">
+    <value>设备信息</value>
+  </data>
+  <data name="Dashboard_017" xml:space="preserve">
+    <value>当前检测到的设备</value>
+  </data>
+  <data name="Dashboard_018" xml:space="preserve">
+    <value>重新检测</value>
+  </data>
+  <data name="Dashboard_019" xml:space="preserve">
+    <value>电源菜单</value>
+  </data>
+  <data name="Dashboard_020" xml:space="preserve">
+    <value>重启目标模式</value>
+  </data>
+  <data name="Dashboard_021" xml:space="preserve">
+    <value>执行重启</value>
+  </data>
+  <data name="Dashboard_022" xml:space="preserve">
+    <value>常用工具</value>
+  </data>
+  <data name="Dashboard_023" xml:space="preserve">
+    <value>选择常用工具</value>
+  </data>
+  <data name="Dashboard_024" xml:space="preserve">
+    <value>执行工具</value>
+  </data>
+  <data name="Dashboard_025" xml:space="preserve">
+    <value>重启系统</value>
+  </data>
+  <data name="Dashboard_026" xml:space="preserve">
+    <value>无线调试</value>
+  </data>
+  <data name="Dashboard_027" xml:space="preserve">
+    <value>重启 ADB 服务</value>
+  </data>
+  <data name="Dashboard_028" xml:space="preserve">
+    <value>设备管理器</value>
+  </data>
+  <data name="Dashboard_029" xml:space="preserve">
+    <value>品牌</value>
+  </data>
+  <data name="Dashboard_030" xml:space="preserve">
+    <value>型号</value>
+  </data>
+  <data name="Dashboard_031" xml:space="preserve">
+    <value>CPU处理器</value>
+  </data>
+  <data name="Dashboard_032" xml:space="preserve">
+    <value>屏幕分辨率</value>
+  </data>
+  <data name="Dashboard_033" xml:space="preserve">
+    <value>屏幕密度 (DPI)</value>
+  </data>
+  <data name="Dashboard_034" xml:space="preserve">
+    <value>存储类型</value>
+  </data>
+  <data name="Dashboard_035" xml:space="preserve">
+    <value>电池健康度</value>
+  </data>
+  <data name="Dashboard_036" xml:space="preserve">
+    <value>电池容量</value>
+  </data>
+  <data name="Dashboard_037" xml:space="preserve">
+    <value>Android版本</value>
+  </data>
+  <data name="Dashboard_038" xml:space="preserve">
+    <value>SDK版本</value>
+  </data>
+  <data name="Dashboard_039" xml:space="preserve">
+    <value>内核版本</value>
+  </data>
+  <data name="Dashboard_040" xml:space="preserve">
+    <value>VNDK版本</value>
+  </data>
+  <data name="Dashboard_041" xml:space="preserve">
+    <value>Bootloader锁</value>
+  </data>
+  <data name="Dashboard_042" xml:space="preserve">
+    <value>Root权限</value>
+  </data>
+  <data name="Dashboard_043" xml:space="preserve">
+    <value>当前 A/B 槽位</value>
+  </data>
+  <data name="Dashboard_044" xml:space="preserve">
+    <value>本次开机时间</value>
+  </data>
+  <data name="Dashboard_045" xml:space="preserve">
+    <value>已连接设备</value>
+  </data>
+  <data name="Dashboard_046" xml:space="preserve">
+    <value>Fastboot 设备</value>
+  </data>
+  <data name="Dashboard_047" xml:space="preserve">
+    <value>端口模式设备</value>
+  </data>
+  <data name="Dashboard_048" xml:space="preserve">
+    <value>设备等待授权</value>
+  </data>
+  <data name="Dashboard_049" xml:space="preserve">
+    <value>设备已离线</value>
+  </data>
+  <data name="Dashboard_050" xml:space="preserve">
+    <value>设备检测失败</value>
+  </data>
+  <data name="Dashboard_051" xml:space="preserve">
+    <value>未连接设备</value>
+  </data>
+  <data name="Dashboard_052" xml:space="preserve">
+    <value>状态：</value>
+  </data>
+  <data name="Dashboard_053" xml:space="preserve">
+    <value>序列号：</value>
+  </data>
+  <data name="Dashboard_054" xml:space="preserve">
+    <value>当前模式未提供此数据</value>
+  </data>
+  <data name="Dashboard_055" xml:space="preserve">
+    <value>等待设备连接</value>
+  </data>
+  <data name="Dashboard_056" xml:space="preserve">
+    <value>剩余电量</value>
+  </data>
+  <data name="Dashboard_057" xml:space="preserve">
+    <value>当前电池电量</value>
+  </data>
+  <data name="Dashboard_058" xml:space="preserve">
+    <value>健康度 {0}%</value>
+  </data>
+  <data name="Dashboard_059" xml:space="preserve">
+    <value>已用空间</value>
+  </data>
+  <data name="Dashboard_060" xml:space="preserve">
+    <value>已用 {0} / 总计 {1}</value>
+  </data>
+  <data name="Dashboard_061" xml:space="preserve">
+    <value>已用内存</value>
+  </data>
+  <data name="Dashboard_062" xml:space="preserve">
+    <value>已解锁</value>
+  </data>
+  <data name="Dashboard_063" xml:space="preserve">
+    <value>已锁定</value>
+  </data>
+  <data name="Dashboard_064" xml:space="preserve">
+    <value>未检测到设备</value>
+  </data>
+  <data name="Dashboard_065" xml:space="preserve">
+    <value>重启指令已发送</value>
+  </data>
+  <data name="Dashboard_066" xml:space="preserve">
+    <value>重启失败</value>
+  </data>
+  <data name="Dashboard_067" xml:space="preserve">
+    <value>ADB 已重启</value>
+  </data>
+  <data name="Dashboard_068" xml:space="preserve">
+    <value>ADB Server 服务已重新启动</value>
+  </data>
+  <data name="Dashboard_069" xml:space="preserve">
+    <value>无法打开设备管理器</value>
+  </data>
+  <data name="Dashboard_070" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="Dashboard_082" xml:space="preserve">
+    <value>ADB 重启失败</value>
+  </data>
+  <data name="Dashboard_083" xml:space="preserve">
+    <value>提示</value>
+  </data>
+  <data name="Dashboard_084" xml:space="preserve">
+    <value>重启操作正在执行，请稍候</value>
+  </data>
+  <data name="Dashboard_086" xml:space="preserve">
+    <value>设备已连接</value>
+  </data>
+  <data name="Dashboard_087" xml:space="preserve">
+    <value>当前模式：{0}</value>
+  </data>
+  <data name="Dashboard_088" xml:space="preserve">
+    <value>设备模式变化</value>
+  </data>
+  <data name="Dashboard_089" xml:space="preserve">
+    <value>设备未授权</value>
+  </data>
+  <data name="Dashboard_090" xml:space="preserve">
+    <value>请在手机上授权 USB 调试</value>
+  </data>
+  <data name="Dashboard_091" xml:space="preserve">
+    <value>设备已断开</value>
+  </data>
+  <data name="Dashboard_092" xml:space="preserve">
+    <value>未发现已连接设备</value>
+  </data>
+  <data name="Dashboard_093" xml:space="preserve">
+    <value>规格速览</value>
+  </data>
+  <data name="Dashboard_094" xml:space="preserve">
+    <value>状态参数</value>
+  </data>
+  <data name="Dashboard_095" xml:space="preserve">
+    <value>展开更多参数</value>
+  </data>
+  <data name="Dashboard_096" xml:space="preserve">
+    <value>收起参数</value>
+  </data>
+  <data name="Dashboard_097" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Dashboard_098" xml:space="preserve">
+    <value>设备代号</value>
+  </data>
+  <data name="Dashboard_099" xml:space="preserve">
+    <value>产品名</value>
+  </data>
+  <data name="Dashboard_100" xml:space="preserve">
+    <value>基带版本</value>
+  </data>
+  <data name="Dashboard_101" xml:space="preserve">
+    <value>Bootloader 版本</value>
+  </data>
+  <data name="Root_020" xml:space="preserve">
+    <value>执行日志</value>
+  </data>
+  <data name="Root_022" xml:space="preserve">
+    <value>清空</value>
+  </data>
+  <data name="Root_030" xml:space="preserve">
+    <value>提示</value>
+  </data>
+  <data name="Root_033" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="Root_037" xml:space="preserve">
+    <value>失败</value>
+  </data>
+  <data name="ImageFactory_001" xml:space="preserve">
+    <value>镜像工厂</value>
+  </data>
+  <data name="ImageFactory_002" xml:space="preserve">
+    <value>Android 固件与分区镜像处理，按文件类型选择解包、打包或转换工具。</value>
+  </data>
+  <data name="ImageFactory_003" xml:space="preserve">
+    <value>固件源处理</value>
+  </data>
+  <data name="ImageFactory_004" xml:space="preserve">
+    <value>提取固件中的分区文件</value>
+  </data>
+  <data name="ImageFactory_005" xml:space="preserve">
+    <value>动态分区 / Super</value>
+  </data>
+  <data name="ImageFactory_006" xml:space="preserve">
+    <value>拆分与组合动态分区镜像</value>
+  </data>
+  <data name="ImageFactory_007" xml:space="preserve">
+    <value>设备树 / DTBO</value>
+  </data>
+  <data name="ImageFactory_008" xml:space="preserve">
+    <value>设备树解包、编译与打包</value>
+  </data>
+  <data name="ImageFactory_009" xml:space="preserve">
+    <value>文件系统 / 分区镜像</value>
+  </data>
+  <data name="ImageFactory_010" xml:space="preserve">
+    <value>处理 ext4 与 erofs 文件系统</value>
+  </data>
+  <data name="ImageFactory_011" xml:space="preserve">
+    <value>Boot 镜像</value>
+  </data>
+  <data name="ImageFactory_012" xml:space="preserve">
+    <value>启动镜像解包与重新打包</value>
+  </data>
+  <data name="ImageFactory_013" xml:space="preserve">
+    <value>OTA 增量包（DAT/BR）</value>
+  </data>
+  <data name="ImageFactory_014" xml:space="preserve">
+    <value>DAT/BR 与 IMG 格式转换</value>
+  </data>
+  <data name="ImageFactory_015" xml:space="preserve">
+    <value>Payload.bin 解包</value>
+  </data>
+  <data name="ImageFactory_016" xml:space="preserve">
+    <value>在线或本地提取 payload.bin，支持全量和指定分区</value>
+  </data>
+  <data name="ImageFactory_017" xml:space="preserve">
+    <value>OFP 解包</value>
+  </data>
+  <data name="ImageFactory_018" xml:space="preserve">
+    <value>解密并提取 .ofp 固件内容</value>
+  </data>
+  <data name="ImageFactory_019" xml:space="preserve">
+    <value>Super 解/打包</value>
+  </data>
+  <data name="ImageFactory_020" xml:space="preserve">
+    <value>解包 super.img 或从分区镜像打包</value>
+  </data>
+  <data name="ImageFactory_021" xml:space="preserve">
+    <value>DTBO 解/打包</value>
+  </data>
+  <data name="ImageFactory_022" xml:space="preserve">
+    <value>解包 + 反编译，或从 dts 回编译并打包</value>
+  </data>
+  <data name="ImageFactory_023" xml:space="preserve">
+    <value>分区镜像（ext4/erofs）解/打包</value>
+  </data>
+  <data name="ImageFactory_024" xml:space="preserve">
+    <value>解包或打包 ext4 / erofs 分区镜像</value>
+  </data>
+  <data name="ImageFactory_025" xml:space="preserve">
+    <value>Boot 解/打包</value>
+  </data>
+  <data name="ImageFactory_026" xml:space="preserve">
+    <value>解包 boot 镜像，或 magiskboot 回打包</value>
+  </data>
+  <data name="ImageFactory_027" xml:space="preserve">
+    <value>DAT/BR 转换</value>
+  </data>
+  <data name="ImageFactory_028" xml:space="preserve">
+    <value>旧版 DAT/BR 与 IMG 之间互相转换</value>
+  </data>
+  <data name="Scrcpy_001" xml:space="preserve">
+    <value>投屏中心</value>
+  </data>
+  <data name="Scrcpy_002" xml:space="preserve">
+    <value>配置 scrcpy 画面与操作选项，在独立窗口中使用设备。</value>
+  </data>
+  <data name="Scrcpy_003" xml:space="preserve">
+    <value>投屏配置</value>
+  </data>
+  <data name="Scrcpy_004" xml:space="preserve">
+    <value>按连接质量调整画面与延迟。</value>
+  </data>
+  <data name="Scrcpy_005" xml:space="preserve">
+    <value>分辨率</value>
+  </data>
+  <data name="Scrcpy_006" xml:space="preserve">
+    <value>帧率</value>
+  </data>
+  <data name="Scrcpy_007" xml:space="preserve">
+    <value>码率</value>
+  </data>
+  <data name="Scrcpy_008" xml:space="preserve">
+    <value>视频缓冲</value>
+  </data>
+  <data name="Scrcpy_009" xml:space="preserve">
+    <value>音频缓冲</value>
+  </data>
+  <data name="Scrcpy_010" xml:space="preserve">
+    <value>启用音频</value>
+  </data>
+  <data name="Scrcpy_011" xml:space="preserve">
+    <value>窗口与交互</value>
+  </data>
+  <data name="Scrcpy_012" xml:space="preserve">
+    <value>启动全屏</value>
+  </data>
+  <data name="Scrcpy_013" xml:space="preserve">
+    <value>无边框</value>
+  </data>
+  <data name="Scrcpy_014" xml:space="preserve">
+    <value>置顶显示</value>
+  </data>
+  <data name="Scrcpy_015" xml:space="preserve">
+    <value>禁用屏保</value>
+  </data>
+  <data name="Scrcpy_016" xml:space="preserve">
+    <value>保持唤醒</value>
+  </data>
+  <data name="Scrcpy_017" xml:space="preserve">
+    <value>息屏投屏</value>
+  </data>
+  <data name="Scrcpy_018" xml:space="preserve">
+    <value>显示触摸</value>
+  </data>
+  <data name="Scrcpy_019" xml:space="preserve">
+    <value>剪切板同步</value>
+  </data>
+  <data name="Scrcpy_020" xml:space="preserve">
+    <value>兼容粘贴</value>
+  </data>
+  <data name="Scrcpy_021" xml:space="preserve">
+    <value>转发所有点击</value>
+  </data>
+  <data name="Scrcpy_022" xml:space="preserve">
+    <value>打印 FPS</value>
+  </data>
+  <data name="Scrcpy_023" xml:space="preserve">
+    <value>操作控制</value>
+  </data>
+  <data name="Scrcpy_024" xml:space="preserve">
+    <value>开始投屏</value>
+  </data>
+  <data name="Scrcpy_025" xml:space="preserve">
+    <value>停止投屏</value>
+  </data>
+  <data name="Scrcpy_026" xml:space="preserve">
+    <value>使用说明</value>
+  </data>
+  <data name="Scrcpy_027" xml:space="preserve">
+    <value>连接设备</value>
+  </data>
+  <data name="Scrcpy_028" xml:space="preserve">
+    <value>推荐使用有线连接。无线投屏前，请先使用顶部设备栏的“无线连接”；连接多个设备时，开始投屏会弹出选择框。</value>
+  </data>
+  <data name="Scrcpy_029" xml:space="preserve">
+    <value>画面与声音</value>
+  </data>
+  <data name="Scrcpy_030" xml:space="preserve">
+    <value>投屏基于 scrcpy，窗口独立显示，不会阻塞当前界面。音频转发仅支持 Android 11 及以上系统。</value>
+  </data>
+  <data name="Scrcpy_031" xml:space="preserve">
+    <value>遇到黑屏时，可尝试降低分辨率或关闭音视频缓冲。</value>
+  </data>
+  <data name="Scrcpy_032" xml:space="preserve">
+    <value>默认</value>
+  </data>
+  <data name="Scrcpy_033" xml:space="preserve">
+    <value>投屏已在运行中。</value>
+  </data>
+  <data name="Scrcpy_034" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="Scrcpy_035" xml:space="preserve">
+    <value>scrcpy 已启动</value>
+  </data>
+  <data name="Scrcpy_036" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Scrcpy_037" xml:space="preserve">
+    <value>未找到 scrcpy 可执行文件</value>
+  </data>
+  <data name="Scrcpy_038" xml:space="preserve">
+    <value>启动 scrcpy 失败: {0}</value>
+  </data>
+  <data name="Scrcpy_039" xml:space="preserve">
+    <value>已发送停止信号</value>
+  </data>
+  <data name="Scrcpy_040" xml:space="preserve">
+    <value>停止失败: {0}</value>
+  </data>
+  <data name="Scrcpy_041" xml:space="preserve">
+    <value>未检测到可用的 ADB 设备。</value>
+  </data>
+  <data name="Scrcpy_042" xml:space="preserve">
+    <value>检测到多个设备，请选择要投屏的设备：</value>
+  </data>
+  <data name="Scrcpy_043" xml:space="preserve">
+    <value>选择投屏设备</value>
+  </data>
+  <data name="Scrcpy_044" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="SoftwareManager_001" xml:space="preserve">
+    <value>软件管理</value>
+  </data>
+  <data name="SoftwareManager_002" xml:space="preserve">
+    <value>浏览已安装应用，安装或导出 APK，管理应用与组件。</value>
+  </data>
+  <data name="SoftwareManager_003" xml:space="preserve">
+    <value>已安装应用</value>
+  </data>
+  <data name="SoftwareManager_004" xml:space="preserve">
+    <value>搜索应用名称或包名</value>
+  </data>
+  <data name="SoftwareManager_005" xml:space="preserve">
+    <value>搜索应用</value>
+  </data>
+  <data name="SoftwareManager_006" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="SoftwareManager_007" xml:space="preserve">
+    <value>包含系统应用</value>
+  </data>
+  <data name="SoftwareManager_008" xml:space="preserve">
+    <value>清除选中</value>
+  </data>
+  <data name="SoftwareManager_009" xml:space="preserve">
+    <value>已安装应用列表</value>
+  </data>
+  <data name="SoftwareManager_010" xml:space="preserve">
+    <value>等待加载应用列表</value>
+  </data>
+  <data name="SoftwareManager_011" xml:space="preserve">
+    <value>设备与前台应用</value>
+  </data>
+  <data name="SoftwareManager_012" xml:space="preserve">
+    <value>自动刷新前台状态</value>
+  </data>
+  <data name="SoftwareManager_013" xml:space="preserve">
+    <value>立即刷新</value>
+  </data>
+  <data name="SoftwareManager_014" xml:space="preserve">
+    <value>检测中…</value>
+  </data>
+  <data name="SoftwareManager_015" xml:space="preserve">
+    <value>选中的包名</value>
+  </data>
+  <data name="SoftwareManager_016" xml:space="preserve">
+    <value>未选择</value>
+  </data>
+  <data name="SoftwareManager_017" xml:space="preserve">
+    <value>前台包名</value>
+  </data>
+  <data name="SoftwareManager_018" xml:space="preserve">
+    <value>前台 Activity</value>
+  </data>
+  <data name="SoftwareManager_019" xml:space="preserve">
+    <value>应用操作</value>
+  </data>
+  <data name="SoftwareManager_020" xml:space="preserve">
+    <value>应用操作分类</value>
+  </data>
+  <data name="SoftwareManager_021" xml:space="preserve">
+    <value>选择电脑上的 APK 文件安装到当前设备。</value>
+  </data>
+  <data name="SoftwareManager_022" xml:space="preserve">
+    <value>覆盖安装</value>
+  </data>
+  <data name="SoftwareManager_023" xml:space="preserve">
+    <value>允许降级</value>
+  </data>
+  <data name="SoftwareManager_024" xml:space="preserve">
+    <value>安装本地 APK</value>
+  </data>
+  <data name="SoftwareManager_025" xml:space="preserve">
+    <value>优先操作列表中选中的应用；未选择时使用前台应用。卸载与清除数据前请先备份。</value>
+  </data>
+  <data name="SoftwareManager_026" xml:space="preserve">
+    <value>冻结应用</value>
+  </data>
+  <data name="SoftwareManager_027" xml:space="preserve">
+    <value>解冻应用</value>
+  </data>
+  <data name="SoftwareManager_028" xml:space="preserve">
+    <value>强行停止</value>
+  </data>
+  <data name="SoftwareManager_029" xml:space="preserve">
+    <value>权限设置</value>
+  </data>
+  <data name="SoftwareManager_030" xml:space="preserve">
+    <value>导出 APK</value>
+  </data>
+  <data name="SoftwareManager_031" xml:space="preserve">
+    <value>数据与卸载</value>
+  </data>
+  <data name="SoftwareManager_032" xml:space="preserve">
+    <value>卸载</value>
+  </data>
+  <data name="SoftwareManager_033" xml:space="preserve">
+    <value>保留数据卸载</value>
+  </data>
+  <data name="SoftwareManager_034" xml:space="preserve">
+    <value>清除数据</value>
+  </data>
+  <data name="SoftwareManager_035" xml:space="preserve">
+    <value>禁用前台 Activity</value>
+  </data>
+  <data name="SoftwareManager_036" xml:space="preserve">
+    <value>使用 Root</value>
+  </data>
+  <data name="SoftwareManager_037" xml:space="preserve">
+    <value>操作记录</value>
+  </data>
+  <data name="SoftwareManager_038" xml:space="preserve">
+    <value>查看并恢复应用的已禁用组件。</value>
+  </data>
+  <data name="SoftwareManager_039" xml:space="preserve">
+    <value>刷新组件列表</value>
+  </data>
+  <data name="SoftwareManager_040" xml:space="preserve">
+    <value>已禁用组件</value>
+  </data>
+  <data name="SoftwareManager_041" xml:space="preserve">
+    <value>组件名称</value>
+  </data>
+  <data name="SoftwareManager_042" xml:space="preserve">
+    <value>包名/类名，或从上方选择</value>
+  </data>
+  <data name="SoftwareManager_043" xml:space="preserve">
+    <value>恢复组件</value>
+  </data>
+  <data name="SoftwareManager_044" xml:space="preserve">
+    <value>操作日志</value>
+  </data>
+  <data name="SoftwareManager_045" xml:space="preserve">
+    <value>安装APK</value>
+  </data>
+  <data name="SoftwareManager_046" xml:space="preserve">
+    <value>组件管理</value>
+  </data>
+  <data name="SoftwareManager_047" xml:space="preserve">
+    <value>正在检测设备</value>
+  </data>
+  <data name="SoftwareManager_048" xml:space="preserve">
+    <value>等待设备列表返回后加载应用。</value>
+  </data>
+  <data name="SoftwareManager_049" xml:space="preserve">
+    <value>设备状态变化</value>
+  </data>
+  <data name="SoftwareManager_050" xml:space="preserve">
+    <value>正在重新检测设备，请稍候。</value>
+  </data>
+  <data name="SoftwareManager_051" xml:space="preserve">
+    <value>设备不可用</value>
+  </data>
+  <data name="SoftwareManager_052" xml:space="preserve">
+    <value>请等待检测完成，并仅连接一台已授权且进入系统的设备。</value>
+  </data>
+  <data name="SoftwareManager_053" xml:space="preserve">
+    <value>检测失败</value>
+  </data>
+  <data name="SoftwareManager_054" xml:space="preserve">
+    <value>设备检测失败，应用列表未加载</value>
+  </data>
+  <data name="SoftwareManager_055" xml:space="preserve">
+    <value>刷新失败: {0}</value>
+  </data>
+  <data name="SoftwareManager_056" xml:space="preserve">
+    <value>未检测到 ADB 设备，请检查连接并启用 USB 调试。</value>
+  </data>
+  <data name="SoftwareManager_057" xml:space="preserve">
+    <value>检测到多个设备（{0}）</value>
+  </data>
+  <data name="SoftwareManager_058" xml:space="preserve">
+    <value>为避免误操作，请仅保留一台设备后再刷新。</value>
+  </data>
+  <data name="SoftwareManager_059" xml:space="preserve">
+    <value>设备未授权</value>
+  </data>
+  <data name="SoftwareManager_060" xml:space="preserve">
+    <value>设备离线</value>
+  </data>
+  <data name="SoftwareManager_061" xml:space="preserve">
+    <value>设备处于 Recovery 模式</value>
+  </data>
+  <data name="SoftwareManager_062" xml:space="preserve">
+    <value>设备处于 Sideload 模式</value>
+  </data>
+  <data name="SoftwareManager_063" xml:space="preserve">
+    <value>当前设备模式不支持软件管理</value>
+  </data>
+  <data name="SoftwareManager_064" xml:space="preserve">
+    <value>请在设备上允许 USB 调试后重试。</value>
+  </data>
+  <data name="SoftwareManager_065" xml:space="preserve">
+    <value>请等待设备进入 Android 系统并建立已授权的 ADB 连接。</value>
+  </data>
+  <data name="SoftwareManager_066" xml:space="preserve">
+    <value>设备处于 Fastboot 模式</value>
+  </data>
+  <data name="SoftwareManager_067" xml:space="preserve">
+    <value>软件管理需要设备进入 Android 系统并启用 USB 调试。</value>
+  </data>
+  <data name="SoftwareManager_068" xml:space="preserve">
+    <value>应用列表未加载</value>
+  </data>
+  <data name="SoftwareManager_069" xml:space="preserve">
+    <value>共 {0} 个应用，当前显示 {1} 个</value>
+  </data>
+  <data name="SoftwareManager_070" xml:space="preserve">
+    <value>正在加载应用列表…</value>
+  </data>
+  <data name="SoftwareManager_071" xml:space="preserve">
+    <value>应用列表加载失败，请刷新重试</value>
+  </data>
+  <data name="SoftwareManager_072" xml:space="preserve">
+    <value>应用列表加载失败</value>
+  </data>
+  <data name="SoftwareManager_073" xml:space="preserve">
+    <value>刷新应用列表失败: {0}</value>
+  </data>
+  <data name="SoftwareManager_074" xml:space="preserve">
+    <value>应用名称/图标读取失败: {0}</value>
+  </data>
+  <data name="SoftwareManager_075" xml:space="preserve">
+    <value>操作进行中</value>
+  </data>
+  <data name="SoftwareManager_076" xml:space="preserve">
+    <value>请等待当前操作完成后重试。</value>
+  </data>
+  <data name="SoftwareManager_077" xml:space="preserve">
+    <value>操作失败（退出码 {0}）</value>
+  </data>
+  <data name="SoftwareManager_078" xml:space="preserve">
+    <value>不再提醒</value>
+  </data>
+  <data name="SoftwareManager_079" xml:space="preserve">
+    <value>继续</value>
+  </data>
+  <data name="SoftwareManager_080" xml:space="preserve">
+    <value>请先选择应用或等待前台包名加载。</value>
+  </data>
+  <data name="SoftwareManager_081" xml:space="preserve">
+    <value>目标应用：{0}
+目标设备：{1}
+
+{2}
+
+是否继续？</value>
+  </data>
+  <data name="SoftwareManager_082" xml:space="preserve">
+    <value>确认冻结应用</value>
+  </data>
+  <data name="SoftwareManager_083" xml:space="preserve">
+    <value>冻结会禁用应用，可能导致桌面图标消失或无法打开，部分设备需要更高权限。</value>
+  </data>
+  <data name="SoftwareManager_084" xml:space="preserve">
+    <value>确认强行停止</value>
+  </data>
+  <data name="SoftwareManager_085" xml:space="preserve">
+    <value>强行停止会立即结束应用进程，可能导致当前操作丢失或数据未保存。</value>
+  </data>
+  <data name="SoftwareManager_086" xml:space="preserve">
+    <value>确认卸载应用</value>
+  </data>
+  <data name="SoftwareManager_087" xml:space="preserve">
+    <value>卸载会删除该应用。如应用包含重要数据，请先备份。</value>
+  </data>
+  <data name="SoftwareManager_088" xml:space="preserve">
+    <value>确认保留数据卸载</value>
+  </data>
+  <data name="SoftwareManager_089" xml:space="preserve">
+    <value>该操作会卸载应用但尝试保留数据，并非所有系统都保证。可能导致后续安装异常或数据残留。</value>
+  </data>
+  <data name="SoftwareManager_090" xml:space="preserve">
+    <value>确认清除数据</value>
+  </data>
+  <data name="SoftwareManager_091" xml:space="preserve">
+    <value>清除数据会删除该应用的所有本地数据与登录状态。</value>
+  </data>
+  <data name="SoftwareManager_092" xml:space="preserve">
+    <value>需要解冻的包名</value>
+  </data>
+  <data name="SoftwareManager_093" xml:space="preserve">
+    <value>解冻</value>
+  </data>
+  <data name="SoftwareManager_094" xml:space="preserve">
+    <value>打开权限设置</value>
+  </data>
+  <data name="SoftwareManager_095" xml:space="preserve">
+    <value>未获取到当前 Activity。</value>
+  </data>
+  <data name="SoftwareManager_096" xml:space="preserve">
+    <value>即将禁用当前 Activity 组件：
+{0}
+
+该界面可能无法再打开，应用功能可能异常。恢复需要重新启用组件。</value>
+  </data>
+  <data name="SoftwareManager_097" xml:space="preserve">
+    <value>
+需要设备已 Root 且 su 可用，请注意设备上的授权提示。</value>
+  </data>
+  <data name="SoftwareManager_098" xml:space="preserve">
+    <value>禁用后将强行停止该应用。</value>
+  </data>
+  <data name="SoftwareManager_099" xml:space="preserve">
+    <value>
+
+是否继续？</value>
+  </data>
+  <data name="SoftwareManager_100" xml:space="preserve">
+    <value>确认禁用当前Activity</value>
+  </data>
+  <data name="SoftwareManager_101" xml:space="preserve">
+    <value>禁用Activity(root)</value>
+  </data>
+  <data name="SoftwareManager_102" xml:space="preserve">
+    <value>禁用Activity</value>
+  </data>
+  <data name="SoftwareManager_103" xml:space="preserve">
+    <value>安装APK ({0}/{1})</value>
+  </data>
+  <data name="SoftwareManager_104" xml:space="preserve">
+    <value>安装失败</value>
+  </data>
+  <data name="SoftwareManager_105" xml:space="preserve">
+    <value>安装失败: {0}</value>
+  </data>
+  <data name="SoftwareManager_106" xml:space="preserve">
+    <value>提取APK</value>
+  </data>
+  <data name="SoftwareManager_107" xml:space="preserve">
+    <value>设备状态已变化，已取消提取</value>
+  </data>
+  <data name="SoftwareManager_108" xml:space="preserve">
+    <value>未找到 {0} 的安装路径</value>
+  </data>
+  <data name="SoftwareManager_109" xml:space="preserve">
+    <value>提取失败</value>
+  </data>
+  <data name="SoftwareManager_110" xml:space="preserve">
+    <value>提取失败: {0}</value>
+  </data>
+  <data name="SoftwareManager_111" xml:space="preserve">
+    <value>读取组件失败: {0}</value>
+  </data>
+  <data name="SoftwareManager_112" xml:space="preserve">
+    <value>请输入组件或从列表选择。</value>
+  </data>
+  <data name="FileManager_001" xml:space="preserve">
+    <value>打开</value>
+  </data>
+  <data name="FileManager_002" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="FileManager_003" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="FileManager_004" xml:space="preserve">
+    <value>剪切</value>
+  </data>
+  <data name="FileManager_005" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
+  <data name="FileManager_006" xml:space="preserve">
+    <value>重命名</value>
+  </data>
+  <data name="FileManager_007" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="FileManager_008" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="FileManager_009" xml:space="preserve">
+    <value>导入文件</value>
+  </data>
+  <data name="FileManager_010" xml:space="preserve">
+    <value>导入文件夹</value>
+  </data>
+  <data name="FileManager_011" xml:space="preserve">
+    <value>文件管理</value>
+  </data>
+  <data name="FileManager_012" xml:space="preserve">
+    <value>浏览设备存储，在电脑与设备之间传输文件。</value>
+  </data>
+  <data name="FileManager_013" xml:space="preserve">
+    <value>文件浏览</value>
+  </data>
+  <data name="FileManager_014" xml:space="preserve">
+    <value>上级</value>
+  </data>
+  <data name="FileManager_015" xml:space="preserve">
+    <value>拉取选中项到本地</value>
+  </data>
+  <data name="FileManager_016" xml:space="preserve">
+    <value>传输进度</value>
+  </data>
+  <data name="FileManager_017" xml:space="preserve">
+    <value>准备就绪</value>
+  </data>
+  <data name="FileManager_018" xml:space="preserve">
+    <value>使用提示</value>
+  </data>
+  <data name="FileManager_019" xml:space="preserve">
+    <value>1. 右键文件或目录可以执行高级操作，如复制、移动、删除等。
+
+2. 双击文件夹可以进入该目录。
+
+3. 传输过程中请保持设备连接，等待进度提示完成。
+
+4. Android 11+ 设备部分目录(如 Android/data) 权限受限，可能无法访问。</value>
+  </data>
+  <data name="FileManager_020" xml:space="preserve">
+    <value>列目录失败：{0}</value>
+  </data>
+  <data name="FileManager_021" xml:space="preserve">
+    <value>共 {0} 项</value>
+  </data>
+  <data name="FileManager_022" xml:space="preserve">
+    <value>请选择文件</value>
+  </data>
+  <data name="FileManager_023" xml:space="preserve">
+    <value>暂不支持拉取文件夹</value>
+  </data>
+  <data name="FileManager_024" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="FileManager_025" xml:space="preserve">
+    <value>进行中...</value>
+  </data>
+  <data name="FileManager_026" xml:space="preserve">
+    <value>未知的传输模式</value>
+  </data>
+  <data name="FileManager_027" xml:space="preserve">
+    <value>操作已完成</value>
+  </data>
+  <data name="FileManager_028" xml:space="preserve">
+    <value>操作失败</value>
+  </data>
+  <data name="FileManager_029" xml:space="preserve">
+    <value>已复制</value>
+  </data>
+  <data name="FileManager_030" xml:space="preserve">
+    <value>已剪切</value>
+  </data>
+  <data name="FileManager_031" xml:space="preserve">
+    <value>剪贴板为空</value>
+  </data>
+  <data name="FileManager_032" xml:space="preserve">
+    <value>新名称：</value>
+  </data>
+  <data name="FileManager_035" xml:space="preserve">
+    <value>已删除</value>
+  </data>
+  <data name="FileManager_036" xml:space="preserve">
+    <value>删除失败</value>
+  </data>
+  <data name="FileManager_037" xml:space="preserve">
+    <value>名称：{0}</value>
+  </data>
+  <data name="FileManager_038" xml:space="preserve">
+    <value>路径：{0}</value>
+  </data>
+  <data name="FileManager_039" xml:space="preserve">
+    <value>类型：{0}</value>
+  </data>
+  <data name="FileManager_040" xml:space="preserve">
+    <value>目录</value>
+  </data>
+  <data name="FileManager_041" xml:space="preserve">
+    <value>大小：{0}</value>
+  </data>
+  <data name="FileManager_042" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="FileManager_063" xml:space="preserve">
+    <value>权限：</value>
+  </data>
+  <data name="FileManager_064" xml:space="preserve">
+    <value>所有者：</value>
+  </data>
+  <data name="FileManager_065" xml:space="preserve">
+    <value>修改时间：</value>
+  </data>
+  <data name="Backup_001" xml:space="preserve">
+    <value>基带备份</value>
+  </data>
+  <data name="Backup_002" xml:space="preserve">
+    <value>面向开发维护的分区备份，支持压缩与本地恢复脚本生成。</value>
+  </data>
+  <data name="Backup_003" xml:space="preserve">
+    <value>操作前请核对设备与分区，并确保保存位置空间充足。备份结束后请检查执行日志和输出文件；恢复脚本需自行核对后运行，请勿跨设备恢复基带分区。</value>
+  </data>
+  <data name="Backup_004" xml:space="preserve">
+    <value>保存目录</value>
+  </data>
+  <data name="Backup_005" xml:space="preserve">
+    <value>备份输出路径</value>
+  </data>
+  <data name="Backup_006" xml:space="preserve">
+    <value>选择本地保存目录</value>
+  </data>
+  <data name="Backup_007" xml:space="preserve">
+    <value>浏览</value>
+  </data>
+  <data name="Backup_008" xml:space="preserve">
+    <value>建议将重要备份另存一份，避免与待处理的固件文件混放。</value>
+  </data>
+  <data name="Backup_009" xml:space="preserve">
+    <value>备份设置</value>
+  </data>
+  <data name="Backup_010" xml:space="preserve">
+    <value>将备份分区打包为一个 ZIP 包</value>
+  </data>
+  <data name="Backup_011" xml:space="preserve">
+    <value>为备份分区生成本地恢复脚本（flash_all.bat/sh）</value>
+  </data>
+  <data name="Backup_012" xml:space="preserve">
+    <value>扫描并选择分区</value>
+  </data>
+  <data name="Backup_013" xml:space="preserve">
+    <value>开始备份</value>
+  </data>
+  <data name="Backup_014" xml:space="preserve">
+    <value>请连接设备至系统模式并开启调试</value>
+  </data>
+  <data name="Backup_015" xml:space="preserve">
+    <value>正在扫描分区...</value>
+  </data>
+  <data name="Backup_016" xml:space="preserve">
+    <value>扫描失败: {0}</value>
+  </data>
+  <data name="Backup_017" xml:space="preserve">
+    <value>扫描失败</value>
+  </data>
+  <data name="Backup_018" xml:space="preserve">
+    <value>扫描完成，共找到 {0} 个分区。</value>
+  </data>
+  <data name="Backup_019" xml:space="preserve">
+    <value>用户取消了分区选择。</value>
+  </data>
+  <data name="Backup_020" xml:space="preserve">
+    <value>已选择 {0} 个分区。</value>
+  </data>
+  <data name="Backup_021" xml:space="preserve">
+    <value>就绪</value>
+  </data>
+  <data name="Backup_022" xml:space="preserve">
+    <value>已选择 {0} 个分区，请点击“开始备份”</value>
+  </data>
+  <data name="Backup_023" xml:space="preserve">
+    <value>扫描流程异常: {0}</value>
+  </data>
+  <data name="Backup_024" xml:space="preserve">
+    <value>未获取到 Root 权限，无法读取分区表。</value>
+  </data>
+  <data name="Backup_025" xml:space="preserve">
+    <value>无法找到分区路径 (/dev/block/by-name 等)。</value>
+  </data>
+  <data name="Backup_026" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="Backup_027" xml:space="preserve">
+    <value>反选</value>
+  </data>
+  <data name="Backup_028" xml:space="preserve">
+    <value>谨慎选择的分区</value>
+  </data>
+  <data name="Backup_029" xml:space="preserve">
+    <value>包含 userdata、metadata、cache 等高体积或高风险分区</value>
+  </data>
+  <data name="Backup_030" xml:space="preserve">
+    <value>选择需要备份的分区</value>
+  </data>
+  <data name="Backup_031" xml:space="preserve">
+    <value>选择分区</value>
+  </data>
+  <data name="Backup_032" xml:space="preserve">
+    <value>请先扫描并选择至少一个分区</value>
+  </data>
+  <data name="Backup_033" xml:space="preserve">
+    <value>无效的保存路径</value>
+  </data>
+  <data name="Backup_034" xml:space="preserve">
+    <value>请确保设备连接且在线</value>
+  </data>
+  <data name="Backup_035" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="Backup_036" xml:space="preserve">
+    <value>您选择了 userdata 分区，该分区通常非常大且包含个人隐私数据。
+备份极易可能失败且耗时极长。
+确定要继续吗？</value>
+  </data>
+  <data name="Backup_037" xml:space="preserve">
+    <value>备份任务结束</value>
+  </data>
+  <data name="Backup_038" xml:space="preserve">
+    <value>未选择任何分区</value>
+  </data>
+  <data name="Backup_039" xml:space="preserve">
+    <value>初始化备份 ({0} 个分区)</value>
+  </data>
+  <data name="Backup_040" xml:space="preserve">
+    <value>找不到分区路径</value>
+  </data>
+  <data name="Backup_041" xml:space="preserve">
+    <value>无法找到分区路径</value>
+  </data>
+  <data name="Backup_042" xml:space="preserve">
+    <value>[{0}/{1}] 备份 {2}</value>
+  </data>
+  <data name="Backup_043" xml:space="preserve">
+    <value>DD失败: {0}</value>
+  </data>
+  <data name="Backup_044" xml:space="preserve">
+    <value>Pull失败: {0}</value>
+  </data>
+  <data name="Backup_045" xml:space="preserve">
+    <value>生成恢复脚本</value>
+  </data>
+  <data name="Backup_046" xml:space="preserve">
+    <value>压缩备份文件</value>
+  </data>
+  <data name="Backup_047" xml:space="preserve">
+    <value>7z 压缩失败，尝试使用内置 zip: {0}</value>
+  </data>
+  <data name="Backup_048" xml:space="preserve">
+    <value>备份完成！
+已保存至: {0}</value>
+  </data>
+  <data name="Misc_001" xml:space="preserve">
+    <value>杂项工具箱</value>
+  </data>
+  <data name="Misc_002" xml:space="preserve">
+    <value>常用刷机维护与开发调试工具，选择工具进入独立操作页。</value>
+  </data>
+  <data name="Misc_003" xml:space="preserve">
+    <value>分区刷入与固件处理</value>
+  </data>
+  <data name="Misc_004" xml:space="preserve">
+    <value>高级操作</value>
+  </data>
+  <data name="Misc_005" xml:space="preserve">
+    <value>修复、模块与开发维护</value>
+  </data>
+  <data name="Misc_006" xml:space="preserve">
+    <value>模拟控制</value>
+  </data>
+  <data name="Misc_007" xml:space="preserve">
+    <value>显示、系统设置与按键模拟</value>
+  </data>
+  <data name="Misc_008" xml:space="preserve">
+    <value>单分区刷入</value>
+  </data>
+  <data name="Misc_009" xml:space="preserve">
+    <value>选择镜像并刷入指定分区（可选槽位 / 模式）</value>
+  </data>
+  <data name="Misc_010" xml:space="preserve">
+    <value>Payload.bin 处理</value>
+  </data>
+  <data name="Misc_011" xml:space="preserve">
+    <value>OFP 处理</value>
+  </data>
+  <data name="Misc_012" xml:space="preserve">
+    <value>启动异常修复</value>
+  </data>
+  <data name="Misc_013" xml:space="preserve">
+    <value>移除异常模块配置，恢复因模块冲突导致的无法启动</value>
+  </data>
+  <data name="Misc_014" xml:space="preserve">
+    <value>模块恢复管理</value>
+  </data>
+  <data name="Misc_015" xml:space="preserve">
+    <value>管理已安装模块：列表/启用/禁用/备份/移除/安装/批量安装（需 Root 环境）</value>
+  </data>
+  <data name="Misc_016" xml:space="preserve">
+    <value>ADB 开发终端</value>
+  </data>
+  <data name="Misc_017" xml:space="preserve">
+    <value>打开原生终端窗口运行 ADB，适用于开发与维护操作</value>
+  </data>
+  <data name="Misc_018" xml:space="preserve">
+    <value>运行开发维护脚本</value>
+  </data>
+  <data name="Misc_019" xml:space="preserve">
+    <value>选择电脑上的 .sh 脚本，推送到手机并在终端交互执行</value>
+  </data>
+  <data name="Misc_020" xml:space="preserve">
+    <value>刷机配置文件检测</value>
+  </data>
+  <data name="Misc_021" xml:space="preserve">
+    <value>检测配置文件语法错误，显示行号、列号和错误信息</value>
+  </data>
+  <data name="Misc_022" xml:space="preserve">
+    <value>显示属性修改</value>
+  </data>
+  <data name="Misc_023" xml:space="preserve">
+    <value>分辨率 / 密度DPI / 最小宽度DP</value>
+  </data>
+  <data name="Misc_024" xml:space="preserve">
+    <value>电池状态模拟</value>
+  </data>
+  <data name="Misc_025" xml:space="preserve">
+    <value>电量 / 温度 / 充电类型</value>
+  </data>
+  <data name="Misc_026" xml:space="preserve">
+    <value>锁屏时间修改</value>
+  </data>
+  <data name="Misc_027" xml:space="preserve">
+    <value>修改 screen_off_timeout</value>
+  </data>
+  <data name="Misc_028" xml:space="preserve">
+    <value>隐藏状态栏图标</value>
+  </data>
+  <data name="Misc_029" xml:space="preserve">
+    <value>时间/蓝牙/定位/WiFi/电池等</value>
+  </data>
+  <data name="Misc_030" xml:space="preserve">
+    <value>字体调节</value>
+  </data>
+  <data name="Misc_031" xml:space="preserve">
+    <value>字体缩放（最大 5 倍）</value>
+  </data>
+  <data name="Misc_032" xml:space="preserve">
+    <value>动画速度</value>
+  </data>
+  <data name="Misc_033" xml:space="preserve">
+    <value>窗口/过渡/动画时长</value>
+  </data>
+  <data name="Misc_034" xml:space="preserve">
+    <value>一键关闭辅助功能</value>
+  </data>
+  <data name="Misc_035" xml:space="preserve">
+    <value>TalkBack/随选朗读/放大/反色/色彩校正/高对比度</value>
+  </data>
+  <data name="Misc_036" xml:space="preserve">
+    <value>模拟按键</value>
+  </data>
+  <data name="Misc_037" xml:space="preserve">
+    <value>音量/锁屏/返回/主页/数据流量等</value>
+  </data>
+  <data name="DeviceBar_001" xml:space="preserve">
+    <value>通过 ADB / Fastboot 连接手机</value>
+  </data>
+  <data name="DeviceBar_002" xml:space="preserve">
+    <value>刷新设备状态</value>
+  </data>
+  <data name="DeviceBar_003" xml:space="preserve">
+    <value>重启设备</value>
+  </data>
+  <data name="DeviceBar_004" xml:space="preserve">
+    <value>未发现已连接设备</value>
+  </data>
+  <data name="DeviceBar_005" xml:space="preserve">
+    <value>重启到系统</value>
+  </data>
+  <data name="DeviceBar_006" xml:space="preserve">
+    <value>重启到 Recovery</value>
+  </data>
+  <data name="DeviceBar_007" xml:space="preserve">
+    <value>重启到 Bootloader</value>
+  </data>
+  <data name="DeviceBar_008" xml:space="preserve">
+    <value>重启到 FastbootD</value>
+  </data>
+  <data name="DeviceBar_009" xml:space="preserve">
+    <value>重启到 9008 (EDL)</value>
+  </data>
+  <data name="LogView_001" xml:space="preserve">
+    <value>暂无日志</value>
+  </data>
+  <data name="Flash_001" xml:space="preserve"><value>刷机中心</value></data>
+  <data name="Flash_002" xml:space="preserve"><value>智能一键刷机</value></data>
+  <data name="Flash_003" xml:space="preserve"><value>刷机涉及分区重写与引导槽切换，操作不可逆。请务必确认固件与机型匹配、手机已进入 Bootloader 且连接稳定。刷机过程中的全部原始输出会完整保留，便于出错时核对。</value></data>
+  <data name="Flash_004" xml:space="preserve"><value>刷机来源</value></data>
+  <data name="Flash_005" xml:space="preserve"><value>手动选择散包刷机</value></data>
+  <data name="Flash_006" xml:space="preserve"><value>选择压缩包刷机 (.zip/.7z)</value></data>
+  <data name="Flash_007" xml:space="preserve"><value>压缩包模式</value></data>
+  <data name="Flash_008" xml:space="preserve"><value>官方包（OTA Zip）模式</value></data>
+  <data name="Flash_009" xml:space="preserve"><value>旧版移植包7z/zip（C16,含0107之前）</value></data>
+  <data name="Flash_010" xml:space="preserve"><value>新版移植包7z（C16,0107之后）</value></data>
+  <data name="Flash_011" xml:space="preserve"><value>ColorOS17移植包(.7z)</value></data>
+  <data name="Flash_012" xml:space="preserve"><value>选择刷机包文件夹路径</value></data>
+  <data name="Flash_013" xml:space="preserve"><value>选择目录</value></data>
+  <data name="Flash_014" xml:space="preserve"><value>设备状态</value></data>
+  <data name="Flash_015" xml:space="preserve"><value>设备：未连接</value></data>
+  <data name="Flash_016" xml:space="preserve"><value>模式：未知</value></data>
+  <data name="Flash_017" xml:space="preserve"><value>刷新状态</value></data>
+  <data name="Flash_018" xml:space="preserve"><value>选项</value></data>
+  <data name="Flash_019" xml:space="preserve"><value>清除数据(出厂重置)</value></data>
+  <data name="Flash_020" xml:space="preserve"><value>保留ROOT权限</value></data>
+  <data name="Flash_021" xml:space="preserve"><value>勾选“保留ROOT权限”将跳过 boot.img 刷入。清除数据会擦除 userdata 与 metadata。</value></data>
+  <data name="Flash_022" xml:space="preserve"><value>操作</value></data>
+  <data name="Flash_023" xml:space="preserve"><value>加载刷机包</value></data>
+  <data name="Flash_024" xml:space="preserve"><value>开始刷机</value></data>
+  <data name="Flash_025" xml:space="preserve"><value>取消</value></data>
+  <data name="Flash_026" xml:space="preserve"><value>保存日志</value></data>
+  <data name="Flash_027" xml:space="preserve"><value>打开日志目录</value></data>
+  <data name="Flash_028" xml:space="preserve"><value>日志输出</value></data>
+  <data name="Flash_030" xml:space="preserve"><value>选择 .zip 或 .7z 压缩包</value></data>
+  <data name="Flash_031" xml:space="preserve"><value>选择文件</value></data>
+  <data name="Flash_032" xml:space="preserve"><value>提示</value></data>
+  <data name="Flash_033" xml:space="preserve"><value>请先选择路径。</value></data>
+  <data name="Flash_034" xml:space="preserve"><value>选择的路径不是有效的文件夹。</value></data>
+  <data name="Flash_035" xml:space="preserve"><value>选择的路径不是有效的文件。</value></data>
+  <data name="Flash_036" xml:space="preserve"><value>刷机环境异常</value></data>
+  <data name="Flash_037" xml:space="preserve"><value>当前不支持刷机操作，请确认你已经关闭了远程控制软件？</value></data>
+  <data name="Flash_038" xml:space="preserve"><value>加载失败</value></data>
+  <data name="Flash_039" xml:space="preserve"><value>未找到可用镜像或校验未通过，请查看日志。</value></data>
+  <data name="Flash_040" xml:space="preserve"><value>镜像已就绪，可以开始刷机。</value></data>
+  <data name="Flash_041" xml:space="preserve"><value>加载成功</value></data>
+  <data name="Flash_042" xml:space="preserve"><value>加载成功，可以进行刷机</value></data>
+  <data name="Flash_043" xml:space="preserve"><value>镜像数量校验</value></data>
+  <data name="Flash_044" xml:space="preserve"><value>扫描到 {0} 个镜像文件。
+通常应为 46 或 48 个。
+是否继续加载？</value></data>
+  <data name="Flash_045" xml:space="preserve"><value>请先点击『加载刷机包』，加载成功后再开始刷机。</value></data>
+  <data name="Flash_046" xml:space="preserve"><value>临时工作目录</value></data>
+  <data name="Flash_047" xml:space="preserve"><value>确认刷机</value></data>
+  <data name="Flash_048" xml:space="preserve"><value>将在{0}中执行刷机。
+计划执行 {1} 个步骤。
+
+请确认手机已进入 Bootloader 模式且连接正常。
+是否开始？</value></data>
+  <data name="Flash_049" xml:space="preserve"><value>取消刷机</value></data>
+  <data name="Flash_050" xml:space="preserve"><value>确定要取消当前刷机任务吗？将立即终止 fastboot 进程。</value></data>
+  <data name="Flash_051" xml:space="preserve"><value>当前没有可保存的日志。</value></data>
+  <data name="Flash_052" xml:space="preserve"><value>日志已保存：</value></data>
+  <data name="Flash_053" xml:space="preserve"><value>保存失败</value></data>
+  <data name="Flash_054" xml:space="preserve"><value>确定</value></data>
+  <data name="Flash_055" xml:space="preserve"><value>开始</value></data>
+  <data name="Flash_056" xml:space="preserve"><value>取消</value></data>
+  <data name="Flash_057" xml:space="preserve"><value>设备未就绪</value></data>
+  <data name="Flash_058" xml:space="preserve"><value>未检测到处于 fastboot / fastbootd 模式的设备。
+请确认手机已进入 Bootloader 模式并连接正常，然后重新点击开始刷机。</value></data>
+</root>

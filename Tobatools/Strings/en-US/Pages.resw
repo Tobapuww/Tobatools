@@ -1,0 +1,1335 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <data name="Dashboard_001" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Dashboard_002" xml:space="preserve">
+    <value>Device connection, resource usage, and common actions.</value>
+  </data>
+  <data name="Dashboard_003" xml:space="preserve">
+    <value>Current device</value>
+  </data>
+  <data name="Dashboard_004" xml:space="preserve">
+    <value>Detecting devices…</value>
+  </data>
+  <data name="Dashboard_005" xml:space="preserve">
+    <value>Reading connection status</value>
+  </data>
+  <data name="Dashboard_006" xml:space="preserve">
+    <value>Serial number: —</value>
+  </data>
+  <data name="Dashboard_007" xml:space="preserve">
+    <value>Wireless connection</value>
+  </data>
+  <data name="Dashboard_008" xml:space="preserve">
+    <value>Refresh status</value>
+  </data>
+  <data name="Dashboard_009" xml:space="preserve">
+    <value>Battery level</value>
+  </data>
+  <data name="Dashboard_010" xml:space="preserve">
+    <value>Waiting for device data</value>
+  </data>
+  <data name="Dashboard_011" xml:space="preserve">
+    <value>Storage</value>
+  </data>
+  <data name="Dashboard_012" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="Dashboard_013" xml:space="preserve">
+    <value>Hardware specifications</value>
+  </data>
+  <data name="Dashboard_014" xml:space="preserve">
+    <value>System information</value>
+  </data>
+  <data name="Dashboard_015" xml:space="preserve">
+    <value>Quick actions</value>
+  </data>
+  <data name="Dashboard_016" xml:space="preserve">
+    <value>Device information</value>
+  </data>
+  <data name="Dashboard_017" xml:space="preserve">
+    <value>Currently detected devices</value>
+  </data>
+  <data name="Dashboard_018" xml:space="preserve">
+    <value>Detect again</value>
+  </data>
+  <data name="Dashboard_019" xml:space="preserve">
+    <value>Power menu</value>
+  </data>
+  <data name="Dashboard_020" xml:space="preserve">
+    <value>Reboot target mode</value>
+  </data>
+  <data name="Dashboard_021" xml:space="preserve">
+    <value>Reboot</value>
+  </data>
+  <data name="Dashboard_022" xml:space="preserve">
+    <value>Common tools</value>
+  </data>
+  <data name="Dashboard_023" xml:space="preserve">
+    <value>Select a common tool</value>
+  </data>
+  <data name="Dashboard_024" xml:space="preserve">
+    <value>Run tool</value>
+  </data>
+  <data name="Dashboard_025" xml:space="preserve">
+    <value>Reboot system</value>
+  </data>
+  <data name="Dashboard_026" xml:space="preserve">
+    <value>Wireless debugging</value>
+  </data>
+  <data name="Dashboard_027" xml:space="preserve">
+    <value>Restart ADB service</value>
+  </data>
+  <data name="Dashboard_028" xml:space="preserve">
+    <value>Device Manager</value>
+  </data>
+  <data name="Dashboard_029" xml:space="preserve">
+    <value>Brand</value>
+  </data>
+  <data name="Dashboard_030" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Dashboard_031" xml:space="preserve">
+    <value>CPU</value>
+  </data>
+  <data name="Dashboard_032" xml:space="preserve">
+    <value>Screen resolution</value>
+  </data>
+  <data name="Dashboard_033" xml:space="preserve">
+    <value>Screen density (DPI)</value>
+  </data>
+  <data name="Dashboard_034" xml:space="preserve">
+    <value>Storage type</value>
+  </data>
+  <data name="Dashboard_035" xml:space="preserve">
+    <value>Battery health</value>
+  </data>
+  <data name="Dashboard_036" xml:space="preserve">
+    <value>Battery capacity</value>
+  </data>
+  <data name="Dashboard_037" xml:space="preserve">
+    <value>Android version</value>
+  </data>
+  <data name="Dashboard_038" xml:space="preserve">
+    <value>SDK version</value>
+  </data>
+  <data name="Dashboard_039" xml:space="preserve">
+    <value>Kernel version</value>
+  </data>
+  <data name="Dashboard_040" xml:space="preserve">
+    <value>VNDK version</value>
+  </data>
+  <data name="Dashboard_041" xml:space="preserve">
+    <value>Bootloader lock</value>
+  </data>
+  <data name="Dashboard_042" xml:space="preserve">
+    <value>Root access</value>
+  </data>
+  <data name="Dashboard_043" xml:space="preserve">
+    <value>Current A/B slot</value>
+  </data>
+  <data name="Dashboard_044" xml:space="preserve">
+    <value>Uptime</value>
+  </data>
+  <data name="Dashboard_045" xml:space="preserve">
+    <value>Connected device</value>
+  </data>
+  <data name="Dashboard_046" xml:space="preserve">
+    <value>Fastboot device</value>
+  </data>
+  <data name="Dashboard_047" xml:space="preserve">
+    <value>Device in port mode</value>
+  </data>
+  <data name="Dashboard_048" xml:space="preserve">
+    <value>Device awaiting authorization</value>
+  </data>
+  <data name="Dashboard_049" xml:space="preserve">
+    <value>Device is offline</value>
+  </data>
+  <data name="Dashboard_050" xml:space="preserve">
+    <value>Device detection failed</value>
+  </data>
+  <data name="Dashboard_051" xml:space="preserve">
+    <value>No device connected</value>
+  </data>
+  <data name="Dashboard_052" xml:space="preserve">
+    <value>Status: </value>
+  </data>
+  <data name="Dashboard_053" xml:space="preserve">
+    <value>Serial number: </value>
+  </data>
+  <data name="Dashboard_054" xml:space="preserve">
+    <value>Data unavailable in this mode</value>
+  </data>
+  <data name="Dashboard_055" xml:space="preserve">
+    <value>Waiting for device connection</value>
+  </data>
+  <data name="Dashboard_056" xml:space="preserve">
+    <value>Remaining charge</value>
+  </data>
+  <data name="Dashboard_057" xml:space="preserve">
+    <value>Current battery level</value>
+  </data>
+  <data name="Dashboard_058" xml:space="preserve">
+    <value>Health {0}%</value>
+  </data>
+  <data name="Dashboard_059" xml:space="preserve">
+    <value>Used storage</value>
+  </data>
+  <data name="Dashboard_060" xml:space="preserve">
+    <value>Used {0} / Total {1}</value>
+  </data>
+  <data name="Dashboard_061" xml:space="preserve">
+    <value>Used memory</value>
+  </data>
+  <data name="Dashboard_062" xml:space="preserve">
+    <value>Unlocked</value>
+  </data>
+  <data name="Dashboard_063" xml:space="preserve">
+    <value>Locked</value>
+  </data>
+  <data name="Dashboard_064" xml:space="preserve">
+    <value>No devices detected</value>
+  </data>
+  <data name="Dashboard_065" xml:space="preserve">
+    <value>Reboot command sent</value>
+  </data>
+  <data name="Dashboard_066" xml:space="preserve">
+    <value>Reboot failed</value>
+  </data>
+  <data name="Dashboard_067" xml:space="preserve">
+    <value>ADB restarted</value>
+  </data>
+  <data name="Dashboard_068" xml:space="preserve">
+    <value>The ADB server has restarted.</value>
+  </data>
+  <data name="Dashboard_069" xml:space="preserve">
+    <value>Cannot open Device Manager</value>
+  </data>
+  <data name="Dashboard_070" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Dashboard_082" xml:space="preserve">
+    <value>ADB restart failed</value>
+  </data>
+  <data name="Dashboard_083" xml:space="preserve">
+    <value>Notice</value>
+  </data>
+  <data name="Dashboard_084" xml:space="preserve">
+    <value>A reboot is already in progress. Please wait.</value>
+  </data>
+  <data name="Dashboard_086" xml:space="preserve">
+    <value>Device connected</value>
+  </data>
+  <data name="Dashboard_087" xml:space="preserve">
+    <value>Current mode: {0}</value>
+  </data>
+  <data name="Dashboard_088" xml:space="preserve">
+    <value>Device mode changed</value>
+  </data>
+  <data name="Dashboard_089" xml:space="preserve">
+    <value>Device unauthorized</value>
+  </data>
+  <data name="Dashboard_090" xml:space="preserve">
+    <value>Please authorize USB debugging on the phone</value>
+  </data>
+  <data name="Dashboard_091" xml:space="preserve">
+    <value>Device disconnected</value>
+  </data>
+  <data name="Dashboard_092" xml:space="preserve">
+    <value>No connected device found</value>
+  </data>
+  <data name="Dashboard_093" xml:space="preserve">
+    <value>Specifications</value>
+  </data>
+  <data name="Dashboard_094" xml:space="preserve">
+    <value>Status parameters</value>
+  </data>
+  <data name="Dashboard_095" xml:space="preserve">
+    <value>Show more parameters</value>
+  </data>
+  <data name="Dashboard_096" xml:space="preserve">
+    <value>Show fewer parameters</value>
+  </data>
+  <data name="Dashboard_097" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Dashboard_098" xml:space="preserve">
+    <value>Device codename</value>
+  </data>
+  <data name="Dashboard_099" xml:space="preserve">
+    <value>Product name</value>
+  </data>
+  <data name="Dashboard_100" xml:space="preserve">
+    <value>Baseband version</value>
+  </data>
+  <data name="Dashboard_101" xml:space="preserve">
+    <value>Bootloader version</value>
+  </data>
+  <data name="Root_020" xml:space="preserve">
+    <value>Execution log</value>
+  </data>
+  <data name="Root_022" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Root_030" xml:space="preserve">
+    <value>Notice</value>
+  </data>
+  <data name="Root_033" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Root_037" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="ImageFactory_001" xml:space="preserve">
+    <value>Image factory</value>
+  </data>
+  <data name="ImageFactory_002" xml:space="preserve">
+    <value>Process Android firmware and partition images. Choose unpacking, packing, or conversion tools by file type.</value>
+  </data>
+  <data name="ImageFactory_003" xml:space="preserve">
+    <value>Firmware sources</value>
+  </data>
+  <data name="ImageFactory_004" xml:space="preserve">
+    <value>Extract partition files from firmware</value>
+  </data>
+  <data name="ImageFactory_005" xml:space="preserve">
+    <value>Dynamic partitions / Super</value>
+  </data>
+  <data name="ImageFactory_006" xml:space="preserve">
+    <value>Split and combine dynamic partition images</value>
+  </data>
+  <data name="ImageFactory_007" xml:space="preserve">
+    <value>Device tree / DTBO</value>
+  </data>
+  <data name="ImageFactory_008" xml:space="preserve">
+    <value>Unpack, compile, and pack device trees</value>
+  </data>
+  <data name="ImageFactory_009" xml:space="preserve">
+    <value>File systems / Partition images</value>
+  </data>
+  <data name="ImageFactory_010" xml:space="preserve">
+    <value>Process ext4 and erofs file systems</value>
+  </data>
+  <data name="ImageFactory_011" xml:space="preserve">
+    <value>Boot images</value>
+  </data>
+  <data name="ImageFactory_012" xml:space="preserve">
+    <value>Unpack and repack boot images</value>
+  </data>
+  <data name="ImageFactory_013" xml:space="preserve">
+    <value>Incremental OTA packages (DAT/BR)</value>
+  </data>
+  <data name="ImageFactory_014" xml:space="preserve">
+    <value>Convert between DAT/BR and IMG</value>
+  </data>
+  <data name="ImageFactory_015" xml:space="preserve">
+    <value>Unpack Payload.bin</value>
+  </data>
+  <data name="ImageFactory_016" xml:space="preserve">
+    <value>Extract payload.bin online or locally, including all or selected partitions</value>
+  </data>
+  <data name="ImageFactory_017" xml:space="preserve">
+    <value>Unpack OFP</value>
+  </data>
+  <data name="ImageFactory_018" xml:space="preserve">
+    <value>Decrypt and extract .ofp firmware</value>
+  </data>
+  <data name="ImageFactory_019" xml:space="preserve">
+    <value>Unpack / Pack Super</value>
+  </data>
+  <data name="ImageFactory_020" xml:space="preserve">
+    <value>Unpack super.img or pack partition images into it</value>
+  </data>
+  <data name="ImageFactory_021" xml:space="preserve">
+    <value>Unpack / Pack DTBO</value>
+  </data>
+  <data name="ImageFactory_022" xml:space="preserve">
+    <value>Unpack and decompile, or recompile DTS and pack</value>
+  </data>
+  <data name="ImageFactory_023" xml:space="preserve">
+    <value>Unpack / Pack partitions (ext4/erofs)</value>
+  </data>
+  <data name="ImageFactory_024" xml:space="preserve">
+    <value>Unpack or pack ext4 / erofs partition images</value>
+  </data>
+  <data name="ImageFactory_025" xml:space="preserve">
+    <value>Unpack / Pack Boot</value>
+  </data>
+  <data name="ImageFactory_026" xml:space="preserve">
+    <value>Unpack boot images or repack with magiskboot</value>
+  </data>
+  <data name="ImageFactory_027" xml:space="preserve">
+    <value>DAT/BR conversion</value>
+  </data>
+  <data name="ImageFactory_028" xml:space="preserve">
+    <value>Convert between legacy DAT/BR and IMG formats</value>
+  </data>
+  <data name="Scrcpy_001" xml:space="preserve">
+    <value>Screen mirroring</value>
+  </data>
+  <data name="Scrcpy_002" xml:space="preserve">
+    <value>Configure scrcpy video and controls to use your device in a separate window.</value>
+  </data>
+  <data name="Scrcpy_003" xml:space="preserve">
+    <value>Mirroring settings</value>
+  </data>
+  <data name="Scrcpy_004" xml:space="preserve">
+    <value>Adjust video quality and latency to suit your connection.</value>
+  </data>
+  <data name="Scrcpy_005" xml:space="preserve">
+    <value>Resolution</value>
+  </data>
+  <data name="Scrcpy_006" xml:space="preserve">
+    <value>Frame rate</value>
+  </data>
+  <data name="Scrcpy_007" xml:space="preserve">
+    <value>Bit rate</value>
+  </data>
+  <data name="Scrcpy_008" xml:space="preserve">
+    <value>Video buffer</value>
+  </data>
+  <data name="Scrcpy_009" xml:space="preserve">
+    <value>Audio buffer</value>
+  </data>
+  <data name="Scrcpy_010" xml:space="preserve">
+    <value>Enable audio</value>
+  </data>
+  <data name="Scrcpy_011" xml:space="preserve">
+    <value>Window and interaction</value>
+  </data>
+  <data name="Scrcpy_012" xml:space="preserve">
+    <value>Start fullscreen</value>
+  </data>
+  <data name="Scrcpy_013" xml:space="preserve">
+    <value>Borderless</value>
+  </data>
+  <data name="Scrcpy_014" xml:space="preserve">
+    <value>Always on top</value>
+  </data>
+  <data name="Scrcpy_015" xml:space="preserve">
+    <value>Disable screensaver</value>
+  </data>
+  <data name="Scrcpy_016" xml:space="preserve">
+    <value>Stay awake</value>
+  </data>
+  <data name="Scrcpy_017" xml:space="preserve">
+    <value>Mirror with screen off</value>
+  </data>
+  <data name="Scrcpy_018" xml:space="preserve">
+    <value>Show touches</value>
+  </data>
+  <data name="Scrcpy_019" xml:space="preserve">
+    <value>Clipboard sync</value>
+  </data>
+  <data name="Scrcpy_020" xml:space="preserve">
+    <value>Legacy paste</value>
+  </data>
+  <data name="Scrcpy_021" xml:space="preserve">
+    <value>Forward all clicks</value>
+  </data>
+  <data name="Scrcpy_022" xml:space="preserve">
+    <value>Print FPS</value>
+  </data>
+  <data name="Scrcpy_023" xml:space="preserve">
+    <value>Controls</value>
+  </data>
+  <data name="Scrcpy_024" xml:space="preserve">
+    <value>Start mirroring</value>
+  </data>
+  <data name="Scrcpy_025" xml:space="preserve">
+    <value>Stop mirroring</value>
+  </data>
+  <data name="Scrcpy_026" xml:space="preserve">
+    <value>Instructions</value>
+  </data>
+  <data name="Scrcpy_027" xml:space="preserve">
+    <value>Connect a device</value>
+  </data>
+  <data name="Scrcpy_028" xml:space="preserve">
+    <value>A wired connection is recommended. Before wireless mirroring, use “Wireless connection” in the top device bar. If multiple devices are connected, you will be asked to select one when starting.</value>
+  </data>
+  <data name="Scrcpy_029" xml:space="preserve">
+    <value>Video and audio</value>
+  </data>
+  <data name="Scrcpy_030" xml:space="preserve">
+    <value>Mirroring uses scrcpy in a separate window without blocking this interface. Audio forwarding requires Android 11 or later.</value>
+  </data>
+  <data name="Scrcpy_031" xml:space="preserve">
+    <value>If the screen is black, try lowering the resolution or disabling audio/video buffering.</value>
+  </data>
+  <data name="Scrcpy_032" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Scrcpy_033" xml:space="preserve">
+    <value>Screen mirroring is already running.</value>
+  </data>
+  <data name="Scrcpy_034" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Scrcpy_035" xml:space="preserve">
+    <value>scrcpy started</value>
+  </data>
+  <data name="Scrcpy_036" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Scrcpy_037" xml:space="preserve">
+    <value>scrcpy executable not found</value>
+  </data>
+  <data name="Scrcpy_038" xml:space="preserve">
+    <value>Failed to start scrcpy: {0}</value>
+  </data>
+  <data name="Scrcpy_039" xml:space="preserve">
+    <value>Stop signal sent</value>
+  </data>
+  <data name="Scrcpy_040" xml:space="preserve">
+    <value>Failed to stop: {0}</value>
+  </data>
+  <data name="Scrcpy_041" xml:space="preserve">
+    <value>No available ADB devices detected.</value>
+  </data>
+  <data name="Scrcpy_042" xml:space="preserve">
+    <value>Multiple devices detected. Select a device to mirror:</value>
+  </data>
+  <data name="Scrcpy_043" xml:space="preserve">
+    <value>Select mirroring device</value>
+  </data>
+  <data name="Scrcpy_044" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SoftwareManager_001" xml:space="preserve">
+    <value>App manager</value>
+  </data>
+  <data name="SoftwareManager_002" xml:space="preserve">
+    <value>Browse installed apps, install or export APKs, and manage apps and components.</value>
+  </data>
+  <data name="SoftwareManager_003" xml:space="preserve">
+    <value>Installed apps</value>
+  </data>
+  <data name="SoftwareManager_004" xml:space="preserve">
+    <value>Search by app or package name</value>
+  </data>
+  <data name="SoftwareManager_005" xml:space="preserve">
+    <value>Search apps</value>
+  </data>
+  <data name="SoftwareManager_006" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="SoftwareManager_007" xml:space="preserve">
+    <value>Include system apps</value>
+  </data>
+  <data name="SoftwareManager_008" xml:space="preserve">
+    <value>Clear selection</value>
+  </data>
+  <data name="SoftwareManager_009" xml:space="preserve">
+    <value>Installed app list</value>
+  </data>
+  <data name="SoftwareManager_010" xml:space="preserve">
+    <value>Waiting to load app list</value>
+  </data>
+  <data name="SoftwareManager_011" xml:space="preserve">
+    <value>Device and foreground app</value>
+  </data>
+  <data name="SoftwareManager_012" xml:space="preserve">
+    <value>Auto-refresh foreground status</value>
+  </data>
+  <data name="SoftwareManager_013" xml:space="preserve">
+    <value>Refresh now</value>
+  </data>
+  <data name="SoftwareManager_014" xml:space="preserve">
+    <value>Detecting…</value>
+  </data>
+  <data name="SoftwareManager_015" xml:space="preserve">
+    <value>Selected package</value>
+  </data>
+  <data name="SoftwareManager_016" xml:space="preserve">
+    <value>Not selected</value>
+  </data>
+  <data name="SoftwareManager_017" xml:space="preserve">
+    <value>Foreground package</value>
+  </data>
+  <data name="SoftwareManager_018" xml:space="preserve">
+    <value>Foreground Activity</value>
+  </data>
+  <data name="SoftwareManager_019" xml:space="preserve">
+    <value>App actions</value>
+  </data>
+  <data name="SoftwareManager_020" xml:space="preserve">
+    <value>App action category</value>
+  </data>
+  <data name="SoftwareManager_021" xml:space="preserve">
+    <value>Select APK files on your computer to install on the current device.</value>
+  </data>
+  <data name="SoftwareManager_022" xml:space="preserve">
+    <value>Replace existing app</value>
+  </data>
+  <data name="SoftwareManager_023" xml:space="preserve">
+    <value>Allow downgrade</value>
+  </data>
+  <data name="SoftwareManager_024" xml:space="preserve">
+    <value>Install local APK</value>
+  </data>
+  <data name="SoftwareManager_025" xml:space="preserve">
+    <value>Actions use the selected app, or the foreground app if none is selected. Back up data before uninstalling or clearing it.</value>
+  </data>
+  <data name="SoftwareManager_026" xml:space="preserve">
+    <value>Freeze app</value>
+  </data>
+  <data name="SoftwareManager_027" xml:space="preserve">
+    <value>Unfreeze app</value>
+  </data>
+  <data name="SoftwareManager_028" xml:space="preserve">
+    <value>Force stop</value>
+  </data>
+  <data name="SoftwareManager_029" xml:space="preserve">
+    <value>Permission settings</value>
+  </data>
+  <data name="SoftwareManager_030" xml:space="preserve">
+    <value>Export APK</value>
+  </data>
+  <data name="SoftwareManager_031" xml:space="preserve">
+    <value>Data and uninstall</value>
+  </data>
+  <data name="SoftwareManager_032" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="SoftwareManager_033" xml:space="preserve">
+    <value>Uninstall, keep data</value>
+  </data>
+  <data name="SoftwareManager_034" xml:space="preserve">
+    <value>Clear data</value>
+  </data>
+  <data name="SoftwareManager_035" xml:space="preserve">
+    <value>Disable foreground Activity</value>
+  </data>
+  <data name="SoftwareManager_036" xml:space="preserve">
+    <value>Use Root</value>
+  </data>
+  <data name="SoftwareManager_037" xml:space="preserve">
+    <value>Operation history</value>
+  </data>
+  <data name="SoftwareManager_038" xml:space="preserve">
+    <value>View and restore disabled app components.</value>
+  </data>
+  <data name="SoftwareManager_039" xml:space="preserve">
+    <value>Refresh component list</value>
+  </data>
+  <data name="SoftwareManager_040" xml:space="preserve">
+    <value>Disabled components</value>
+  </data>
+  <data name="SoftwareManager_041" xml:space="preserve">
+    <value>Component name</value>
+  </data>
+  <data name="SoftwareManager_042" xml:space="preserve">
+    <value>Package/class name, or select above</value>
+  </data>
+  <data name="SoftwareManager_043" xml:space="preserve">
+    <value>Restore component</value>
+  </data>
+  <data name="SoftwareManager_044" xml:space="preserve">
+    <value>Operation log</value>
+  </data>
+  <data name="SoftwareManager_045" xml:space="preserve">
+    <value>Install APK</value>
+  </data>
+  <data name="SoftwareManager_046" xml:space="preserve">
+    <value>Component manager</value>
+  </data>
+  <data name="SoftwareManager_047" xml:space="preserve">
+    <value>Detecting devices</value>
+  </data>
+  <data name="SoftwareManager_048" xml:space="preserve">
+    <value>Apps will load after the device list is available.</value>
+  </data>
+  <data name="SoftwareManager_049" xml:space="preserve">
+    <value>Device status changed</value>
+  </data>
+  <data name="SoftwareManager_050" xml:space="preserve">
+    <value>Detecting devices again. Please wait.</value>
+  </data>
+  <data name="SoftwareManager_051" xml:space="preserve">
+    <value>Device unavailable</value>
+  </data>
+  <data name="SoftwareManager_052" xml:space="preserve">
+    <value>Wait for detection to finish. Keep only one authorized device connected and booted into Android.</value>
+  </data>
+  <data name="SoftwareManager_053" xml:space="preserve">
+    <value>Detection failed</value>
+  </data>
+  <data name="SoftwareManager_054" xml:space="preserve">
+    <value>Device detection failed; app list was not loaded</value>
+  </data>
+  <data name="SoftwareManager_055" xml:space="preserve">
+    <value>Refresh failed: {0}</value>
+  </data>
+  <data name="SoftwareManager_056" xml:space="preserve">
+    <value>No ADB devices detected. Check the connection and enable USB debugging.</value>
+  </data>
+  <data name="SoftwareManager_057" xml:space="preserve">
+    <value>Multiple devices detected ({0})</value>
+  </data>
+  <data name="SoftwareManager_058" xml:space="preserve">
+    <value>To avoid unintended actions, leave only one device connected and refresh.</value>
+  </data>
+  <data name="SoftwareManager_059" xml:space="preserve">
+    <value>Device unauthorized</value>
+  </data>
+  <data name="SoftwareManager_060" xml:space="preserve">
+    <value>Device offline</value>
+  </data>
+  <data name="SoftwareManager_061" xml:space="preserve">
+    <value>Device is in Recovery mode</value>
+  </data>
+  <data name="SoftwareManager_062" xml:space="preserve">
+    <value>Device is in Sideload mode</value>
+  </data>
+  <data name="SoftwareManager_063" xml:space="preserve">
+    <value>App management is unavailable in the current device mode</value>
+  </data>
+  <data name="SoftwareManager_064" xml:space="preserve">
+    <value>Allow USB debugging on the device, then try again.</value>
+  </data>
+  <data name="SoftwareManager_065" xml:space="preserve">
+    <value>Wait for the device to boot into Android and establish an authorized ADB connection.</value>
+  </data>
+  <data name="SoftwareManager_066" xml:space="preserve">
+    <value>Device is in Fastboot mode</value>
+  </data>
+  <data name="SoftwareManager_067" xml:space="preserve">
+    <value>App management requires the device to be booted into Android with USB debugging enabled.</value>
+  </data>
+  <data name="SoftwareManager_068" xml:space="preserve">
+    <value>App list not loaded</value>
+  </data>
+  <data name="SoftwareManager_069" xml:space="preserve">
+    <value>{0} apps total; {1} shown</value>
+  </data>
+  <data name="SoftwareManager_070" xml:space="preserve">
+    <value>Loading app list…</value>
+  </data>
+  <data name="SoftwareManager_071" xml:space="preserve">
+    <value>Failed to load app list. Refresh to try again.</value>
+  </data>
+  <data name="SoftwareManager_072" xml:space="preserve">
+    <value>Failed to load app list</value>
+  </data>
+  <data name="SoftwareManager_073" xml:space="preserve">
+    <value>Failed to refresh app list: {0}</value>
+  </data>
+  <data name="SoftwareManager_074" xml:space="preserve">
+    <value>Failed to read app name/icon: {0}</value>
+  </data>
+  <data name="SoftwareManager_075" xml:space="preserve">
+    <value>Operation in progress</value>
+  </data>
+  <data name="SoftwareManager_076" xml:space="preserve">
+    <value>Wait for the current operation to finish, then try again.</value>
+  </data>
+  <data name="SoftwareManager_077" xml:space="preserve">
+    <value>Operation failed (exit code {0})</value>
+  </data>
+  <data name="SoftwareManager_078" xml:space="preserve">
+    <value>Do not remind me again</value>
+  </data>
+  <data name="SoftwareManager_079" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="SoftwareManager_080" xml:space="preserve">
+    <value>Select an app or wait for the foreground package name to load.</value>
+  </data>
+  <data name="SoftwareManager_081" xml:space="preserve">
+    <value>Target app: {0}
+Target device: {1}
+
+{2}
+
+Continue?</value>
+  </data>
+  <data name="SoftwareManager_082" xml:space="preserve">
+    <value>Confirm freezing app</value>
+  </data>
+  <data name="SoftwareManager_083" xml:space="preserve">
+    <value>Freezing disables the app. Its home screen icon may disappear or the app may no longer open. Some devices require elevated permissions.</value>
+  </data>
+  <data name="SoftwareManager_084" xml:space="preserve">
+    <value>Confirm force stop</value>
+  </data>
+  <data name="SoftwareManager_085" xml:space="preserve">
+    <value>Force stop immediately ends the app process. Current work or unsaved data may be lost.</value>
+  </data>
+  <data name="SoftwareManager_086" xml:space="preserve">
+    <value>Confirm uninstall</value>
+  </data>
+  <data name="SoftwareManager_087" xml:space="preserve">
+    <value>Uninstalling removes this app. Back up any important app data first.</value>
+  </data>
+  <data name="SoftwareManager_088" xml:space="preserve">
+    <value>Confirm uninstall with data retained</value>
+  </data>
+  <data name="SoftwareManager_089" xml:space="preserve">
+    <value>This uninstalls the app while attempting to retain its data. Not all systems guarantee this. It may cause installation issues later or leave residual data.</value>
+  </data>
+  <data name="SoftwareManager_090" xml:space="preserve">
+    <value>Confirm clearing data</value>
+  </data>
+  <data name="SoftwareManager_091" xml:space="preserve">
+    <value>Clearing data deletes all local app data and sign-in state.</value>
+  </data>
+  <data name="SoftwareManager_092" xml:space="preserve">
+    <value>Package name to unfreeze</value>
+  </data>
+  <data name="SoftwareManager_093" xml:space="preserve">
+    <value>Unfreeze</value>
+  </data>
+  <data name="SoftwareManager_094" xml:space="preserve">
+    <value>Open permission settings</value>
+  </data>
+  <data name="SoftwareManager_095" xml:space="preserve">
+    <value>Current Activity could not be obtained.</value>
+  </data>
+  <data name="SoftwareManager_096" xml:space="preserve">
+    <value>The current Activity component will be disabled:
+{0}
+
+This screen may no longer open and the app may malfunction. Recovery requires re-enabling the component.</value>
+  </data>
+  <data name="SoftwareManager_097" xml:space="preserve">
+    <value>
+The device must have Root access and a working su command. Watch for authorization prompts on the device.</value>
+  </data>
+  <data name="SoftwareManager_098" xml:space="preserve">
+    <value>The app will be force-stopped after disabling the component.</value>
+  </data>
+  <data name="SoftwareManager_099" xml:space="preserve">
+    <value>
+
+Continue?</value>
+  </data>
+  <data name="SoftwareManager_100" xml:space="preserve">
+    <value>Confirm disabling current Activity</value>
+  </data>
+  <data name="SoftwareManager_101" xml:space="preserve">
+    <value>Disable Activity (Root)</value>
+  </data>
+  <data name="SoftwareManager_102" xml:space="preserve">
+    <value>Disable Activity</value>
+  </data>
+  <data name="SoftwareManager_103" xml:space="preserve">
+    <value>Install APK ({0}/{1})</value>
+  </data>
+  <data name="SoftwareManager_104" xml:space="preserve">
+    <value>Installation failed</value>
+  </data>
+  <data name="SoftwareManager_105" xml:space="preserve">
+    <value>Installation failed: {0}</value>
+  </data>
+  <data name="SoftwareManager_106" xml:space="preserve">
+    <value>Extract APK</value>
+  </data>
+  <data name="SoftwareManager_107" xml:space="preserve">
+    <value>Device status changed; extraction cancelled</value>
+  </data>
+  <data name="SoftwareManager_108" xml:space="preserve">
+    <value>Installation path for {0} not found</value>
+  </data>
+  <data name="SoftwareManager_109" xml:space="preserve">
+    <value>Extraction failed</value>
+  </data>
+  <data name="SoftwareManager_110" xml:space="preserve">
+    <value>Extraction failed: {0}</value>
+  </data>
+  <data name="SoftwareManager_111" xml:space="preserve">
+    <value>Failed to read components: {0}</value>
+  </data>
+  <data name="SoftwareManager_112" xml:space="preserve">
+    <value>Enter a component or select one from the list.</value>
+  </data>
+  <data name="FileManager_001" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="FileManager_002" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="FileManager_003" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="FileManager_004" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="FileManager_005" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="FileManager_006" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="FileManager_007" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="FileManager_008" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="FileManager_009" xml:space="preserve">
+    <value>Import files</value>
+  </data>
+  <data name="FileManager_010" xml:space="preserve">
+    <value>Import folder</value>
+  </data>
+  <data name="FileManager_011" xml:space="preserve">
+    <value>File manager</value>
+  </data>
+  <data name="FileManager_012" xml:space="preserve">
+    <value>Browse device storage and transfer files between your computer and device.</value>
+  </data>
+  <data name="FileManager_013" xml:space="preserve">
+    <value>File browser</value>
+  </data>
+  <data name="FileManager_014" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="FileManager_015" xml:space="preserve">
+    <value>Download selected item</value>
+  </data>
+  <data name="FileManager_016" xml:space="preserve">
+    <value>Transfer progress</value>
+  </data>
+  <data name="FileManager_017" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="FileManager_018" xml:space="preserve">
+    <value>Tips</value>
+  </data>
+  <data name="FileManager_019" xml:space="preserve">
+    <value>1. Right-click a file or folder for advanced actions such as copying, moving, or deleting.
+
+2. Double-click a folder to open it.
+
+3. Keep the device connected during transfers and wait for completion.
+
+4. Some folders on Android 11+ (such as Android/data) have restricted permissions and may be inaccessible.</value>
+  </data>
+  <data name="FileManager_020" xml:space="preserve">
+    <value>Failed to list directory: {0}</value>
+  </data>
+  <data name="FileManager_021" xml:space="preserve">
+    <value>{0} items</value>
+  </data>
+  <data name="FileManager_022" xml:space="preserve">
+    <value>Select a file.</value>
+  </data>
+  <data name="FileManager_023" xml:space="preserve">
+    <value>Downloading folders is not supported here yet.</value>
+  </data>
+  <data name="FileManager_024" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="FileManager_025" xml:space="preserve">
+    <value>In progress…</value>
+  </data>
+  <data name="FileManager_026" xml:space="preserve">
+    <value>Unknown transfer mode</value>
+  </data>
+  <data name="FileManager_027" xml:space="preserve">
+    <value>Operation completed</value>
+  </data>
+  <data name="FileManager_028" xml:space="preserve">
+    <value>Operation failed</value>
+  </data>
+  <data name="FileManager_029" xml:space="preserve">
+    <value>Copied</value>
+  </data>
+  <data name="FileManager_030" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="FileManager_031" xml:space="preserve">
+    <value>Clipboard is empty</value>
+  </data>
+  <data name="FileManager_032" xml:space="preserve">
+    <value>New name:</value>
+  </data>
+  <data name="FileManager_035" xml:space="preserve">
+    <value>Deleted</value>
+  </data>
+  <data name="FileManager_036" xml:space="preserve">
+    <value>Deletion failed</value>
+  </data>
+  <data name="FileManager_037" xml:space="preserve">
+    <value>Name: {0}</value>
+  </data>
+  <data name="FileManager_038" xml:space="preserve">
+    <value>Path: {0}</value>
+  </data>
+  <data name="FileManager_039" xml:space="preserve">
+    <value>Type: {0}</value>
+  </data>
+  <data name="FileManager_040" xml:space="preserve">
+    <value>Directory</value>
+  </data>
+  <data name="FileManager_041" xml:space="preserve">
+    <value>Size: {0}</value>
+  </data>
+  <data name="FileManager_042" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="FileManager_063" xml:space="preserve">
+    <value>Permissions: </value>
+  </data>
+  <data name="FileManager_064" xml:space="preserve">
+    <value>Owner: </value>
+  </data>
+  <data name="FileManager_065" xml:space="preserve">
+    <value>Modified: </value>
+  </data>
+  <data name="Backup_001" xml:space="preserve">
+    <value>Baseband backup</value>
+  </data>
+  <data name="Backup_002" xml:space="preserve">
+    <value>Partition backups for development and maintenance, with compression and local restore script generation.</value>
+  </data>
+  <data name="Backup_003" xml:space="preserve">
+    <value>Verify the device and partitions, and ensure sufficient free space at the destination. After backup, check the execution log and output files. Review restore scripts yourself before running them. Never restore baseband partitions to a different device.</value>
+  </data>
+  <data name="Backup_004" xml:space="preserve">
+    <value>Save directory</value>
+  </data>
+  <data name="Backup_005" xml:space="preserve">
+    <value>Backup output path</value>
+  </data>
+  <data name="Backup_006" xml:space="preserve">
+    <value>Select a local save directory</value>
+  </data>
+  <data name="Backup_007" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="Backup_008" xml:space="preserve">
+    <value>Keep an extra copy of important backups, separate from firmware files you are working on.</value>
+  </data>
+  <data name="Backup_009" xml:space="preserve">
+    <value>Backup settings</value>
+  </data>
+  <data name="Backup_010" xml:space="preserve">
+    <value>Pack backed-up partitions into a single ZIP archive</value>
+  </data>
+  <data name="Backup_011" xml:space="preserve">
+    <value>Generate local restore scripts for backed-up partitions (flash_all.bat/sh)</value>
+  </data>
+  <data name="Backup_012" xml:space="preserve">
+    <value>Scan and select partitions</value>
+  </data>
+  <data name="Backup_013" xml:space="preserve">
+    <value>Start backup</value>
+  </data>
+  <data name="Backup_014" xml:space="preserve">
+    <value>Connect the device in Android system mode and enable debugging.</value>
+  </data>
+  <data name="Backup_015" xml:space="preserve">
+    <value>Scanning partitions…</value>
+  </data>
+  <data name="Backup_016" xml:space="preserve">
+    <value>Scan failed: {0}</value>
+  </data>
+  <data name="Backup_017" xml:space="preserve">
+    <value>Scan failed</value>
+  </data>
+  <data name="Backup_018" xml:space="preserve">
+    <value>Scan complete. Found {0} partitions.</value>
+  </data>
+  <data name="Backup_019" xml:space="preserve">
+    <value>The user cancelled partition selection.</value>
+  </data>
+  <data name="Backup_020" xml:space="preserve">
+    <value>Selected {0} partitions.</value>
+  </data>
+  <data name="Backup_021" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Backup_022" xml:space="preserve">
+    <value>Selected {0} partitions. Click “Start backup”.</value>
+  </data>
+  <data name="Backup_023" xml:space="preserve">
+    <value>An error occurred during scanning: {0}</value>
+  </data>
+  <data name="Backup_024" xml:space="preserve">
+    <value>Root access was not granted. Cannot read the partition table.</value>
+  </data>
+  <data name="Backup_025" xml:space="preserve">
+    <value>Partition path not found (/dev/block/by-name, etc.).</value>
+  </data>
+  <data name="Backup_026" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="Backup_027" xml:space="preserve">
+    <value>Invert selection</value>
+  </data>
+  <data name="Backup_028" xml:space="preserve">
+    <value>Select these partitions with care</value>
+  </data>
+  <data name="Backup_029" xml:space="preserve">
+    <value>Includes large or high-risk partitions such as userdata, metadata, and cache</value>
+  </data>
+  <data name="Backup_030" xml:space="preserve">
+    <value>Select partitions to back up</value>
+  </data>
+  <data name="Backup_031" xml:space="preserve">
+    <value>Select partitions</value>
+  </data>
+  <data name="Backup_032" xml:space="preserve">
+    <value>Scan and select at least one partition first.</value>
+  </data>
+  <data name="Backup_033" xml:space="preserve">
+    <value>Invalid save path</value>
+  </data>
+  <data name="Backup_034" xml:space="preserve">
+    <value>Ensure the device is connected and online.</value>
+  </data>
+  <data name="Backup_035" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Backup_036" xml:space="preserve">
+    <value>You selected userdata, which is usually very large and contains private personal data.
+The backup is very likely to fail and may take an extremely long time.
+Are you sure you want to continue?</value>
+  </data>
+  <data name="Backup_037" xml:space="preserve">
+    <value>Backup task finished</value>
+  </data>
+  <data name="Backup_038" xml:space="preserve">
+    <value>No partitions selected</value>
+  </data>
+  <data name="Backup_039" xml:space="preserve">
+    <value>Initializing backup ({0} partitions)</value>
+  </data>
+  <data name="Backup_040" xml:space="preserve">
+    <value>Partition path not found</value>
+  </data>
+  <data name="Backup_041" xml:space="preserve">
+    <value>Cannot find partition path</value>
+  </data>
+  <data name="Backup_042" xml:space="preserve">
+    <value>[{0}/{1}] Backing up {2}</value>
+  </data>
+  <data name="Backup_043" xml:space="preserve">
+    <value>DD failed: {0}</value>
+  </data>
+  <data name="Backup_044" xml:space="preserve">
+    <value>Pull failed: {0}</value>
+  </data>
+  <data name="Backup_045" xml:space="preserve">
+    <value>Generating restore scripts</value>
+  </data>
+  <data name="Backup_046" xml:space="preserve">
+    <value>Compressing backup files</value>
+  </data>
+  <data name="Backup_047" xml:space="preserve">
+    <value>7z compression failed; trying built-in ZIP: {0}</value>
+  </data>
+  <data name="Backup_048" xml:space="preserve">
+    <value>Backup complete!
+Saved to: {0}</value>
+  </data>
+  <data name="Misc_001" xml:space="preserve">
+    <value>Miscellaneous tools</value>
+  </data>
+  <data name="Misc_002" xml:space="preserve">
+    <value>Tools for flashing, maintenance, and development. Select a tool to open its dedicated page.</value>
+  </data>
+  <data name="Misc_003" xml:space="preserve">
+    <value>Partition flashing and firmware processing</value>
+  </data>
+  <data name="Misc_004" xml:space="preserve">
+    <value>Advanced actions</value>
+  </data>
+  <data name="Misc_005" xml:space="preserve">
+    <value>Repair, modules, and development maintenance</value>
+  </data>
+  <data name="Misc_006" xml:space="preserve">
+    <value>Simulation controls</value>
+  </data>
+  <data name="Misc_007" xml:space="preserve">
+    <value>Display, system settings, and simulated keys</value>
+  </data>
+  <data name="Misc_008" xml:space="preserve">
+    <value>Flash a single partition</value>
+  </data>
+  <data name="Misc_009" xml:space="preserve">
+    <value>Select an image and flash the target partition (optional slot / mode)</value>
+  </data>
+  <data name="Misc_010" xml:space="preserve">
+    <value>Payload.bin tools</value>
+  </data>
+  <data name="Misc_011" xml:space="preserve">
+    <value>OFP tools</value>
+  </data>
+  <data name="Misc_012" xml:space="preserve">
+    <value>Fix boot problems</value>
+  </data>
+  <data name="Misc_013" xml:space="preserve">
+    <value>Remove faulty module configurations to recover from boot failures caused by module conflicts</value>
+  </data>
+  <data name="Misc_014" xml:space="preserve">
+    <value>Module recovery manager</value>
+  </data>
+  <data name="Misc_015" xml:space="preserve">
+    <value>Manage installed modules: list, enable, disable, back up, remove, install, or batch install (requires Root)</value>
+  </data>
+  <data name="Misc_016" xml:space="preserve">
+    <value>ADB development terminal</value>
+  </data>
+  <data name="Misc_017" xml:space="preserve">
+    <value>Open a native terminal window to run ADB for development and maintenance</value>
+  </data>
+  <data name="Misc_018" xml:space="preserve">
+    <value>Run maintenance scripts</value>
+  </data>
+  <data name="Misc_019" xml:space="preserve">
+    <value>Select a .sh script on your computer, push it to the phone, and run it interactively in a terminal</value>
+  </data>
+  <data name="Misc_020" xml:space="preserve">
+    <value>Check flashing configuration</value>
+  </data>
+  <data name="Misc_021" xml:space="preserve">
+    <value>Check configuration syntax and show line numbers, column numbers, and error details</value>
+  </data>
+  <data name="Misc_022" xml:space="preserve">
+    <value>Display properties</value>
+  </data>
+  <data name="Misc_023" xml:space="preserve">
+    <value>Resolution / Density (DPI) / Smallest width (DP)</value>
+  </data>
+  <data name="Misc_024" xml:space="preserve">
+    <value>Simulate battery status</value>
+  </data>
+  <data name="Misc_025" xml:space="preserve">
+    <value>Charge level / Temperature / Charging type</value>
+  </data>
+  <data name="Misc_026" xml:space="preserve">
+    <value>Change screen timeout</value>
+  </data>
+  <data name="Misc_027" xml:space="preserve">
+    <value>Change screen_off_timeout</value>
+  </data>
+  <data name="Misc_028" xml:space="preserve">
+    <value>Hide status bar icons</value>
+  </data>
+  <data name="Misc_029" xml:space="preserve">
+    <value>Time, Bluetooth, location, Wi-Fi, battery, and more</value>
+  </data>
+  <data name="Misc_030" xml:space="preserve">
+    <value>Font size</value>
+  </data>
+  <data name="Misc_031" xml:space="preserve">
+    <value>Font scaling (up to 5×)</value>
+  </data>
+  <data name="Misc_032" xml:space="preserve">
+    <value>Animation speed</value>
+  </data>
+  <data name="Misc_033" xml:space="preserve">
+    <value>Window / Transition / Animator duration</value>
+  </data>
+  <data name="Misc_034" xml:space="preserve">
+    <value>Disable accessibility features</value>
+  </data>
+  <data name="Misc_035" xml:space="preserve">
+    <value>TalkBack / Select to Speak / Magnification / Color inversion / Color correction / High contrast</value>
+  </data>
+  <data name="Misc_036" xml:space="preserve">
+    <value>Simulate key presses</value>
+  </data>
+  <data name="Misc_037" xml:space="preserve">
+    <value>Volume, lock screen, Back, Home, mobile data, and more</value>
+  </data>
+  <data name="DeviceBar_001" xml:space="preserve">
+    <value>Connect your phone via ADB / Fastboot</value>
+  </data>
+  <data name="DeviceBar_002" xml:space="preserve">
+    <value>Refresh device status</value>
+  </data>
+  <data name="DeviceBar_003" xml:space="preserve">
+    <value>Reboot device</value>
+  </data>
+  <data name="DeviceBar_004" xml:space="preserve">
+    <value>No connected devices found</value>
+  </data>
+  <data name="DeviceBar_005" xml:space="preserve">
+    <value>Reboot to system</value>
+  </data>
+  <data name="DeviceBar_006" xml:space="preserve">
+    <value>Reboot to Recovery</value>
+  </data>
+  <data name="DeviceBar_007" xml:space="preserve">
+    <value>Reboot to Bootloader</value>
+  </data>
+  <data name="DeviceBar_008" xml:space="preserve">
+    <value>Reboot to FastbootD</value>
+  </data>
+  <data name="DeviceBar_009" xml:space="preserve">
+    <value>Reboot to 9008 (EDL)</value>
+  </data>
+  <data name="LogView_001" xml:space="preserve">
+    <value>No log entries yet</value>
+  </data>
+  <data name="Flash_001" xml:space="preserve"><value>Flash Center</value></data>
+  <data name="Flash_002" xml:space="preserve"><value>One-click smart flashing</value></data>
+  <data name="Flash_003" xml:space="preserve"><value>Flashing rewrites partitions and switches boot slots; it cannot be undone. Make sure the firmware matches your model and the phone is in Bootloader mode with a stable connection. All raw output is preserved for later verification.</value></data>
+  <data name="Flash_004" xml:space="preserve"><value>Flash source</value></data>
+  <data name="Flash_005" xml:space="preserve"><value>Manual image folder</value></data>
+  <data name="Flash_006" xml:space="preserve"><value>Archive package (.zip/.7z)</value></data>
+  <data name="Flash_007" xml:space="preserve"><value>Archive mode</value></data>
+  <data name="Flash_008" xml:space="preserve"><value>Official package (OTA Zip)</value></data>
+  <data name="Flash_009" xml:space="preserve"><value>Legacy port 7z/zip (C16, before 0107)</value></data>
+  <data name="Flash_010" xml:space="preserve"><value>New port 7z (C16, after 0107)</value></data>
+  <data name="Flash_011" xml:space="preserve"><value>ColorOS17 port (.7z)</value></data>
+  <data name="Flash_012" xml:space="preserve"><value>Select flash package folder</value></data>
+  <data name="Flash_013" xml:space="preserve"><value>Browse</value></data>
+  <data name="Flash_014" xml:space="preserve"><value>Device status</value></data>
+  <data name="Flash_015" xml:space="preserve"><value>Device: not connected</value></data>
+  <data name="Flash_016" xml:space="preserve"><value>Mode: unknown</value></data>
+  <data name="Flash_017" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Flash_018" xml:space="preserve"><value>Options</value></data>
+  <data name="Flash_019" xml:space="preserve"><value>Wipe data (factory reset)</value></data>
+  <data name="Flash_020" xml:space="preserve"><value>Keep ROOT</value></data>
+  <data name="Flash_021" xml:space="preserve"><value>Enabling "Keep ROOT" skips flashing boot.img. Wiping data erases userdata and metadata.</value></data>
+  <data name="Flash_022" xml:space="preserve"><value>Actions</value></data>
+  <data name="Flash_023" xml:space="preserve"><value>Load package</value></data>
+  <data name="Flash_024" xml:space="preserve"><value>Start flashing</value></data>
+  <data name="Flash_025" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Flash_026" xml:space="preserve"><value>Save log</value></data>
+  <data name="Flash_027" xml:space="preserve"><value>Open log folder</value></data>
+  <data name="Flash_028" xml:space="preserve"><value>Log output</value></data>
+  <data name="Flash_030" xml:space="preserve"><value>Select a .zip or .7z archive</value></data>
+  <data name="Flash_031" xml:space="preserve"><value>Browse</value></data>
+  <data name="Flash_032" xml:space="preserve"><value>Notice</value></data>
+  <data name="Flash_033" xml:space="preserve"><value>Please select a path first.</value></data>
+  <data name="Flash_034" xml:space="preserve"><value>The selected path is not a valid folder.</value></data>
+  <data name="Flash_035" xml:space="preserve"><value>The selected path is not a valid file.</value></data>
+  <data name="Flash_036" xml:space="preserve"><value>Unsafe environment</value></data>
+  <data name="Flash_037" xml:space="preserve"><value>Flashing is not allowed now. Please close any remote-control software.</value></data>
+  <data name="Flash_038" xml:space="preserve"><value>Load failed</value></data>
+  <data name="Flash_039" xml:space="preserve"><value>No usable images found or validation failed. Check the log.</value></data>
+  <data name="Flash_040" xml:space="preserve"><value>Images ready. You can start flashing.</value></data>
+  <data name="Flash_041" xml:space="preserve"><value>Loaded</value></data>
+  <data name="Flash_042" xml:space="preserve"><value>Loaded successfully. You can start flashing.</value></data>
+  <data name="Flash_043" xml:space="preserve"><value>Image count check</value></data>
+  <data name="Flash_044" xml:space="preserve"><value>Found {0} image files.
+Usually 46 or 48 is expected.
+Continue loading?</value></data>
+  <data name="Flash_045" xml:space="preserve"><value>Click "Load package" first and wait for it to succeed.</value></data>
+  <data name="Flash_046" xml:space="preserve"><value>the temporary working directory</value></data>
+  <data name="Flash_047" xml:space="preserve"><value>Confirm flashing</value></data>
+  <data name="Flash_048" xml:space="preserve"><value>Flashing will run in {0}.
+{1} steps are planned.
+
+Make sure the phone is in Bootloader mode and connected.
+Start now?</value></data>
+  <data name="Flash_049" xml:space="preserve"><value>Cancel flashing</value></data>
+  <data name="Flash_050" xml:space="preserve"><value>Cancel the current flashing task? The fastboot process will be terminated immediately.</value></data>
+  <data name="Flash_051" xml:space="preserve"><value>There is no log to save.</value></data>
+  <data name="Flash_052" xml:space="preserve"><value>Log saved: </value></data>
+  <data name="Flash_053" xml:space="preserve"><value>Save failed</value></data>
+  <data name="Flash_054" xml:space="preserve"><value>OK</value></data>
+  <data name="Flash_055" xml:space="preserve"><value>Start</value></data>
+  <data name="Flash_056" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Flash_057" xml:space="preserve"><value>Device not ready</value></data>
+  <data name="Flash_058" xml:space="preserve"><value>No device in fastboot / fastbootd mode was detected.
+Make sure the phone is in Bootloader mode and connected, then try again.</value></data>
+</root>
